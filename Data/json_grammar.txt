@@ -1,0 +1,24 @@
+"Start" "Initial" "Terminal"
+
+"Initial" "Object"
+
+"Value" "String"
+"Value" "Number"
+"Value" "List"
+"Value" "Object"
+
+"List" "EmptyList"
+"List" "[" "ListItems" "]"
+
+"EmptyList" "[" "]"
+"ListItems" "Value"
+"ListItems" "ListItems" "," "Value"
+
+"Object" "EmptyObject"
+"Object" "{" "Properties" "}"
+
+"EmptyObject" "{" "}"
+"Properties" "KeyValuePair"
+"Properties" "Properties" "," "KeyValuePair"
+
+"KeyValuePair" "String" ":" "Value"
