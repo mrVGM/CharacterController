@@ -32,4 +32,5 @@ public:
 
 	const std::string& GetId() const;
 	const TypeDef* GetParent() const;
+	bool IsA(const TypeDef& type) const;
 };

@@ -4,10 +4,13 @@
 
 namespace
 {
+	std::string m_typeTypeDefId = "A4885F01-547F-4C21-BE40-A21C7BE0BA24";
+
 	BoolTypeDef m_boolTypeDef;
 	IntTypeDef m_intTypeDef;
 	FloatTypeDef m_floatTypeDef;
 	StringTypeDef m_stringTypeDef;
+	GenericTypeDef m_genericTypedef;
 }
 
 const BoolTypeDef& BoolTypeDef::GetTypeDef()
@@ -84,4 +87,64 @@ void StringTypeDef::GetReflectionData(json_parser::JSONValue& outData)
 	TypeDef::GetReflectionData(outData);
 	auto& map = outData.GetAsObj();
 	map["hint"] = JSONValue("string");
+}
+
+const GenericTypeDef& GenericTypeDef::GetTypeDef()
+{
+	return m_genericTypedef;
+}
+
+GenericTypeDef::GenericTypeDef() :
+	TypeDef(nullptr, "1D4363E5-BC6F-4B49-80F3-FAC358F5B296")
+{
+}
+
+void GenericTypeDef::GetReflectionData(json_parser::JSONValue& outData)
+{
+	using namespace json_parser;
+
+	TypeDef::GetReflectionData(outData);
+	auto& map = outData.GetAsObj();
+
+	map["hint"] = JSONValue("type");
+}
+
+
+void TypeTypeDef::GetKey(const TypeDef& templateType, json_parser::JSONValue& outKey)
+{
+	using namespace json_parser;
+	GetDefaultTypeKey(m_typeTypeDefId, outKey);
+
+	auto& map = outKey.GetAsObj();
+	map["template"] = JSONValue(templateType.GetId());
+}
+
+const TypeTypeDef& TypeTypeDef::GetTypeDef(const TypeDef& templateType)
+{
+	using namespace json_parser;
+
+	JSONValue key;
+	GetKey(templateType, key);
+
+	TypeDefsMap& defsMap = GetDefsMap();
+	auto it = defsMap.find(key.ToString(false));
+
+	if (it != defsMap.end())
+	{
+		return *it->second;
+	}
+
+	TypeTypeDef* newDef = new TypeTypeDef(templateType);
+	return *newDef;
+}
+
+TypeTypeDef::TypeTypeDef(const TypeDef& templateType) :
+	TypeDef(&GenericTypeDef::GetTypeDef(), m_typeTypeDefId),
+	m_templateType(templateType)
+{
+}
+
+void TypeTypeDef::GetTypeKey(json_parser::JSONValue& outKey) const
+{
+	GetKey(m_templateType, outKey);
 }

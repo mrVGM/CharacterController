@@ -42,7 +42,7 @@ int main(int args, const char** argv)
 	assets::Boot();
 
 	const ListTypeDef& lDef = ListTypeDef::GetTypeDef(IntTypeDef::GetTypeDef());
-	GenericList<int> gl(lDef);
+	GenericList<int> gl(lDef, nullptr);
 
 
 

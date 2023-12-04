@@ -27,6 +27,22 @@ TypeDef::TypeDefsMap& TypeDef::GetDefsMap()
 	return *m_defsMap;
 }
 
+bool TypeDef::IsA(const TypeDef& type) const
+{
+	const TypeDef* cur = this;
+
+	while (cur)
+	{
+		if (cur == &type)
+		{
+			return true;
+		}
+		cur = cur->GetParent();
+	}
+
+	return false;
+}
+
 void TypeDef::GetDefaultTypeKey(const std::string& id, json_parser::JSONValue& outTypeKey)
 {
 	using namespace json_parser;

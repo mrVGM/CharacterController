@@ -41,3 +41,26 @@ public:
 
 	virtual void GetReflectionData(json_parser::JSONValue& outData) override;
 };
+
+class GenericTypeDef : public TypeDef
+{
+public:
+	static const GenericTypeDef& GetTypeDef();
+
+	GenericTypeDef();
+
+	virtual void GetReflectionData(json_parser::JSONValue& outData) override;
+};
+
+class TypeTypeDef : public TypeDef
+{
+private:
+	static void GetKey(const TypeDef& templateType, json_parser::JSONValue& outKey);
+	const TypeDef& m_templateType;
+
+public:
+	static const TypeTypeDef& GetTypeDef(const TypeDef& templateType);
+
+	TypeTypeDef(const TypeDef& templateType);
+	void GetTypeKey(json_parser::JSONValue& outKey) const override;
+};
