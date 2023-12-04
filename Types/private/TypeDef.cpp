@@ -43,6 +43,10 @@ bool TypeDef::IsA(const TypeDef& type) const
 	return false;
 }
 
+void TypeDef::DeserializeFromJSON(void* object, json_parser::JSONValue& json) const
+{
+}
+
 void TypeDef::GetDefaultTypeKey(const std::string& id, json_parser::JSONValue& outTypeKey)
 {
 	using namespace json_parser;

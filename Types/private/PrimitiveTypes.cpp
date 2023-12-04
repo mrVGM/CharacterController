@@ -32,6 +32,12 @@ void BoolTypeDef::GetReflectionData(json_parser::JSONValue& outData)
 	map["hint"] = JSONValue("bool");
 }
 
+void BoolTypeDef::DeserializeFromJSON(void* object, json_parser::JSONValue& json) const
+{
+	bool* obj = static_cast<bool*>(object);
+	*obj = static_cast<bool>(std::get<double>(json.m_payload));
+}
+
 const IntTypeDef& IntTypeDef::GetTypeDef()
 {
 	return m_intTypeDef;
@@ -49,6 +55,12 @@ void IntTypeDef::GetReflectionData(json_parser::JSONValue& outData)
 	TypeDef::GetReflectionData(outData);
 	auto& map = outData.GetAsObj();
 	map["hint"] = JSONValue("int");
+}
+
+void IntTypeDef::DeserializeFromJSON(void* object, json_parser::JSONValue& json) const
+{
+	int* obj = static_cast<int*>(object);
+	*obj = static_cast<int>(std::get<double>(json.m_payload));
 }
 
 const FloatTypeDef& FloatTypeDef::GetTypeDef()
@@ -70,6 +82,12 @@ void FloatTypeDef::GetReflectionData(json_parser::JSONValue& outData)
 	map["hint"] = JSONValue("float");
 }
 
+void FloatTypeDef::DeserializeFromJSON(void* object, json_parser::JSONValue& json) const
+{
+	float* obj = static_cast<float*>(object);
+	*obj = static_cast<float>(std::get<double>(json.m_payload));
+}
+
 const StringTypeDef& StringTypeDef::GetTypeDef()
 {
 	return m_stringTypeDef;
@@ -87,6 +105,12 @@ void StringTypeDef::GetReflectionData(json_parser::JSONValue& outData)
 	TypeDef::GetReflectionData(outData);
 	auto& map = outData.GetAsObj();
 	map["hint"] = JSONValue("string");
+}
+
+void StringTypeDef::DeserializeFromJSON(void* object, json_parser::JSONValue& json) const
+{
+	std::string* obj = static_cast<std::string*>(object);
+	*obj = std::get<std::string>(json.m_payload);
 }
 
 const GenericTypeDef& GenericTypeDef::GetTypeDef()
@@ -147,4 +171,22 @@ TypeTypeDef::TypeTypeDef(const TypeDef& templateType) :
 void TypeTypeDef::GetTypeKey(json_parser::JSONValue& outKey) const
 {
 	GetKey(m_templateType, outKey);
+}
+
+void TypeTypeDef::DeserializeFromJSON(void* object, json_parser::JSONValue& json) const
+{
+	using namespace json_parser;
+	JSONValue key;
+	GetDefaultTypeKey(m_templateType.GetId(), key);
+
+	const TypeDef::TypeDefsMap& defsMap =TypeDef::GetDefsMap();
+	auto it = defsMap.find(key.ToString(false));
+
+	if (it == defsMap.end())
+	{
+		return;
+	}
+
+	const TypeDef** obj = static_cast<const TypeDef**>(object);
+	*obj = it->second;
 }

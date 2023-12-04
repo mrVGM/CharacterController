@@ -33,4 +33,6 @@ public:
 	const std::string& GetId() const;
 	const TypeDef* GetParent() const;
 	bool IsA(const TypeDef& type) const;
+
+	virtual void DeserializeFromJSON(void* object, json_parser::JSONValue& json) const;
 };
