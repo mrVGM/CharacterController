@@ -8,9 +8,7 @@
 #include <iostream>
 #include <filesystem>
 
-#include "ListTypeDef.h"
 #include "PrimitiveTypes.h"
-#include "GenericList.h"
 
 int main(int args, const char** argv)
 {
@@ -40,10 +38,6 @@ int main(int args, const char** argv)
 	json_parser::JSONValue::FromString(defaults, tmp);
 
 	assets::Boot();
-
-	const ListTypeDef& lDef = ListTypeDef::GetTypeDef(IntTypeDef::GetTypeDef());
-	GenericList<int> gl(lDef, nullptr);
-
 
 
 	return 0;

@@ -9,13 +9,10 @@ add_library (Types
 	"private/PrimitiveTypes.cpp"
 	"public/CompositeTypeDef.h"
 	"private/CompositeTypeDef.cpp"
-	"public/Object.h"
-	"private/Object.cpp"
-	"public/GenericListTypeDef.h"
-	"private/GenericListTypeDef.cpp"
-	"public/ListTypeDef.h"
-	"private/ListTypeDef.cpp"
-	"public/GenericList.h"
+	"public/CompositeValue.h"
+	"private/CompositeValue.cpp"
+	"public/GenericListDef.h"
+	"private/GenericListDef.cpp"
 )
 
 target_include_directories(Types INTERFACE PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/public")
