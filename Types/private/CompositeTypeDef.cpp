@@ -22,6 +22,26 @@ void CompositeTypeDef::Construct(Value& container) const
 	throw "Can't construct from a CompositeTypeDef!";
 }
 
+void CompositeTypeDef::GetReflectionData(json_parser::JSONValue& outData)
+{
+	using namespace json_parser;
+
+	TypeDef::GetReflectionData(outData);
+
+	auto& map = outData.GetAsObj();
+	map["properties"] = JSONValue(ValueType::Object);
+
+	JSONValue& props = map["properties"];
+	auto& propsMap = props.GetAsObj();
+
+	for (auto it = m_properties.begin(); it != m_properties.end(); ++it)
+	{
+		JSONValue tmp;
+		it->second->GetReflectionData(tmp);
+		propsMap[it->first] = tmp;
+	}
+}
+
 
 ValueTypeDef::ValueTypeDef(const TypeDef* parent, const std::string& id) :
 	CompositeTypeDef(parent, id)
@@ -64,4 +84,37 @@ void ReferenceTypeDef::GetReflectionData(json_parser::JSONValue& outData)
 void ReferenceTypeDef::Construct(Value& container) const
 {
 	throw "Can't construct from a ReferenceTypeDef!";
+}
+
+TypeProperty::TypeProperty(const std::string id, const TypeDef& type) :
+	m_id(id),
+	m_type(type)
+{
+}
+
+void TypeProperty::GetReflectionData(json_parser::JSONValue& outData) const
+{
+	using namespace json_parser;
+	JSONValue res(ValueType::Object);
+
+	auto& map = res.GetAsObj();
+	map["id"] = JSONValue(m_id);
+	map["name"] = JSONValue(m_name);
+	map["category"] = JSONValue(m_category);
+
+	JSONValue type;
+	m_type.GetTypeKey(type);
+	map["type"] = type;
+
+	outData = res;
+}
+
+const std::string& TypeProperty::GetId()
+{
+	return m_id;
+}
+
+const TypeDef& TypeProperty::GetType()
+{
+	return m_type;
 }

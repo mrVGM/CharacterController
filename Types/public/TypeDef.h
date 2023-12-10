@@ -22,12 +22,13 @@ protected:
 	bool m_isGenerated = false;
 
 	TypeDef(const TypeDef* parent, const std::string& id);
-	virtual void GetTypeKey(json_parser::JSONValue& outTypeKey) const;
 
 public:
 	static TypeDefsMap& GetDefsMap();
 
 	static void GetDefaultTypeKey(const std::string& id, json_parser::JSONValue& outTypeKey);
+
+	virtual void GetTypeKey(json_parser::JSONValue& outTypeKey) const;
 	virtual void GetReflectionData(json_parser::JSONValue& outData);
 
 	const std::string& GetId() const;
