@@ -3,12 +3,15 @@
 #include "TypeDef.h"
 
 class ObjectValue;
+class Value;
 
 class CompositeTypeDef : public TypeDef
 {
 public:
 	CompositeTypeDef(const TypeDef* parent, const std::string& id);
 	static const CompositeTypeDef& GetTypeDef();
+
+	virtual void Construct(Value& container) const;
 };
 
 class ValueTypeDef : public CompositeTypeDef
@@ -27,5 +30,5 @@ public:
 	static const ReferenceTypeDef& GetTypeDef();
 
 	virtual void GetReflectionData(json_parser::JSONValue& outData) override;
-	virtual void Contruct(ObjectValue& outValue);
+	virtual void Construct(Value& container) const override;
 };

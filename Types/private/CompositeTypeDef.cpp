@@ -17,6 +17,11 @@ const CompositeTypeDef& CompositeTypeDef::GetTypeDef()
 	return m_compositeTypeDef;
 }
 
+void CompositeTypeDef::Construct(Value& container) const
+{
+	throw "Can't construct from a CompositeTypeDef!";
+}
+
 
 ValueTypeDef::ValueTypeDef(const TypeDef* parent, const std::string& id) :
 	CompositeTypeDef(parent, id)
@@ -56,6 +61,7 @@ void ReferenceTypeDef::GetReflectionData(json_parser::JSONValue& outData)
 	map["hint"] = JSONValue("reference_type");
 }
 
-void ReferenceTypeDef::Contruct(ObjectValue& outValue)
+void ReferenceTypeDef::Construct(Value& container) const
 {
+	throw "Can't construct from a ReferenceTypeDef!";
 }

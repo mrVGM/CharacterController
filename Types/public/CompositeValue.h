@@ -14,26 +14,33 @@ public:
 	CompositeValue(const CompositeTypeDef& typeDef, const CompositeValue* outer);
 
 	const CompositeTypeDef& GetTypeDef() const;
-	virtual void Copy(const CompositeValue& src);
 };
 
 class ObjectValue : public CompositeValue
 {
 };
 
+class CopyValue : public CompositeValue
+{
+public:
+	CopyValue(const CompositeTypeDef& typeDef, const CompositeValue* outer);
+
+	virtual void Copy(const CopyValue& src) = 0;
+};
+
 
 template <typename T>
-class StructValue : public CompositeValue
+class StructValue : public CopyValue
 {
 public:
 	T m_payload;
 
 	StructValue(const CompositeTypeDef& typeDef, const CompositeValue* outer) :
-		CompositeValue(typeDef, outer)
+		CopyValue(typeDef, outer)
 	{
 	}
 
-	virtual void Copy(const CompositeValue& src) override
+	virtual void Copy(const CopyValue& src) override
 	{
 		const StructValue& srcStruct = static_cast<StructValue&>(src);
 
@@ -44,14 +51,15 @@ public:
 class Value
 {
 private:
+	friend class std::list<Value>;
 	friend class ValueList;
 
 	bool m_initialized = false;
-	Value();
-
-	void Initialize(const TypeDef& type, const CompositeValue* outer);
 
 public:
+	Value();
+	void Initialize(const TypeDef& type, const CompositeValue* outer);
+
 	typedef std::variant<bool, int, float, std::string, CompositeValue*> ValuePayload;
 
 	ValuePayload m_payload;
@@ -66,13 +74,14 @@ public:
 	~Value();
 };
 
+class ListDef;
 
-class ValueList : public CompositeValue
+class ValueList : public CopyValue
 {
 public:
 	std::list<Value> m_values;
 
-	ValueList(const CompositeTypeDef& typeDef, const CompositeValue* outer);
+	ValueList(const ListDef& typeDef, const CompositeValue* outer);
 
-	virtual void Copy(const CompositeValue& src) override;
+	virtual void Copy(const CopyValue& src) override;
 };

@@ -64,6 +64,12 @@ ListDef::ListDef(const TypeDef& templateDef) :
 	m_isGenerated = true;
 }
 
+void ListDef::Construct(Value& container) const
+{
+	ValueList* tmp = new ValueList(*this, container.m_outer);
+	container.m_payload = tmp;
+}
+
 void ListDef::GetTypeKey(json_parser::JSONValue& outTypeKey) const
 {
 	GetKey(m_templateDef, outTypeKey);
