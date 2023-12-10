@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CompositeTypeDef.h"
+#include "GC.h"
 
 #include <variant>
 
@@ -14,9 +15,10 @@ public:
 	CompositeValue(const CompositeTypeDef& typeDef, const CompositeValue* outer);
 
 	const CompositeTypeDef& GetTypeDef() const;
+	const CompositeValue* GetOuter() const;
 };
 
-class ObjectValue : public CompositeValue
+class ObjectValue : public CompositeValue, public gc::ManagedObject
 {
 };
 
@@ -72,6 +74,8 @@ public:
 
 	Value& operator=(const Value& other);
 	~Value();
+
+	void AssignObject(ObjectValue* object);
 };
 
 class ListDef;

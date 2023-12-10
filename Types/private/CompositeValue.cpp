@@ -3,9 +3,32 @@
 #include "CompositeValue.h"
 #include "GenericListDef.h"
 
+namespace
+{
+	const ObjectValue* GetOuterObject(const CompositeValue* outer)
+	{
+		while (outer)
+		{
+			if (outer->GetTypeDef().IsA(ReferenceTypeDef::GetTypeDef()))
+			{
+				return static_cast<const ObjectValue*>(outer);
+			}
+
+			outer = outer->GetOuter();
+		}
+
+		return nullptr;
+	}
+}
+
 const CompositeTypeDef& CompositeValue::GetTypeDef() const
 {
 	return m_typeDef;
+}
+
+const CompositeValue* CompositeValue::GetOuter() const
+{
+	return m_outer;
 }
 
 CompositeValue::CompositeValue(const CompositeTypeDef& typeDef, const CompositeValue* outer) :
@@ -54,7 +77,9 @@ Value& Value::operator=(const Value& other)
 
 	if (m_type->IsA(ReferenceTypeDef::GetTypeDef()))
 	{
-		throw "Not Implemented!";
+		ObjectValue* obj = static_cast<ObjectValue*>(std::get<CompositeValue*>(other.m_payload));
+		AssignObject(obj);
+		return *this;
 	}
 
 	m_payload = other.m_payload;
@@ -64,7 +89,54 @@ Value& Value::operator=(const Value& other)
 
 Value::~Value()
 {
-	throw "Not Implamented!";
+	if (m_type->IsA(ValueTypeDef::GetTypeDef()))
+	{
+		CopyValue* copyValue = static_cast<CopyValue*>(std::get<CompositeValue*>(m_payload));
+		delete copyValue;
+		return;
+	}
+
+	if (m_type->IsA(ReferenceTypeDef::GetTypeDef()))
+	{
+		ObjectValue* objectValue = static_cast<ObjectValue*>(std::get<CompositeValue*>(m_payload));
+		AssignObject(nullptr);
+		return;
+	}
+}
+
+void Value::AssignObject(ObjectValue* object)
+{
+	if (!m_type->IsA(ReferenceTypeDef::GetTypeDef()))
+	{
+		throw "Can't Assign Object!";
+	}
+
+	const ObjectValue* outer = GetOuterObject(m_outer);
+	const ObjectValue* cur = static_cast<ObjectValue*>(std::get<CompositeValue*>(m_payload));
+
+	if (outer)
+	{
+		if (object)
+		{
+			gc::AddLink(object, outer);
+		}
+		if (cur)
+		{
+			gc::RemoveLink(cur, outer);
+		}
+	}
+	else
+	{
+		if (object)
+		{
+			gc::IncrementRefs(object);
+		}
+		if (cur)
+		{
+			gc::DecrementRefs(cur);
+		}
+	}
+	m_payload = object;
 }
 
 ValueList::ValueList(const ListDef& typeDef, const CompositeValue* outer) :
@@ -98,3 +170,4 @@ CopyValue::CopyValue(const CompositeTypeDef& typeDef, const CompositeValue* oute
 	CompositeValue(typeDef, outer)
 {
 }
+
