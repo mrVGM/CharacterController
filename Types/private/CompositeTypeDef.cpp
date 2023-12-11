@@ -1,5 +1,7 @@
 #include "CompositeTypeDef.h"
 
+#include "CompositeValue.h"
+
 namespace
 {
 	CompositeTypeDef m_compositeTypeDef(nullptr, "1A3E4D51-E1E3-4FD4-A487-A164913A74E2");
@@ -42,6 +44,17 @@ void CompositeTypeDef::GetReflectionData(json_parser::JSONValue& outData)
 	}
 }
 
+void CompositeTypeDef::DeserializeFromJSON(Value& value, json_parser::JSONValue& json) const
+{
+	auto& map = json.GetAsObj();
+
+	CompositeValue* compositeValue = std::get<CompositeValue*>(value.m_payload);
+	for (auto it = m_properties.begin(); it != m_properties.end(); ++it)
+	{
+		Value& cur = it->second->m_getValue(compositeValue);
+		cur.m_type->DeserializeFromJSON(cur, map[it->first]);
+	}
+}
 
 ValueTypeDef::ValueTypeDef(const TypeDef* parent, const std::string& id) :
 	CompositeTypeDef(parent, id)
@@ -84,6 +97,10 @@ void ReferenceTypeDef::GetReflectionData(json_parser::JSONValue& outData)
 void ReferenceTypeDef::Construct(Value& container) const
 {
 	throw "Can't construct from a ReferenceTypeDef!";
+}
+
+void ReferenceTypeDef::DeserializeFromJSON(Value& value, json_parser::JSONValue& json) const
+{
 }
 
 TypeProperty::TypeProperty(const std::string id, const TypeDef& type) :

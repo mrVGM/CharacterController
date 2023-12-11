@@ -43,7 +43,7 @@ bool TypeDef::IsA(const TypeDef& type) const
 	return false;
 }
 
-void TypeDef::DeserializeFromJSON(void* object, json_parser::JSONValue& json) const
+void TypeDef::DeserializeFromJSON(Value& value, json_parser::JSONValue& json) const
 {
 }
 

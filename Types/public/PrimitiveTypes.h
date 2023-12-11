@@ -10,7 +10,7 @@ public:
 	BoolTypeDef();
 
 	virtual void GetReflectionData(json_parser::JSONValue& outData) override;
-	virtual void DeserializeFromJSON(void* object, json_parser::JSONValue& json) const override;
+	virtual void DeserializeFromJSON(Value& value, json_parser::JSONValue& json) const override;
 };
 
 class IntTypeDef : public TypeDef
@@ -21,7 +21,7 @@ public:
 	IntTypeDef();
 
 	virtual void GetReflectionData(json_parser::JSONValue& outData) override;
-	virtual void DeserializeFromJSON(void* object, json_parser::JSONValue& json) const override;
+	virtual void DeserializeFromJSON(Value& value, json_parser::JSONValue& json) const override;
 };
 
 class FloatTypeDef : public TypeDef
@@ -32,7 +32,7 @@ public:
 	FloatTypeDef();
 
 	virtual void GetReflectionData(json_parser::JSONValue& outData) override;
-	virtual void DeserializeFromJSON(void* object, json_parser::JSONValue& json) const;
+	virtual void DeserializeFromJSON(Value& value, json_parser::JSONValue& json) const;
 };
 
 class StringTypeDef : public TypeDef
@@ -43,7 +43,7 @@ public:
 	StringTypeDef();
 
 	virtual void GetReflectionData(json_parser::JSONValue& outData) override;
-	virtual void DeserializeFromJSON(void* object, json_parser::JSONValue& json) const;
+	virtual void DeserializeFromJSON(Value& value, json_parser::JSONValue& json) const;
 };
 
 class GenericTypeDef : public TypeDef
@@ -67,6 +67,6 @@ public:
 
 	TypeTypeDef(const TypeDef& templateType);
 	void GetTypeKey(json_parser::JSONValue& outKey) const override;
-	virtual void DeserializeFromJSON(void* object, json_parser::JSONValue& json) const;
+	virtual void DeserializeFromJSON(Value& value, json_parser::JSONValue& json) const;
 };
 

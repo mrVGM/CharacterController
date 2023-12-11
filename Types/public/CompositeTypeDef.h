@@ -22,8 +22,7 @@ public:
 	const std::string& GetId();
 	const TypeDef& GetType();
 
-	std::function<void(CompositeValue*, Value*&)> m_getValue;
-	std::function<void(CompositeValue*, const Value&)> m_setValue;
+	std::function<Value&(CompositeValue*)> m_getValue;
 
 	TypeProperty(const std::string id, const TypeDef& type);
 	void GetReflectionData(json_parser::JSONValue& outData) const;
@@ -39,6 +38,7 @@ public:
 
 	virtual void Construct(Value& container) const;
 	virtual void GetReflectionData(json_parser::JSONValue& outData) override;
+	virtual void DeserializeFromJSON(Value& value, json_parser::JSONValue& json) const;
 };
 
 class ValueTypeDef : public CompositeTypeDef
@@ -58,4 +58,5 @@ public:
 
 	virtual void GetReflectionData(json_parser::JSONValue& outData) override;
 	virtual void Construct(Value& container) const override;
+	virtual void DeserializeFromJSON(Value& value, json_parser::JSONValue& json) const;
 };

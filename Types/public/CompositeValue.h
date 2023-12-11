@@ -53,16 +53,13 @@ public:
 class Value
 {
 private:
-	friend class std::list<Value>;
-	friend class ValueList;
-
 	bool m_initialized = false;
 
 public:
 	Value();
 	void Initialize(const TypeDef& type, const CompositeValue* outer);
 
-	typedef std::variant<bool, int, float, std::string, CompositeValue*> ValuePayload;
+	typedef std::variant<bool, int, float, std::string, const TypeDef*, CompositeValue*> ValuePayload;
 
 	ValuePayload m_payload;
 

@@ -2,6 +2,8 @@
 
 #include "PrimitiveTypes.h"
 
+#include "CompositeValue.h"
+
 namespace
 {
 	std::string m_typeTypeDefId = "A4885F01-547F-4C21-BE40-A21C7BE0BA24";
@@ -32,10 +34,14 @@ void BoolTypeDef::GetReflectionData(json_parser::JSONValue& outData)
 	map["hint"] = JSONValue("bool");
 }
 
-void BoolTypeDef::DeserializeFromJSON(void* object, json_parser::JSONValue& json) const
+void BoolTypeDef::DeserializeFromJSON(Value& value, json_parser::JSONValue& json) const
 {
-	bool* obj = static_cast<bool*>(object);
-	*obj = static_cast<bool>(std::get<double>(json.m_payload));
+	if (!value.m_type->IsA(GetTypeDef()))
+	{
+		throw "Wrong value type!";
+	}
+
+	value.m_payload = static_cast<bool>(std::get<double>(json.m_payload));
 }
 
 const IntTypeDef& IntTypeDef::GetTypeDef()
@@ -57,10 +63,14 @@ void IntTypeDef::GetReflectionData(json_parser::JSONValue& outData)
 	map["hint"] = JSONValue("int");
 }
 
-void IntTypeDef::DeserializeFromJSON(void* object, json_parser::JSONValue& json) const
+void IntTypeDef::DeserializeFromJSON(Value& value, json_parser::JSONValue& json) const
 {
-	int* obj = static_cast<int*>(object);
-	*obj = static_cast<int>(std::get<double>(json.m_payload));
+	if (!value.m_type->IsA(*this))
+	{
+		throw "Wrong value type!";
+	}
+
+	value.m_payload = static_cast<int>(std::get<double>(json.m_payload));
 }
 
 const FloatTypeDef& FloatTypeDef::GetTypeDef()
@@ -82,10 +92,14 @@ void FloatTypeDef::GetReflectionData(json_parser::JSONValue& outData)
 	map["hint"] = JSONValue("float");
 }
 
-void FloatTypeDef::DeserializeFromJSON(void* object, json_parser::JSONValue& json) const
+void FloatTypeDef::DeserializeFromJSON(Value& value, json_parser::JSONValue& json) const
 {
-	float* obj = static_cast<float*>(object);
-	*obj = static_cast<float>(std::get<double>(json.m_payload));
+	if (!value.m_type->IsA(*this))
+	{
+		throw "Wrong value type!";
+	}
+
+	value.m_payload = static_cast<float>(std::get<double>(json.m_payload));
 }
 
 const StringTypeDef& StringTypeDef::GetTypeDef()
@@ -107,10 +121,14 @@ void StringTypeDef::GetReflectionData(json_parser::JSONValue& outData)
 	map["hint"] = JSONValue("string");
 }
 
-void StringTypeDef::DeserializeFromJSON(void* object, json_parser::JSONValue& json) const
+void StringTypeDef::DeserializeFromJSON(Value& value, json_parser::JSONValue& json) const
 {
-	std::string* obj = static_cast<std::string*>(object);
-	*obj = std::get<std::string>(json.m_payload);
+	if (!value.m_type->IsA(*this))
+	{
+		throw "Wrong value type!";
+	}
+
+	value.m_payload = std::get<std::string>(json.m_payload);
 }
 
 const GenericTypeDef& GenericTypeDef::GetTypeDef()
@@ -173,8 +191,13 @@ void TypeTypeDef::GetTypeKey(json_parser::JSONValue& outKey) const
 	GetKey(m_templateType, outKey);
 }
 
-void TypeTypeDef::DeserializeFromJSON(void* object, json_parser::JSONValue& json) const
+void TypeTypeDef::DeserializeFromJSON(Value& value, json_parser::JSONValue& json) const
 {
+	if (!value.m_type->IsA(*this))
+	{
+		throw "Wrong value type!";
+	}
+
 	using namespace json_parser;
 	JSONValue key;
 	GetDefaultTypeKey(m_templateType.GetId(), key);
@@ -187,6 +210,5 @@ void TypeTypeDef::DeserializeFromJSON(void* object, json_parser::JSONValue& json
 		return;
 	}
 
-	const TypeDef** obj = static_cast<const TypeDef**>(object);
-	*obj = it->second;
+	value.m_payload = it->second;
 }

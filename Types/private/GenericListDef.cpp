@@ -84,3 +84,25 @@ void ListDef::GetReflectionData(json_parser::JSONValue& outData)
 
 	map["hint"] = JSONValue("list");
 }
+
+void ListDef::DeserializeFromJSON(Value& value, json_parser::JSONValue& json) const
+{
+	auto list = json.GetAsList();
+
+	if (!value.m_type->IsA(*this))
+	{
+		throw "Wrong value type!";
+	}
+
+	CompositeValue* compositeValue = std::get<CompositeValue*>(value.m_payload);
+	ValueList* valueList = static_cast<ValueList*>(compositeValue);
+
+	valueList->m_values.clear();
+	for (auto it = list.begin(); it != list.end(); ++it)
+	{
+		Value& cur = valueList->m_values.emplace_back();
+		cur.Initialize(*this, compositeValue);
+
+		m_templateDef.DeserializeFromJSON(cur, *it);
+	}
+}

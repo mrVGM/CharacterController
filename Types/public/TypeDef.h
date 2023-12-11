@@ -5,6 +5,8 @@
 #include <string>
 #include <map>
 
+class Value;
+
 class TypeDef
 {
 public:
@@ -35,5 +37,5 @@ public:
 	const TypeDef* GetParent() const;
 	bool IsA(const TypeDef& type) const;
 
-	virtual void DeserializeFromJSON(void* object, json_parser::JSONValue& json) const;
+	virtual void DeserializeFromJSON(Value& value, json_parser::JSONValue& json) const;
 };

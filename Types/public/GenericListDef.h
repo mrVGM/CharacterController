@@ -29,4 +29,6 @@ public:
 
 	virtual void GetTypeKey(json_parser::JSONValue& outTypeKey) const;
 	virtual void GetReflectionData(json_parser::JSONValue& outData) override;
+
+	virtual void DeserializeFromJSON(Value& value, json_parser::JSONValue& json) const;
 };
