@@ -9,6 +9,7 @@
 #include <filesystem>
 
 #include "PrimitiveTypes.h"
+#include "Types.h"
 
 int main(int args, const char** argv)
 {
@@ -30,6 +31,10 @@ int main(int args, const char** argv)
 
 	files::Init(dataPath.string());
 	json_parser::Boot();
+
+	BootTypeSystem();
+
+	TypeDef::SaveReflectionData();
 
 	std::string defaults;
 	files::ReadTextFile("Assets\\test_object_defaults.json", defaults);

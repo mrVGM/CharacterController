@@ -1,4 +1,5 @@
 #include "TypeDef.h"
+#include "Files.h"
 
 TypeDef::TypeDefsMap* TypeDef::m_defsMap = nullptr;
 
@@ -47,6 +48,27 @@ void TypeDef::DeserializeFromJSON(Value& value, json_parser::JSONValue& json) co
 {
 }
 
+void TypeDef::SaveReflectionData()
+{
+	using namespace json_parser;
+	TypeDefsMap& defsMap = GetDefsMap();
+	for (auto it = defsMap.begin(); it != defsMap.end(); ++it)
+	{
+		if (it->second->m_isGenerated)
+		{
+			continue;
+		}
+		
+		JSONValue reflectionData;
+		it->second->GetReflectionData(reflectionData);
+
+		std::string contents = reflectionData.ToString(true);
+		std::string fileName = files::GetReflectionDataDir() + it->second->GetId() + ".json";
+
+		files::WriteTextFile(fileName, contents);
+	}
+}
+
 void TypeDef::GetDefaultTypeKey(const std::string& id, json_parser::JSONValue& outTypeKey)
 {
 	using namespace json_parser;
@@ -58,7 +80,7 @@ void TypeDef::GetDefaultTypeKey(const std::string& id, json_parser::JSONValue& o
 	outTypeKey = res;
 }
 
-void TypeDef::GetReflectionData(json_parser::JSONValue& outData)
+void TypeDef::GetReflectionData(json_parser::JSONValue& outData) const
 {
 	using namespace json_parser;
 

@@ -13,7 +13,7 @@ add_library (Types
 	"private/CompositeValue.cpp"
 	"public/GenericListDef.h"
 	"private/GenericListDef.cpp"
- )
+  )
 
 target_include_directories(Types INTERFACE PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/public")
 target_include_directories(Types PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/private")

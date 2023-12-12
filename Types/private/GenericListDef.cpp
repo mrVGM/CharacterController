@@ -19,7 +19,7 @@ GenericListDef::GenericListDef() :
 {
 }
 
-void GenericListDef::GetReflectionData(json_parser::JSONValue& outData)
+void GenericListDef::GetReflectionData(json_parser::JSONValue& outData) const
 {
 	using namespace json_parser;
 
@@ -75,7 +75,7 @@ void ListDef::GetTypeKey(json_parser::JSONValue& outTypeKey) const
 	GetKey(m_templateDef, outTypeKey);
 }
 
-void ListDef::GetReflectionData(json_parser::JSONValue& outData)
+void ListDef::GetReflectionData(json_parser::JSONValue& outData) const
 {
 	using namespace json_parser;
 

@@ -24,7 +24,7 @@ void CompositeTypeDef::Construct(Value& container) const
 	throw "Can't construct from a CompositeTypeDef!";
 }
 
-void CompositeTypeDef::GetReflectionData(json_parser::JSONValue& outData)
+void CompositeTypeDef::GetReflectionData(json_parser::JSONValue& outData) const
 {
 	using namespace json_parser;
 
@@ -66,7 +66,7 @@ const ValueTypeDef& ValueTypeDef::GetTypeDef()
 	return m_valueTypeDef;
 }
 
-void ValueTypeDef::GetReflectionData(json_parser::JSONValue& outData)
+void ValueTypeDef::GetReflectionData(json_parser::JSONValue& outData) const
 {
 	using namespace json_parser;
 	CompositeTypeDef::GetReflectionData(outData);
@@ -85,7 +85,7 @@ const ReferenceTypeDef& ReferenceTypeDef::GetTypeDef()
 	return m_referenceTypeDef;
 }
 
-void ReferenceTypeDef::GetReflectionData(json_parser::JSONValue& outData)
+void ReferenceTypeDef::GetReflectionData(json_parser::JSONValue& outData) const
 {
 	using namespace json_parser;
 	CompositeTypeDef::GetReflectionData(outData);

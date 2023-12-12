@@ -10,7 +10,7 @@ public:
 
 	GenericListDef();
 	
-	virtual void GetReflectionData(json_parser::JSONValue& outData) override;
+	virtual void GetReflectionData(json_parser::JSONValue& outData) const override;
 };
 
 
@@ -28,7 +28,7 @@ public:
 	virtual void Construct(Value& container) const override;
 
 	virtual void GetTypeKey(json_parser::JSONValue& outTypeKey) const;
-	virtual void GetReflectionData(json_parser::JSONValue& outData) override;
+	virtual void GetReflectionData(json_parser::JSONValue& outData) const override;
 
 	virtual void DeserializeFromJSON(Value& value, json_parser::JSONValue& json) const;
 };

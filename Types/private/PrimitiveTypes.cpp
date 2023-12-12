@@ -25,7 +25,7 @@ BoolTypeDef::BoolTypeDef() :
 {
 }
 
-void BoolTypeDef::GetReflectionData(json_parser::JSONValue& outData)
+void BoolTypeDef::GetReflectionData(json_parser::JSONValue& outData) const
 {
 	using namespace json_parser;
 
@@ -54,7 +54,7 @@ IntTypeDef::IntTypeDef() :
 {
 }
 
-void IntTypeDef::GetReflectionData(json_parser::JSONValue& outData)
+void IntTypeDef::GetReflectionData(json_parser::JSONValue& outData) const
 {
 	using namespace json_parser;
 
@@ -83,7 +83,7 @@ FloatTypeDef::FloatTypeDef() :
 {
 }
 
-void FloatTypeDef::GetReflectionData(json_parser::JSONValue& outData)
+void FloatTypeDef::GetReflectionData(json_parser::JSONValue& outData) const
 {
 	using namespace json_parser;
 
@@ -112,7 +112,7 @@ StringTypeDef::StringTypeDef() :
 {
 }
 
-void StringTypeDef::GetReflectionData(json_parser::JSONValue& outData)
+void StringTypeDef::GetReflectionData(json_parser::JSONValue& outData) const
 {
 	using namespace json_parser;
 
@@ -141,7 +141,7 @@ GenericTypeDef::GenericTypeDef() :
 {
 }
 
-void GenericTypeDef::GetReflectionData(json_parser::JSONValue& outData)
+void GenericTypeDef::GetReflectionData(json_parser::JSONValue& outData) const
 {
 	using namespace json_parser;
 

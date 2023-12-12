@@ -9,7 +9,7 @@ public:
 
 	BoolTypeDef();
 
-	virtual void GetReflectionData(json_parser::JSONValue& outData) override;
+	virtual void GetReflectionData(json_parser::JSONValue& outData) const override;
 	virtual void DeserializeFromJSON(Value& value, json_parser::JSONValue& json) const override;
 };
 
@@ -20,7 +20,7 @@ public:
 
 	IntTypeDef();
 
-	virtual void GetReflectionData(json_parser::JSONValue& outData) override;
+	virtual void GetReflectionData(json_parser::JSONValue& outData) const override;
 	virtual void DeserializeFromJSON(Value& value, json_parser::JSONValue& json) const override;
 };
 
@@ -31,7 +31,7 @@ public:
 
 	FloatTypeDef();
 
-	virtual void GetReflectionData(json_parser::JSONValue& outData) override;
+	virtual void GetReflectionData(json_parser::JSONValue& outData) const override;
 	virtual void DeserializeFromJSON(Value& value, json_parser::JSONValue& json) const;
 };
 
@@ -42,7 +42,7 @@ public:
 
 	StringTypeDef();
 
-	virtual void GetReflectionData(json_parser::JSONValue& outData) override;
+	virtual void GetReflectionData(json_parser::JSONValue& outData) const override;
 	virtual void DeserializeFromJSON(Value& value, json_parser::JSONValue& json) const;
 };
 
@@ -53,7 +53,7 @@ public:
 
 	GenericTypeDef();
 
-	virtual void GetReflectionData(json_parser::JSONValue& outData) override;
+	virtual void GetReflectionData(json_parser::JSONValue& outData) const override;
 };
 
 class TypeTypeDef : public TypeDef
