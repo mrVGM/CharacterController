@@ -1,28 +1,14 @@
 const { LoadEJSElement } = require('./loadEJSElement');
 const { getTabsController } = require('../controllers/tabsController');
 
-const { create: createClassPropsEditor } = require('./classPropsEditor');
-const { create: createClassFuncsEditor } = require('./classFuncsEditor');
-const { create: createPropertyDetailsEditor } = require('./propertyDetailsEditor');
-const { create: createFuncDetailsEditor } = require('./funcDetailsEditor');
-const { create: createClassEditorController } = require('../controllers/classEditorController');
 function create(def) {
-    const controller = createClassEditorController(def);
+    debugger;
     const classEditor = LoadEJSElement('classEditor.ejs');
-    controller.layout = classEditor;
-
     const { properties } = classEditor.tagged;
 
     const { create: createPropsPanel } = require('./categorizedDataPanel');
     const propsPanel = createPropsPanel();
     properties.appendChild(propsPanel.element);
-
-    createClassPropsEditor(controller, propsPanel);
-    createClassFuncsEditor(controller, propsPanel);
-    createPropertyDetailsEditor(controller);
-    createFuncDetailsEditor(controller);
-
-    controller.setSelectedItem();
 
     const initialDisplayStyle = classEditor.element.style.display;
     classEditor.element.style.display = 'none';

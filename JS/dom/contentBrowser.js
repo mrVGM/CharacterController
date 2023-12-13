@@ -5,7 +5,7 @@ const { getTabsController } = require('../controllers/tabsController');
 function createContentBrowser() {
     const contentBrowser = LoadEJSElement('contentBrowser.ejs');
 
-    const { buttons, files, details } = contentBrowser.tagged;
+    const { buttons, files } = contentBrowser.tagged;
 
     const addClassButton = LoadEJSElement('button.ejs');
     const deleteButton = LoadEJSElement('button.ejs');
@@ -71,12 +71,10 @@ function createContentBrowser() {
         const newDef = {
             id: crypto.randomUUID(),
             parent: chosen.id,
-            name: "New Class",
+            name: "New Asset",
             category: "",
-            isNative: false,
-            valueType: 'class',
-            properties: {},
-            funcs: {}
+            isGenerated: true,
+            defaults: {}
         };
 
         document.appData.defs[newDef.id] = newDef;
@@ -140,7 +138,7 @@ function createContentBrowser() {
         });
 
         file.element.addEventListener('dblclick', event => {
-            if (file.data.def.isNative) {
+            if (!file.data.def.isGenerated) {
                 return;
             }
 
