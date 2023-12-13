@@ -4,7 +4,8 @@
 
 namespace
 {
-	std::string m_listDefId = "61BE566E-F055-4537-BCBD-2E1A7335EB55";
+	const char* m_listDefId = "61BE566E-F055-4537-BCBD-2E1A7335EB55";
+	const char* m_genericListDefId = "B5883DED-257C-4E35-846C-DB5BB7E11289";
 
 	GenericListDef m_genericListDef;
 }
@@ -15,7 +16,7 @@ const GenericListDef& GenericListDef::GetTypeDef()
 }
 
 GenericListDef::GenericListDef() :
-	TypeDef(&ValueTypeDef::GetTypeDef(), "B5883DED-257C-4E35-846C-DB5BB7E11289")
+	TypeDef(&ValueTypeDef::GetTypeDef(), m_genericListDefId)
 {
 }
 
@@ -33,7 +34,7 @@ void ListDef::GetKey(const TypeDef& templateDef, json_parser::JSONValue& outKey)
 {
 	using namespace json_parser;
 
-	GetDefaultTypeKey(m_listDefId, outKey);
+	GetDefaultTypeKey(m_genericListDefId, outKey);
 	auto& map = outKey.GetAsObj();
 	map["template"] = JSONValue(templateDef.GetId());
 }

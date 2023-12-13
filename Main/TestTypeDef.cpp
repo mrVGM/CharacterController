@@ -2,6 +2,7 @@
 
 #include "PrimitiveTypes.h"
 #include "TestObject.h"
+#include "GenericListDef.h"
 
 
 namespace
@@ -10,12 +11,14 @@ namespace
 
 	const char* m_floatPropId = "A7BC6971-69D8-4B8D-AC13-F4F3EF513D8B";
 	const char* m_stringPropId = "4C2D1D66-37DA-41F6-9B9F-A2874CE544CC";
+	const char* m_listPropId = "D863DA2B-6152-415B-A50F-DF42EF5E57FC";
 }
 
 TestTypeDef::TestTypeDef() :
 	ReferenceTypeDef(&ReferenceTypeDef::GetTypeDef(), "B49D7893-FCA8-4CBF-8B65-D72287B94BB9"),
 	m_floatProp(m_floatPropId, FloatTypeDef::GetTypeDef()),
-	m_stringProp(m_stringPropId, StringTypeDef::GetTypeDef())
+	m_stringProp(m_stringPropId, StringTypeDef::GetTypeDef()),
+	m_listProp(m_listPropId, ListDef::GetTypeDef(BoolTypeDef::GetTypeDef()))
 {
 	m_name = "Test Def";
 
@@ -25,8 +28,12 @@ TestTypeDef::TestTypeDef() :
 	m_stringProp.m_name = "String Prop";
 	m_stringProp.m_category = "Setup";
 
+	m_listProp.m_name = "List Prop";
+	m_listProp.m_category = "Setup";
+
 	m_properties[m_floatPropId] = &m_floatProp;
 	m_properties[m_stringPropId] = &m_stringProp;
+	m_properties[m_listPropId] = &m_listProp;
 }
 
 const TestTypeDef& TestTypeDef::GetTypeDef()

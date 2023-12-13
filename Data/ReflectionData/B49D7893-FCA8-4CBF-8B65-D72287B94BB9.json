@@ -1,5 +1,14 @@
 {
   "properties": {
+    "D863DA2B-6152-415B-A50F-DF42EF5E57FC": {
+      "type": {
+        "template": "A1A5297D-A75D-499B-8758-CC6A7696CDE0",
+        "id": "B5883DED-257C-4E35-846C-DB5BB7E11289"
+      },
+      "name": "List Prop",
+      "id": "D863DA2B-6152-415B-A50F-DF42EF5E57FC",
+      "category": "Setup"
+    },
     "A7BC6971-69D8-4B8D-AC13-F4F3EF513D8B": {
       "type": {
         "id": "D3B56C9E-8D0D-4065-9778-805D515D9EB6"
