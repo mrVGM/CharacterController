@@ -1,6 +1,8 @@
 const { LoadEJSElement } = require('./loadEJSElement');
 const { getTabsController } = require('../controllers/tabsController');
 
+const propUtils = require('./prop');
+
 function getAllProps(typeId)
 {
     let cur = document.appData.defs[typeId];
@@ -30,12 +32,14 @@ function create(def) {
     const propsPanel = createPropsPanel();
     properties.appendChild(propsPanel.element);
 
-    debugger;
+
     for (let k in props) {
         const cur = props[k];
         const slot = propsPanel.data.addSlot(cur.category);
-        const p = LoadEJSElement('property.ejs');
-        propsPanel.data.addItem(p, cur.name, slot.slotId);
+
+        const { createProp } = propUtils;
+        const prop = createProp(cur);
+        propsPanel.data.addItem(prop, cur.name, slot.slotId);
     }
 
     const initialDisplayStyle = classEditor.element.style.display;
