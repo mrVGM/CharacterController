@@ -3,11 +3,11 @@
   "parent": {
     "id": "361D902F-526F-452D-B925-7B59B0F5AB09"
   },
-  "name": "",
+  "name": "Reference Type",
   "isGenerated": 0,
   "id": {
     "id": "361D902F-526F-452D-B925-7B59B0F5AB09"
   },
   "hint": "reference_type",
-  "category": ""
+  "category": "Composite"
 }

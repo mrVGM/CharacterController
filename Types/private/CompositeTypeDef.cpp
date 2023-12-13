@@ -59,6 +59,8 @@ void CompositeTypeDef::DeserializeFromJSON(Value& value, json_parser::JSONValue&
 ValueTypeDef::ValueTypeDef(const TypeDef* parent, const std::string& id) :
 	CompositeTypeDef(parent, id)
 {
+	m_category = "Composite";
+	m_name = "Value Type";
 }
 
 const ValueTypeDef& ValueTypeDef::GetTypeDef()
@@ -78,6 +80,8 @@ void ValueTypeDef::GetReflectionData(json_parser::JSONValue& outData) const
 ReferenceTypeDef::ReferenceTypeDef(const TypeDef* parent, const std::string& id) :
 	CompositeTypeDef(parent, id)
 {
+	m_category = "Composite";
+	m_name = "Reference Type";
 }
 
 const ReferenceTypeDef& ReferenceTypeDef::GetTypeDef()
