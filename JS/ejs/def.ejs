@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data_def id="<%= id %>" name="<%= name %>" category="<%= category %>" value_type="<%= valueType %>" is_native="<%= isNative ? 1 : 0 %>">
+	<% if (properties) { %>
+	<properties>
+		<% for (let key in properties) { %>
+		<% const prop = properties[key]; %>
+		<property id="<%= prop.id %>" name="<%= prop.name %>" category="<%= prop.category %>" access="<%= prop.access %>">
+			<structure type="<%= prop.structure %>">
+				<% if (prop.structure === 'map') { %>
+				<key id="<%= prop.keyType.type %>" is_ref="<%= prop.keyType.isRef ? 1 : 0 %>"></key>
+				<value id="<%= prop.valueType.type %>" is_ref="<%= prop.valueType.isRef ? 1 : 0 %>"></value>
+				<% } else { %>
+				<type id="<%= prop.type.type %>" is_ref="<%= prop.type.isRef ? 1 : 0 %>"></type>
+				<% } %>
+			</structure>
+		</property>
+		<% } %>
+	</properties>
+	<% } %>
+</data_def>

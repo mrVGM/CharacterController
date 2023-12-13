@@ -1,0 +1,25 @@
+<div app-id="property_details" style="position: relative; width: 100%; height: 100%; display: flex;">
+	<div style="position: relative; margin-top: 10px; margin-left: 10px; flex: 1;">
+		<div style="position: relative; width: 100%; height: 100%; display: flex; flex-direction: column; overflow: auto;">
+			<div class="general-row" style="display: flex;">
+				<div style="align-self: center;">Name:</div>
+				<div style="margin-left: 10px; align-self: center;">
+					<div app-id="name"></div>
+					<input app-id="change_name" type="text" style="display: none;"/>
+				</div>
+				<div style="flex: 1;"></div>
+				<div app-id="delete_button"></div>
+			</div>
+			<div class="general-row" style="display: flex;">
+				Category:
+				<input app-id="category" style="margin-left: 10px;"/>
+			</div>
+			<div style="position: relative; flex: 1;">
+				<div app-id="default_value" style="position: relative; width: 100%; height: 100%; overflow: auto;">
+					<div style="user-select: none;">Default Value:</div>
+					<div app-id="default_value_content"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

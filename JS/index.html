@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Visual Scripting!</title>
+    <link rel="stylesheet" type="text/css" href="main.css">
+</head>
+<body>
+    <div id="layout-container" style="height: 100%; display: flex; flex-flow: column;">
+        <div style="display:flex; overflow:auto">
+            <div id="header" style="display: flex;"></div>
+            <div style="flex: 1; border-bottom: solid 2px;"></div>
+        </div>
+        <div id="content" style="display: flex; flex: 1; border-style: solid; border-width: 2px; border-top: 0px;  margin-bottom: 0px;"></div>
+    </div>
+    <div id ="modal_space" style="display: none; position: absolute; left: 0px; top: 0px; width: 100%; height: 100%"></div>
+    <script>
+        {
+            const { readDirectory, ejsDir, defsDir, constructDefs, serializeDefToXML } = require('./init');
+
+            async function init() {
+                let ejsData = readDirectory(ejsDir);
+                let defs = readDirectory(defsDir);
+
+                ejsData = await ejsData;
+                defs = await defs;
+
+                defs = constructDefs(defs);
+
+                const appData = {
+                    ejsData: ejsData,
+                    defs: defs,
+                    enumerateDefs: function* () {
+                        for (let key in defs) {
+                            yield defs[key];
+                        }
+                    },
+                    isAssignable: (id1, id2) => {
+                        const type1 = appData.defs[id1];
+                        const type2 = appData.defs[id2];
+
+                        if (type1 === type2) {
+                            return true;
+                        }
+
+                        if (!type1.parent) {
+                            return false;
+                        }
+                        return appData.isAssignable(type1.parent, id2);
+                    },
+                    enumerateAssignableToClass: function* (id) {
+                        const it = appData.enumerateDefs();
+
+                        let cur = it.next();
+                        while (!cur.done) {
+                            if (appData.isAssignable(cur.value.id, id)) {
+                                yield cur.value;
+                            }
+                            cur = it.next();
+                        }
+                    },
+                    serialiDefToXML: serializeDefToXML,
+                };
+
+                document.appData = appData;
+
+                const { create } = require('./dom/contentBrowser');
+                create();
+            }
+
+            init();
+        }
+    </script>
+</body>
+</html>
