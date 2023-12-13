@@ -66,14 +66,14 @@
                         if (!type1.parent) {
                             return false;
                         }
-                        return appData.isAssignable(type1.parent, id2);
+                        return appData.isAssignable(type1.parent.id, id2);
                     },
-                    enumerateAssignableToClass: function* (id) {
+                    enumerateReferenced: function* () {
                         const it = appData.enumerateDefs();
 
                         let cur = it.next();
                         while (!cur.done) {
-                            if (appData.isAssignable(cur.value.id, id)) {
+                            if (appData.isAssignable(cur.value.id.id, referenceType.id.id)) {
                                 yield cur.value;
                             }
                             cur = it.next();

@@ -40,7 +40,7 @@ function createContentBrowser() {
 
     addClassButton.element.addEventListener('click', async event => {
         const { openModal, closeModal } = require('./modalUtils');
-        const it = document.appData.enumerateDefs();
+        const it = document.appData.enumerateReferenced();
 
         let choose;
 
@@ -48,16 +48,13 @@ function createContentBrowser() {
         let cur = it.next();
         while (!cur.done) {
             const def = cur.value;
-            if (def.valueType === 'class') {
-                classes.push({
-                    name: def.name,
-                    category: def.category,
-                    chosen: () => {
-                        choose(def);
-                    }
-                });
-            }
-
+            classes.push({
+                name: def.name,
+                category: def.category,
+                chosen: () => {
+                    choose(def);
+                }
+            });
             cur = it.next();
         }
 

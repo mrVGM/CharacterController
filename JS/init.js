@@ -218,11 +218,11 @@ function constructDefs(defs) {
             type = json;
         }
 
-        if (json.hint === 'valueType') {
+        if (json.hint === 'value_type') {
             valueType = json;
         }
 
-        if (json.hint === 'referenceType') {
+        if (json.hint === 'reference_type') {
             referenceType = json;
         }
 
