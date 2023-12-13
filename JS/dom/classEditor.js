@@ -1,8 +1,26 @@
 const { LoadEJSElement } = require('./loadEJSElement');
 const { getTabsController } = require('../controllers/tabsController');
 
+function getAllProps(typeId)
+{
+    let cur = document.appData.defs[typeId];
+
+    const res = {};
+    while (cur) {
+        for (let p in cur.properties) {
+            res[p] = cur.properties[p];
+        }
+
+        cur = document.appData.defs[cur.parent];
+    }
+
+    return res;
+}
+
 function create(def) {
+    const props = getAllProps(def.id.id);
     debugger;
+
     const classEditor = LoadEJSElement('classEditor.ejs');
     const { properties } = classEditor.tagged;
 
