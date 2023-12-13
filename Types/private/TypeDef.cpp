@@ -95,7 +95,7 @@ void TypeDef::GetReflectionData(json_parser::JSONValue& outData) const
 	{
 		JSONValue parentTypeKey;
 		m_parent->GetTypeKey(parentTypeKey);
-		map["parent"] = typeKey;
+		map["parent"] = parentTypeKey;
 	}
 
 	map["name"] = JSONValue(m_name);
