@@ -69,7 +69,7 @@ function createContentBrowser() {
         const chosen = await pr;
 
         const newDef = {
-            id: crypto.randomUUID(),
+            id: { id: crypto.randomUUID() },
             parent: chosen.id,
             name: "New Asset",
             category: "",

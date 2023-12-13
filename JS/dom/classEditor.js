@@ -11,15 +11,17 @@ function getAllProps(typeId)
             res[p] = cur.properties[p];
         }
 
-        cur = document.appData.defs[cur.parent];
+        if (!cur.parent) {
+            break;
+        }
+        cur = document.appData.defs[cur.parent.id];
     }
 
     return res;
 }
 
 function create(def) {
-    const props = getAllProps(def.id.id);
-    debugger;
+    const props = getAllProps(def.id);
 
     const classEditor = LoadEJSElement('classEditor.ejs');
     const { properties } = classEditor.tagged;
@@ -27,6 +29,14 @@ function create(def) {
     const { create: createPropsPanel } = require('./categorizedDataPanel');
     const propsPanel = createPropsPanel();
     properties.appendChild(propsPanel.element);
+
+    debugger;
+    for (let k in props) {
+        const cur = props[k];
+        const slot = propsPanel.data.addSlot(cur.category);
+        const p = LoadEJSElement('property.ejs');
+        propsPanel.data.addItem(p, cur.name, slot.slotId);
+    }
 
     const initialDisplayStyle = classEditor.element.style.display;
     classEditor.element.style.display = 'none';
