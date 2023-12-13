@@ -20,6 +20,9 @@ public:
 
 class ObjectValue : public CompositeValue, public gc::ManagedObject
 {
+public:
+	ObjectValue(const CompositeTypeDef& typeDef, const CompositeValue* outer);
+
 };
 
 class CopyValue : public CompositeValue
