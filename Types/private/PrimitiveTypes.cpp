@@ -23,6 +23,8 @@ const BoolTypeDef& BoolTypeDef::GetTypeDef()
 BoolTypeDef::BoolTypeDef() :
 	TypeDef(nullptr, "A1A5297D-A75D-499B-8758-CC6A7696CDE0")
 {
+	m_category = "Primitive";
+	m_name = "bool";
 }
 
 void BoolTypeDef::GetReflectionData(json_parser::JSONValue& outData) const
@@ -52,6 +54,8 @@ const IntTypeDef& IntTypeDef::GetTypeDef()
 IntTypeDef::IntTypeDef() :
 	TypeDef(nullptr, "8E993D4A-B13D-4D59-92D1-43F0FC138DBD")
 {
+	m_category = "Primitive";
+	m_name = "int";
 }
 
 void IntTypeDef::GetReflectionData(json_parser::JSONValue& outData) const
@@ -81,6 +85,8 @@ const FloatTypeDef& FloatTypeDef::GetTypeDef()
 FloatTypeDef::FloatTypeDef() :
 	TypeDef(nullptr, "D3B56C9E-8D0D-4065-9778-805D515D9EB6")
 {
+	m_category = "Primitive";
+	m_name = "float";
 }
 
 void FloatTypeDef::GetReflectionData(json_parser::JSONValue& outData) const
@@ -110,6 +116,8 @@ const StringTypeDef& StringTypeDef::GetTypeDef()
 StringTypeDef::StringTypeDef() :
 	TypeDef(nullptr, "B641BC7D-49F6-4194-B4C9-239FDDAAA623")
 {
+	m_category = "Primitive";
+	m_name = "string";
 }
 
 void StringTypeDef::GetReflectionData(json_parser::JSONValue& outData) const
@@ -139,6 +147,8 @@ const GenericTypeDef& GenericTypeDef::GetTypeDef()
 GenericTypeDef::GenericTypeDef() :
 	TypeDef(nullptr, "1D4363E5-BC6F-4B49-80F3-FAC358F5B296")
 {
+	m_category = "Primitive";
+	m_name = "type";
 }
 
 void GenericTypeDef::GetReflectionData(json_parser::JSONValue& outData) const
