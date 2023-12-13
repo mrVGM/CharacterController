@@ -190,14 +190,58 @@ function readDefaultValue(defaultValueNode) {
 function constructDefs(defs) {
     const parsed = {};
 
+    let bool, int, float, string, type, valueType, referenceType, list;
+
     for (key in defs) {
         const content = defs[key];
         const json = JSON.parse(content);
 
-        parsed[JSON.stringify(json.id)] = json;
+        parsed[json.id.id] = json;
+
+        if (json.hint === 'bool') {
+            bool = json;
+        }
+
+        if (json.hint === 'int') {
+            int = json;
+        }
+
+        if (json.hint === 'float') {
+            float = json;
+        }
+
+        if (json.hint === 'string') {
+            string = json;
+        }
+
+        if (json.hint === 'type') {
+            type = json;
+        }
+
+        if (json.hint === 'valueType') {
+            valueType = json;
+        }
+
+        if (json.hint === 'referenceType') {
+            referenceType = json;
+        }
+
+        if (json.hint === 'list') {
+            list = json;
+        }
     }
 
-    return parsed;
+    return {
+        parsed,
+        bool,
+        int,
+        float,
+        string,
+        type,
+        valueType,
+        referenceType,
+        list
+    };
 }
 
 function serializeDefToXML(id) {

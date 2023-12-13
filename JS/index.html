@@ -25,14 +25,34 @@
                 ejsData = await ejsData;
                 defs = await defs;
 
-                defs = constructDefs(defs);
+                const {
+                    parsed,
+                    bool,
+                    int,
+                    float,
+                    string,
+                    type,
+                    valueType,
+                    referenceType,
+                    list
+                } = constructDefs(defs);
 
                 const appData = {
                     ejsData: ejsData,
-                    defs: defs,
+                    defs: parsed,
+                    specialTypes: {
+                        bool,
+                        int,
+                        float,
+                        string,
+                        type,
+                        valueType,
+                        referenceType,
+                        list
+                    },
                     enumerateDefs: function* () {
-                        for (let key in defs) {
-                            yield defs[key];
+                        for (let key in parsed) {
+                            yield parsed[key];
                         }
                     },
                     isAssignable: (id1, id2) => {
