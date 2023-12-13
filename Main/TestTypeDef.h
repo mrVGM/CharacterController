@@ -9,6 +9,7 @@ class TestTypeDef : public ReferenceTypeDef
 public:
 	TypeProperty m_floatProp;
 	TypeProperty m_stringProp;
+	TypeProperty m_listProp;
 
 	TestTypeDef();
 	static const TestTypeDef& GetTypeDef();
