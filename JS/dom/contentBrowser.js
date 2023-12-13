@@ -95,21 +95,6 @@ function createContentBrowser() {
     files.appendChild(filesPanel.element);
     
     let selectedFile;
-
-    function updateSelectedFileDetails() {
-        const file = selectedFile;
-        if (!file) {
-            return;
-        }
-        const def = file.data.def;
-
-        const { id, name, value_type, is_native, category } = detailsPanel.tagged;
-        id.innerHTML = def.id;
-        name.innerHTML = def.name;
-        value_type.innerHTML = def.valueType;
-        is_native.innerHTML = def.isNative;
-        category.value = def.category;
-    }
     
     function addFileEntry(def) {
         const cat = (def.isGenerated ? 'Generated/' : 'Native/') + def.category;
@@ -151,8 +136,6 @@ function createContentBrowser() {
 
             selectedFile = file;
             selectedFile.data.select();
-
-            updateSelectedFileDetails();
         }
 
         file.element.addEventListener('click', event => {
