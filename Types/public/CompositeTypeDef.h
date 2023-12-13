@@ -26,11 +26,12 @@ public:
 
 	TypeProperty(const std::string id, const TypeDef& type);
 	void GetReflectionData(json_parser::JSONValue& outData) const;
+	const TypeDef& GetType() const;
 };
 
 class CompositeTypeDef : public TypeDef
 {
-private:
+protected:
 	std::map<std::string, const TypeProperty*> m_properties;
 public:
 	CompositeTypeDef(const TypeDef* parent, const std::string& id);

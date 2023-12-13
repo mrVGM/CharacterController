@@ -1,0 +1,29 @@
+{
+  "properties": {
+    "A7BC6971-69D8-4B8D-AC13-F4F3EF513D8B": {
+      "type": {
+        "id": "D3B56C9E-8D0D-4065-9778-805D515D9EB6"
+      },
+      "name": "Float Prop",
+      "id": "A7BC6971-69D8-4B8D-AC13-F4F3EF513D8B",
+      "category": "Setup"
+    },
+    "4C2D1D66-37DA-41F6-9B9F-A2874CE544CC": {
+      "type": {
+        "id": "B641BC7D-49F6-4194-B4C9-239FDDAAA623"
+      },
+      "name": "String Prop",
+      "id": "4C2D1D66-37DA-41F6-9B9F-A2874CE544CC",
+      "category": "Setup"
+    }
+  },
+  "parent": {
+    "id": "361D902F-526F-452D-B925-7B59B0F5AB09"
+  },
+  "name": "Test Def",
+  "isGenerated": 0,
+  "id": {
+    "id": "B49D7893-FCA8-4CBF-8B65-D72287B94BB9"
+  },
+  "category": "Composite"
+}

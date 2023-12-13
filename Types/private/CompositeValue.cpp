@@ -171,3 +171,7 @@ CopyValue::CopyValue(const CompositeTypeDef& typeDef, const CompositeValue* oute
 {
 }
 
+ObjectValue::ObjectValue(const CompositeTypeDef& typeDef, const CompositeValue* outer) :
+	CompositeValue(typeDef, outer)
+{
+}
