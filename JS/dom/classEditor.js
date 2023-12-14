@@ -38,7 +38,7 @@ function create(def) {
         const slot = propsPanel.data.addSlot(cur.category);
 
         const { createProp } = propUtils;
-        const prop = createProp(cur);
+        const prop = createProp(cur.type, cur.name);
         propsPanel.data.addItem(prop, cur.name, slot.slotId);
     }
 
