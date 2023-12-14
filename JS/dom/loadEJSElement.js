@@ -49,6 +49,56 @@ function LoadEJSElement(ejsFile, data) {
 
     res.element.ejsData = res;
 
+    {
+        function startUpdatingPadding(padded) {
+            function getEJSData(elem) {
+                if (!elem) {
+                    return;
+                }
+
+                if (elem.ejsData) {
+                    return elem.ejsData;
+                }
+
+                return getEJSData(elem.parentElement);
+            }
+
+            function* getEJSParentChain(elem) {
+                let curEJS = getEJSData(elem);
+
+                while (curEJS) {
+                    yield curEJS;
+                    curEJS = getEJSData(curEJS.element.parentElement);
+                }
+            }
+
+            function updatePadding() {
+                let level = 0;
+
+                const it = getEJSParentChain(padded);
+                let cur = it.next();
+                while (!cur.done) {
+                    const { padded: tmp } = cur.value.tagged;
+                    if (tmp) {
+                        ++level;
+                    }
+                    cur = it.next();
+                }
+
+                padded.style['padding-left'] = (Math.max(level - 1, 0) * 30) + 'px';
+
+                setTimeout(updatePadding, 0);
+            }
+
+            updatePadding();
+        }
+
+        const { padded } = res.tagged;
+        if (padded) {
+            startUpdatingPadding(padded);
+        }
+    }
+
     return res;
 }
 

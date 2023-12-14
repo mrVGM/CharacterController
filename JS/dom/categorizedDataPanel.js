@@ -13,8 +13,7 @@ function create() {
         name: '',
         subcategories: {},
         subelements: 0,
-        hidden: 0,
-        padding: -30,
+        hidden: 0
     };
     panel.tagged.contents.appendChild(dummyCategory.element);
 
@@ -119,10 +118,6 @@ function create() {
             let curCat = parentCat.data.subcategories[cat];
             if (!curCat) {
                 curCat = createCategory(cat);
-                const { padded } = curCat.tagged;
-                curCat.data.padding = parentCat.data.padding + 30;
-                padded.style['padding-left'] = curCat.data.padding + 'px';
-
                 const elem = parentCat.tagged.nested_categories;
                 if (elem.childElementCount === 0) {
                     elem.appendChild(curCat.element);
@@ -251,9 +246,6 @@ function create() {
         item.data.show = show;
 
         const cat = itemCategory[slotId];
-
-        const { padded } = item.tagged;
-        padded.style['padding-left'] = (cat.data.padding + 30) + 'px';
 
         const elem = cat.tagged.nested;
 

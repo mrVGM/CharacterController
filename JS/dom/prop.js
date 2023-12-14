@@ -32,10 +32,26 @@ function createListProp(type, name, getter) {
     const template = document.appData.defs[type.template];
 
     const listContainer = LoadEJSElement('listContainer.ejs');
-    const listHeader = LoadEJSElement('listHeader.ejs');
-
+    
     const addButton = LoadEJSElement('button.ejs');
     const clearButton = LoadEJSElement('button.ejs');
+
+    {
+        const { name: listName, buttons, list_header, content, expand_icon } = listContainer.tagged;
+        listName.innerHTML = name;
+
+        buttons.appendChild(addButton.element);
+        buttons.appendChild(clearButton.element);
+
+        let expanded = true;
+        list_header.addEventListener('click', event => {
+            expanded = !expanded;
+            content.style.display = expanded ? '' : 'none';
+
+            expand_icon.classList.remove(expanded ? 'expand-button-collapsed' : 'expand-button-expanded');
+            expand_icon.classList.add(expanded ? 'expand-button-expanded' : 'expand-button-collapsed');
+        });
+    }
 
     const { create: createListPanel } = require('./categorizedDataPanel');
     const listPanel = createListPanel();
@@ -44,9 +60,6 @@ function createListProp(type, name, getter) {
 
     contents_holder.style.position = '';
     search_box.style.display = 'none';
-
-    const slot = listPanel.data.addSlot('');
-    listPanel.data.addItem(listHeader, -1, slot.slotId);
 
     const { content } = listContainer.tagged;
     content.appendChild(listPanel.element);
@@ -78,6 +91,7 @@ function createListProp(type, name, getter) {
         name.innerHTML = 'Add';
         addButton.element.addEventListener('click', event => {
             add();
+            event.stopPropagation();
         });
     }
 
@@ -87,16 +101,11 @@ function createListProp(type, name, getter) {
         name.innerHTML = 'Clear';
         clearButton.element.addEventListener('click', event => {
             clear();
+            event.stopPropagation();
         });
     }
 
-    {
-        const { name: listName, buttons } = listHeader.tagged;
-        listName.innerHTML = name;
-
-        buttons.appendChild(addButton.element);
-        buttons.appendChild(clearButton.element);
-    }
+    
 
     return listContainer;
 }
