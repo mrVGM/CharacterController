@@ -39,25 +39,26 @@ function createListProp(type, name, getter) {
 
     const { create: createListPanel } = require('./categorizedDataPanel');
     const listPanel = createListPanel();
+    listPanel.data.setSorted(false);
     const { search_box, contents_holder } = listPanel.tagged;
 
     contents_holder.style.position = '';
     search_box.style.display = 'none';
 
     const slot = listPanel.data.addSlot('');
-    listPanel.data.addItem(listHeader, (-1).toString(), slot.slotId);
+    listPanel.data.addItem(listHeader, -1, slot.slotId);
 
     const { content } = listContainer.tagged;
     content.appendChild(listPanel.element);
 
     let index = 0;
 
-    const itemsAdded = [];
+    let itemsAdded = [];
 
     function add() {
         const slot = listPanel.data.addSlot('');
         const prop = createProp(template.id, index.toString(), getter);
-        listPanel.data.addItem(prop, index.toString(), slot.slotId);
+        listPanel.data.addItem(prop, index, slot.slotId);
         itemsAdded.push(prop);
         index++;
     }
@@ -65,7 +66,11 @@ function createListProp(type, name, getter) {
     function clear() {
         itemsAdded.forEach(x => {
             listPanel.data.removeSlot(x.data.slotId);
+            x.element.remove();
         });
+
+        itemsAdded = [];
+        index = 0;
     }
 
     {

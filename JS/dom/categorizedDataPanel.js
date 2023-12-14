@@ -187,6 +187,7 @@ function create() {
         }
     }
 
+    let sorted = true;
     function addItem(item, name, slotId) {
         function hideCategories(cat) {
             if (cat.data.hidden < cat.data.subelements) {
@@ -255,6 +256,12 @@ function create() {
         padded.style['padding-left'] = (cat.data.padding + 30) + 'px';
 
         const elem = cat.tagged.nested;
+
+        if (!sorted) {
+            elem.appendChild(item.element);
+            return;
+        }
+
         if (elem.childElementCount === 0) {
             elem.appendChild(item.element);
         }
@@ -280,7 +287,10 @@ function create() {
     panel.data = {
         addSlot: addSlot,
         removeSlot: removeSlot,
-        addItem: addItem
+        addItem: addItem,
+        setSorted: s => {
+            sorted = s;
+        }
     };
 
     return panel;
