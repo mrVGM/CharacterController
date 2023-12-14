@@ -16,14 +16,20 @@
     <div id ="modal_space" style="display: none; position: absolute; left: 0px; top: 0px; width: 100%; height: 100%"></div>
     <script>
         {
-            const { readDirectory, ejsDir, defsDir, constructDefs, serializeDefToXML } = require('./init');
+            const { readDirectory, ejsDir, defsDir, assetsDir, constructDefs, serializeDefToXML } = require('./init');
 
             async function init() {
                 let ejsData = readDirectory(ejsDir);
                 let defs = readDirectory(defsDir);
+                let assets = readDirectory(assetsDir);
 
                 ejsData = await ejsData;
                 defs = await defs;
+                assets = await assets;
+
+                for (let k in assets) {
+                    defs[k] = assets[k];
+                }
 
                 const {
                     parsed,
@@ -80,6 +86,38 @@
                         }
                     },
                     serialiDefToXML: serializeDefToXML,
+                    saveAssets: async () => {
+                        const path = require('path');
+                        const fs = require('fs');
+
+                        const it = appData.enumerateDefs();
+                        let cur = it.next();
+
+                        let proms = [];
+
+                        while (!cur.done) {
+                            let item = cur.value;
+                            cur = it.next();
+                            if (!item.isGenerated) {
+                                continue;
+                            }
+
+                            const tmp = new Promise((resolve, reject) => {
+                                let fileName = path.join(assetsDir, item.id.id + '.json');
+                                fs.writeFile(fileName, JSON.stringify(item), () => {
+                                    resolve();
+                                });
+                            });
+
+                            proms.push(tmp);
+                        }
+
+                        for (let i = 0; i < proms.length; ++i) {
+                            await proms[i];
+                        }
+
+                        console.log('Assets Saved!');
+                    },
                 };
 
                 document.appData = appData;

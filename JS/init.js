@@ -4,6 +4,7 @@ const ejs = require('ejs');
 
 const ejsDir = path.join(__dirname, 'ejs');
 const defsDir = path.join(__dirname, '../Data/ReflectionData');
+const assetsDir = path.join(__dirname, '../Data/Assets');
 
 function readDirectory(dir) {
     const filesData = {};
@@ -268,4 +269,5 @@ exports.readDirectory = readDirectory;
 exports.constructDefs = constructDefs;
 exports.ejsDir = ejsDir;
 exports.defsDir = defsDir;
+exports.assetsDir = assetsDir;
 exports.serializeDefToXML = serializeDefToXML;
