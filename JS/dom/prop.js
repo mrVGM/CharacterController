@@ -29,25 +29,43 @@ function createStringProp(name, getter) {
 }
 
 function createListProp(type, name, getter) {
-    const listProperty = LoadEJSElement('listProperty.ejs');
     const template = document.appData.defs[type.template];
+
+    const listContainer = LoadEJSElement('listContainer.ejs');
+    const listHeader = LoadEJSElement('listHeader.ejs');
 
     const addButton = LoadEJSElement('button.ejs');
     const clearButton = LoadEJSElement('button.ejs');
 
+    const { create: createListPanel } = require('./categorizedDataPanel');
+    const listPanel = createListPanel();
+    const { search_box, contents_holder } = listPanel.tagged;
+
+    contents_holder.style.position = '';
+    search_box.style.display = 'none';
+
+    const slot = listPanel.data.addSlot('');
+    listPanel.data.addItem(listHeader, (-1).toString(), slot.slotId);
+
+    const { content } = listContainer.tagged;
+    content.appendChild(listPanel.element);
+
     let index = 0;
 
-    function add() {
-        const prop = createProp(template.id, (index++).toString(), getter);
+    const itemsAdded = [];
 
-        const { content } = listProperty.tagged;
-        content.appendChild(prop.element);
+    function add() {
+        const slot = listPanel.data.addSlot('');
+        const prop = createProp(template.id, index.toString(), getter);
+        listPanel.data.addItem(prop, index.toString(), slot.slotId);
+        itemsAdded.push(prop);
+        index++;
     }
 
     function clear() {
-        const { content } = listProperty.tagged;
-        content.innerHTML = '';
-        index = 0;
+        itemsAdded.forEach(x => {
+            listPanel.data.removeSlot(x.data.slotId);
+        });
     }
 
     {
@@ -68,12 +86,14 @@ function createListProp(type, name, getter) {
     }
 
     {
-        const { name: nameElem, buttons } = listProperty.tagged;
-        nameElem.innerHTML = name;
+        const { name: listName, buttons } = listHeader.tagged;
+        listName.innerHTML = name;
+
         buttons.appendChild(addButton.element);
         buttons.appendChild(clearButton.element);
     }
-    return listProperty;
+
+    return listContainer;
 }
 
 function createProp(propType, name, defaults) {
