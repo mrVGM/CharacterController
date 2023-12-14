@@ -23,7 +23,9 @@ function getAllProps(typeId)
 }
 
 function create(def) {
-    const props = getAllProps(def.id);
+    const props = getAllProps(def.id.id);
+
+    const { defaults } = def;
 
     const classEditor = LoadEJSElement('classEditor.ejs');
     const { properties } = classEditor.tagged;
@@ -38,7 +40,10 @@ function create(def) {
         const slot = propsPanel.data.addSlot(cur.category);
 
         const { createProp } = propUtils;
-        const prop = createProp(cur.type, cur.name);
+        const prop = createProp(cur.type, cur.name, {
+            get: () => defaults[k],
+            set: value => { defaults[k] = value; }
+        });
         propsPanel.data.addItem(prop, cur.name, slot.slotId);
     }
 

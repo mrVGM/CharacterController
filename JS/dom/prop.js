@@ -1,38 +1,66 @@
-const { debug } = require('console');
 const { LoadEJSElement } = require('./loadEJSElement')
 
-function createBoolProp(name, getter) {
+function createBoolProp(name, accessors) {
     const boolProp = LoadEJSElement('boolProperty.ejs');
     const { name: label, value } = boolProp.tagged;
 
     label.innerHTML = name;
 
+    value.checked = !!accessors.get();
+    accessors.set(value.checked ? 1 : 0);
+
+    value.addEventListener('change', event => {
+        accessors.set(value.checked ? 1 : 0);
+    });
+
     return boolProp;
 }
 
-function createNumProp(name, getter) {
+function createNumProp(name, accessors) {
     const numProp = LoadEJSElement('numProperty.ejs');
     const { name: label, value } = numProp.tagged;
 
     label.innerHTML = name;
 
+    if (!accessors.get()) {
+        accessors.set(0);
+    }
+    value.value = accessors.get();
+
+    value.addEventListener('change', event => {
+        accessors.set(value.value);
+    });
+
     return numProp;
 }
 
-function createStringProp(name, getter) {
+function createStringProp(name, accessors) {
     const stringProp = LoadEJSElement('stringProperty.ejs');
     const { name: label, value } = stringProp.tagged;
 
     label.innerHTML = name;
 
+    if (!accessors.get()) {
+        accessors.set('');
+    }
+    value.value = accessors.get();
+
+    value.addEventListener('change', event => {
+        accessors.set(value.value);
+    });
+
     return stringProp;
 }
 
-function createListProp(type, name, getter) {
+function createListProp(type, name, accessors) {
     const template = document.appData.defs[type.template];
 
     const listContainer = LoadEJSElement('listContainer.ejs');
-    
+
+    if (!accessors.get()) {
+        accessors.set([]);
+    }
+
     const addButton = LoadEJSElement('button.ejs');
     const clearButton = LoadEJSElement('button.ejs');
 
@@ -69,8 +97,20 @@ function createListProp(type, name, getter) {
     let itemsAdded = [];
 
     function add() {
+        const l = accessors.get();
+        if (l.length <= itemsAdded.length) {
+            l.push();
+        }
+
+        function createAccessors(index) {
+            return {
+                get: () => l[index],
+                set: x => { l[index] = x; }
+            };
+        }
+
         const slot = listPanel.data.addSlot('');
-        const prop = createProp(template.id, index.toString(), getter);
+        const prop = createProp(template.id, index.toString(), createAccessors(index));
         listPanel.data.addItem(prop, index, slot.slotId);
         itemsAdded.push(prop);
         index++;
@@ -83,9 +123,14 @@ function createListProp(type, name, getter) {
         });
 
         itemsAdded = [];
+        accessors.set([]);
         index = 0;
     }
 
+    accessors.get().forEach(x => {
+        add();
+    });
+    
     {
         const { name } = addButton.tagged;
         name.innerHTML = 'Add';
@@ -105,12 +150,10 @@ function createListProp(type, name, getter) {
         });
     }
 
-    
-
     return listContainer;
 }
 
-function createProp(propType, name, defaults) {
+function createProp(propType, name, accessors) {
     const {
         bool,
         int,
@@ -123,23 +166,23 @@ function createProp(propType, name, defaults) {
     } = document.appData.specialTypes;
 
     if (document.appData.isAssignable(propType.id, bool.id.id)) {
-        return createBoolProp(name, defaults);
+        return createBoolProp(name, accessors);
     }
 
     if (document.appData.isAssignable(propType.id, int.id.id)) {
-        return createNumProp(name, defaults);
+        return createNumProp(name, accessors);
     }
 
     if (document.appData.isAssignable(propType.id, float.id.id)) {
-        return createNumProp(name, defaults);
+        return createNumProp(name, accessors);
     }
 
     if (document.appData.isAssignable(propType.id, string.id.id)) {
-        return createStringProp(name, defaults);
+        return createStringProp(name, accessors);
     }
 
     if (document.appData.isAssignable(propType.id, list.id.id)) {
-        return createListProp(propType, name, defaults);
+        return createListProp(propType, name, accessors);
     }
 }
 

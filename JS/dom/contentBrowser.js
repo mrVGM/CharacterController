@@ -73,11 +73,11 @@ function createContentBrowser() {
             parent: chosen.id,
             name: "New Asset",
             category: "",
-            isGenerated: true,
+            isGenerated: 1,
             defaults: {}
         };
 
-        document.appData.defs[newDef.id] = newDef;
+        document.appData.defs[newDef.id.id] = newDef;
 
         const { click } = addFileEntry(newDef);
         click();
