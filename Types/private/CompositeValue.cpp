@@ -3,6 +3,8 @@
 #include "CompositeValue.h"
 #include "GenericListDef.h"
 
+#include "ObjectValueContainer.h"
+
 namespace
 {
 	const ObjectValue* GetOuterObject(const CompositeValue* outer)
@@ -174,4 +176,10 @@ CopyValue::CopyValue(const CompositeTypeDef& typeDef, const CompositeValue* oute
 ObjectValue::ObjectValue(const CompositeTypeDef& typeDef, const CompositeValue* outer) :
 	CompositeValue(typeDef, outer)
 {
+	ObjectValueContainer::GetContainer().Register(this);
+}
+
+ObjectValue::~ObjectValue()
+{
+	ObjectValueContainer::GetContainer().Unregister(this);
 }
