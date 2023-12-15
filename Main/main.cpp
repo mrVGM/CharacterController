@@ -40,12 +40,6 @@ int main(int args, const char** argv)
 
 	TypeDef::SaveReflectionData();
 
-	std::string defaults;
-	files::ReadTextFile("Assets\\test_object_defaults.json", defaults);
-
-	json_parser::JSONValue tmp;
-	json_parser::JSONValue::FromString(defaults, tmp);
-
 	assets::Boot();
 
 
