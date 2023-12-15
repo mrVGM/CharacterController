@@ -55,6 +55,6 @@ const TestTypeDef& TestTypeDef::GetTypeDef()
 
 void TestTypeDef::Construct(Value& container) const
 {
-	TestObject* obj = new TestObject(container.m_outer);
+	TestObject* obj = new TestObject(*this, container.m_outer);
 	container.m_payload = obj;
 }

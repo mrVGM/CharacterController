@@ -3,6 +3,8 @@
 #include "CompositeValue.h"
 #include "CompositeTypeDef.h"
 
+#include "TestTypeDef.h"
+
 class TestObject : public ObjectValue
 {
 public:
@@ -10,5 +12,5 @@ public:
 	Value m_stringVal;
 	Value m_listVal;
 
-	TestObject(const CompositeValue* outer);
+	TestObject(const TestTypeDef& testTypeDef, const CompositeValue* outer);
 };
