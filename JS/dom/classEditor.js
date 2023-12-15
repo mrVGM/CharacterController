@@ -84,20 +84,14 @@ function create(def) {
         classEditor.element.style.display = 'none';
     }
 
-    tabButton.data.activate = activate;
-    tabButton.data.deactivate = deactivate;
-
-    tabButton.element.addEventListener('click', event => {
-        activateTab(tabButton.data.id);
-    });
-
-    tabButton.element.addEventListener('auxclick', event => {
-        if (event.button !== 1) {
-            return;
-        }
+    function remove() {
         removeTab(tabButton);
         classEditor.element.remove();
-    });
+    }
+
+    tabButton.data.activate = activate;
+    tabButton.data.deactivate = deactivate;
+    tabButton.data.remove = remove;
 
     return tabButton;
 }

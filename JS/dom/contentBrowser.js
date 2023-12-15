@@ -188,16 +188,38 @@ function createContentBrowser() {
             click();
         });
 
+        let fileOpened = false;
+        let tabButton;
+
         file.element.addEventListener('dblclick', event => {
             if (!file.data.def.isGenerated) {
                 return;
             }
 
-            const { create } = require('./classEditor');
-            const tabButton = create(def);
+            const { activateTab, removeTab } = getTabsController();
+            if (fileOpened) {
+                activateTab(tabButton.data.id);
+                return;
+            }
 
-            const tabsController = getTabsController();
-            tabsController.activateTab(tabButton.data.id);
+            const { create } = require('./classEditor');
+            tabButton = create(def);
+            activateTab(tabButton.data.id);
+
+            tabButton.element.addEventListener('click', event => {
+                activateTab(tabButton.data.id);
+            });
+
+            tabButton.element.addEventListener('auxclick', event => {
+                if (event.button !== 1) {
+                    return;
+                }
+                tabButton.data.remove();
+                fileOpened = false;
+                tabButton = undefined;
+            });
+
+            fileOpened = true;
         });
 
         return {
