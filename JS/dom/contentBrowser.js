@@ -8,11 +8,16 @@ function createContentBrowser() {
     const { buttons, files } = contentBrowser.tagged;
 
     const addClassButton = LoadEJSElement('button.ejs');
+    const detailsButton = LoadEJSElement('button.ejs');
     const deleteButton = LoadEJSElement('button.ejs');
     const saveAssetsButton = LoadEJSElement('button.ejs');
     {
         const { name } = addClassButton.tagged;
         name.innerHTML = "Add Class";
+    }
+    {
+        const { name } = detailsButton.tagged;
+        name.innerHTML = "Details";
     }
     {
         const { name } = deleteButton.tagged;
@@ -25,14 +30,40 @@ function createContentBrowser() {
     }
 
     buttons.appendChild(addClassButton.element);
+    buttons.appendChild(detailsButton.element);
     buttons.appendChild(deleteButton.element);
     buttons.appendChild(saveAssetsButton.element);
+
+    detailsButton.element.addEventListener('click', async event => {
+        if (!selectedFile) {
+            return;
+        }
+        const file = selectedFile;
+
+        const def = selectedFile.data.def;
+        if (!def.isGenerated) {
+            return;
+        }
+
+        const { openFileDetailsModal, closeModal } = require('./modalUtils');
+
+        const { filename, category } = await openFileDetailsModal(def);
+        def.name = filename === '' ? def.name : filename;
+        def.category = category;
+
+        filesPanel.data.removeSlot(file.data.slotId);
+        file.element.remove();
+        const { click } = addFileEntry(def);
+        click();
+
+        closeModal();
+    });
 
     saveAssetsButton.element.addEventListener('click', event => {
         document.appData.saveAssets();
     });
 
-    deleteButton.element.addEventListener('click', event => {
+    deleteButton.element.addEventListener('click', async event => {
         if (!selectedFile) {
             return;
         }
@@ -45,8 +76,12 @@ function createContentBrowser() {
         selectedFile.element.remove();
         filesPanel.data.removeSlot(selectedFile.data.slotId);
 
-        delete document.appData.defs[def.id];
+        delete document.appData.defs[def.id.id];
         selectedFile = undefined;
+
+        const assetName = def.id.id + '.json';
+        await document.appData.moveAssetToTrash(assetName);
+        console.log(`Asset ${assetName} moved to trash!`);
     });
 
     addClassButton.element.addEventListener('click', async event => {
@@ -151,24 +186,6 @@ function createContentBrowser() {
 
         file.element.addEventListener('click', event => {
             click();
-        });
-
-        file.element.addEventListener('contextmenu', async event => {
-            if (!def.isGenerated) {
-                return;
-            }
-            click();
-            const { openFileDetailsModal, closeModal } = require('./modalUtils');
-
-            const { filename, category } = await openFileDetailsModal(def);
-            def.name = filename === '' ? def.name : filename;
-            def.category = category;
-
-            filesPanel.data.removeSlot(file.data.slotId);
-            file.element.remove();
-            addFileEntry(def);
-
-            closeModal();
         });
 
         file.element.addEventListener('dblclick', event => {
