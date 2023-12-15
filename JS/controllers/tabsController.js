@@ -5,6 +5,12 @@ function create() {
     const buttons = {};
     let active = -1;
 
+    function removeTab(button) {
+        activateTab(0);
+        delete buttons[button.data.id];
+        button.element.remove();
+    }
+
     function addTab(button) {
         button.data.id = buttonId++;
 
@@ -31,8 +37,9 @@ function create() {
     }
 
     const res = {
-        addTab: addTab,
-        activateTab: activateTab
+        addTab,
+        removeTab,
+        activateTab
     };
 
     return res;

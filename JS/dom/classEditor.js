@@ -54,12 +54,21 @@ function create(def) {
     content.appendChild(classEditor.element);
 
     const tabButton = LoadEJSElement('tabButton.ejs');
-    const { addTab, activateTab } = getTabsController();
+    const { addTab, removeTab, activateTab } = getTabsController();
 
     addTab(tabButton);
 
-    const { name } = tabButton.tagged;
-    name.innerHTML = def.name;
+    function updateName() {
+        if (!tabButton.element.isConnected) {
+            return;
+        }
+        const { name } = tabButton.tagged;
+        name.innerHTML = def.name;
+
+        setTimeout(updateName, 500);
+    }
+
+    updateName();
 
     function activate() {
         tabButton.element.classList.remove('tab-button-idle');
@@ -80,6 +89,14 @@ function create(def) {
 
     tabButton.element.addEventListener('click', event => {
         activateTab(tabButton.data.id);
+    });
+
+    tabButton.element.addEventListener('auxclick', event => {
+        if (event.button !== 1) {
+            return;
+        }
+        removeTab(tabButton);
+        classEditor.element.remove();
     });
 
     return tabButton;
