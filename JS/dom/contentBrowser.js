@@ -9,6 +9,7 @@ function createContentBrowser() {
 
     const addClassButton = LoadEJSElement('button.ejs');
     const deleteButton = LoadEJSElement('button.ejs');
+    const saveAssetsButton = LoadEJSElement('button.ejs');
     {
         const { name } = addClassButton.tagged;
         name.innerHTML = "Add Class";
@@ -18,8 +19,18 @@ function createContentBrowser() {
         name.innerHTML = "Delete";
     }
 
+    {
+        const { name } = saveAssetsButton.tagged;
+        name.innerHTML = "Save Assets";
+    }
+
     buttons.appendChild(addClassButton.element);
     buttons.appendChild(deleteButton.element);
+    buttons.appendChild(saveAssetsButton.element);
+
+    saveAssetsButton.element.addEventListener('click', event => {
+        document.appData.saveAssets();
+    });
 
     deleteButton.element.addEventListener('click', event => {
         if (!selectedFile) {
@@ -27,7 +38,7 @@ function createContentBrowser() {
         }
 
         const def = selectedFile.data.def;
-        if (def.isNative) {
+        if (!def.isGenerated) {
             return;
         }
 
@@ -48,6 +59,12 @@ function createContentBrowser() {
         let cur = it.next();
         while (!cur.done) {
             const def = cur.value;
+            cur = it.next();
+
+            if (def.isGenerated) {
+                continue;
+            }
+
             classes.push({
                 name: def.name,
                 category: def.category,
@@ -55,7 +72,6 @@ function createContentBrowser() {
                     choose(def);
                 }
             });
-            cur = it.next();
         }
 
         const pr = new Promise((resolve, reject) => {
@@ -64,7 +80,7 @@ function createContentBrowser() {
             };
         });
 
-        openModal(classes);
+        openModal(classes, 'Choose Parent Class');
 
         const chosen = await pr;
 
@@ -135,6 +151,24 @@ function createContentBrowser() {
 
         file.element.addEventListener('click', event => {
             click();
+        });
+
+        file.element.addEventListener('contextmenu', async event => {
+            if (!def.isGenerated) {
+                return;
+            }
+            click();
+            const { openFileDetailsModal, closeModal } = require('./modalUtils');
+
+            const { filename, category } = await openFileDetailsModal(def);
+            def.name = filename === '' ? def.name : filename;
+            def.category = category;
+
+            filesPanel.data.removeSlot(file.data.slotId);
+            file.element.remove();
+            addFileEntry(def);
+
+            closeModal();
         });
 
         file.element.addEventListener('dblclick', event => {
