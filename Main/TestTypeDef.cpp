@@ -24,12 +24,24 @@ TestTypeDef::TestTypeDef() :
 
 	m_floatProp.m_name = "Float Prop";
 	m_floatProp.m_category = "Setup";
+	m_floatProp.m_getValue = [](CompositeValue* object) -> Value& {
+		TestObject* obj = static_cast<TestObject*>(object);
+		return obj->m_floatVal;
+	};
 
 	m_stringProp.m_name = "String Prop";
 	m_stringProp.m_category = "Setup";
+	m_stringProp.m_getValue = [](CompositeValue* object) -> Value& {
+		TestObject* obj = static_cast<TestObject*>(object);
+		return obj->m_stringVal;
+	};
 
 	m_listProp.m_name = "List Prop";
 	m_listProp.m_category = "Setup";
+	m_listProp.m_getValue = [](CompositeValue* object) -> Value& {
+		TestObject* obj = static_cast<TestObject*>(object);
+		return obj->m_listVal;
+	};
 
 	m_properties[m_floatPropId] = &m_floatProp;
 	m_properties[m_stringPropId] = &m_stringProp;

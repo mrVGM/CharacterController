@@ -8,6 +8,7 @@ class TestObject : public ObjectValue
 public:
 	Value m_floatVal;
 	Value m_stringVal;
+	Value m_listVal;
 
 	TestObject(const CompositeValue* outer);
 };

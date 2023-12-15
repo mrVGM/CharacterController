@@ -59,5 +59,4 @@ public:
 
 	virtual void GetReflectionData(json_parser::JSONValue& outData) const override;
 	virtual void Construct(Value& container) const override;
-	virtual void DeserializeFromJSON(Value& value, json_parser::JSONValue& json) const;
 };

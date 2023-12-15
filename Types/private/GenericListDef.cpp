@@ -102,7 +102,7 @@ void ListDef::DeserializeFromJSON(Value& value, json_parser::JSONValue& json) co
 	for (auto it = list.begin(); it != list.end(); ++it)
 	{
 		Value& cur = valueList->m_values.emplace_back();
-		cur.Initialize(*this, compositeValue);
+		cur.Initialize(this->m_templateDef, compositeValue);
 
 		m_templateDef.DeserializeFromJSON(cur, *it);
 	}

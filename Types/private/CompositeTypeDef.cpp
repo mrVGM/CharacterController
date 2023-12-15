@@ -106,10 +106,6 @@ void ReferenceTypeDef::Construct(Value& container) const
 	throw "Can't construct from a ReferenceTypeDef!";
 }
 
-void ReferenceTypeDef::DeserializeFromJSON(Value& value, json_parser::JSONValue& json) const
-{
-}
-
 TypeProperty::TypeProperty(const std::string id, const TypeDef& type) :
 	m_id(id),
 	m_type(type)

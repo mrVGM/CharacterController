@@ -28,7 +28,7 @@ function createNumProp(name, accessors) {
     value.value = accessors.get();
 
     value.addEventListener('change', event => {
-        accessors.set(value.value);
+        accessors.set(parseFloat(value.value));
     });
 
     return numProp;

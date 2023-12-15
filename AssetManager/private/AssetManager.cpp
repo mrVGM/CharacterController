@@ -7,6 +7,7 @@
 #include "CompositeValue.h"
 
 #include "TypeDef.h"
+#include "AssetTypeDef.h"
 
 #include <filesystem>
 
@@ -35,31 +36,17 @@ void assets::Boot()
 
             JSONValue tmp;
             JSONValue::FromString(contents, tmp);
-
             auto& map = tmp.GetAsObj();
-            JSONValue key = map["id"];
-            JSONValue parentKey = map["parent"];
 
-            std::string keyStr = parentKey.ToString(false);
-            auto it = defsMap.find(keyStr);
-
-            if (it == defsMap.end())
-            {
-                throw "Can't find type def!";
-            }
-
-            const TypeDef* type = it->second;
-            if (!type->IsA(ReferenceTypeDef::GetTypeDef()))
-            {
-                throw "Asset is not a reference type!";
-            }
-
-            const ReferenceTypeDef* refType = static_cast<const ReferenceTypeDef*>(type);
-
+            AssetTypeDef* assetTypeDef = new AssetTypeDef(tmp);
             Value& asset = valueList->m_values.emplace_back();
             asset.Initialize(static_cast<const ListDef&>(valueList->GetTypeDef()).m_templateDef, valueList);
 
-            refType->Construct(asset);
+            assetTypeDef->Construct(asset);
+
+            JSONValue defaults = map["defaults"];
+            const ReferenceTypeDef* parent = static_cast<const ReferenceTypeDef*>(assetTypeDef->GetParent());
+            parent->DeserializeFromJSON(asset, defaults);
         }
     }
 }
