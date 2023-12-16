@@ -85,6 +85,17 @@
                             cur = it.next();
                         }
                     },
+                    enumerateAssignable: function* (type) {
+                        const it = appData.enumerateDefs();
+
+                        let cur = it.next();
+                        while (!cur.done) {
+                            if (appData.isAssignable(cur.value.id.id, type.id.id)) {
+                                yield cur.value;
+                            }
+                            cur = it.next();
+                        }
+                    },
                     serialiDefToXML: serializeDefToXML,
                     saveAssets: async () => {
                         const path = require('path');

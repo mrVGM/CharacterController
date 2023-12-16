@@ -153,6 +153,65 @@ function createListProp(type, name, accessors) {
     return listContainer;
 }
 
+function createTypeProp(type, name, accessors) {
+    const template = document.appData.defs[type.template];
+
+    function getVal() {
+        let val = accessors.get();
+        if (val) {
+            val = document.appData.defs[val.id];
+        }
+
+        return val;
+    }
+
+    const typeProp = LoadEJSElement('typeProperty.ejs');
+    const { name: label, type_button } = typeProp.tagged;
+
+    const button = LoadEJSElement("button.ejs");
+    type_button.appendChild(button.element);
+
+    {
+        const { name: buttonName } = button.tagged;
+        {
+            const valTmp = getVal();
+            buttonName.innerHTML = valTmp ? valTmp.name : 'Choose Type';
+        }
+
+        button.element.addEventListener('click', async event => {
+            const { openModal, closeModal } = require('./modalUtils');
+
+            const assignable = [];
+            const it = document.appData.enumerateAssignable(template);
+            let cur = it.next();
+
+            const pr = new Promise((resolve, reject) => {
+                while (!cur.done) {
+                    const def = cur.value;
+                    cur = it.next();
+
+                    assignable.push({
+                        name: def.name,
+                        category: def.category,
+                        chosen: () => {
+                            resolve(def);
+                        }
+                    });
+                }
+            });
+
+            openModal(assignable, "Choose item:");
+            const chosen = await pr;
+            accessors.set(chosen.id);
+            buttonName.innerHTML = getVal().name;
+            closeModal();
+        });
+    }
+
+    label.innerHTML = name;
+
+    return typeProp;
+}
 function createProp(propType, name, accessors) {
     const {
         bool,
@@ -179,6 +238,10 @@ function createProp(propType, name, accessors) {
 
     if (document.appData.isAssignable(propType.id, string.id.id)) {
         return createStringProp(name, accessors);
+    }
+
+    if (document.appData.isAssignable(propType.id, type.id.id)) {
+        return createTypeProp(propType, name, accessors);
     }
 
     if (document.appData.isAssignable(propType.id, list.id.id)) {
