@@ -7,6 +7,20 @@
 
 class Value;
 
+template <typename T>
+struct BasicObjectContainer
+{
+	T* m_object = nullptr;
+	~BasicObjectContainer()
+	{
+		if (m_object)
+		{
+			delete m_object;
+		}
+		m_object = nullptr;
+	}
+};
+
 class TypeDef
 {
 public:

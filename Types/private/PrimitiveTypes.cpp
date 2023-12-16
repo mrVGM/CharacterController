@@ -6,18 +6,24 @@
 
 namespace
 {
-	std::string m_typeTypeDefId = "A4885F01-547F-4C21-BE40-A21C7BE0BA24";
+	const char* m_typeTypeDefId = "A4885F01-547F-4C21-BE40-A21C7BE0BA24";
+	const char* m_genericTypeDefId = "1D4363E5-BC6F-4B49-80F3-FAC358F5B296";
 
-	BoolTypeDef m_boolTypeDef;
-	IntTypeDef m_intTypeDef;
-	FloatTypeDef m_floatTypeDef;
-	StringTypeDef m_stringTypeDef;
-	GenericTypeDef m_genericTypedef;
+	BasicObjectContainer<BoolTypeDef> m_boolTypeDef;
+	BasicObjectContainer<IntTypeDef> m_intTypeDef;
+	BasicObjectContainer<FloatTypeDef> m_floatTypeDef;
+	BasicObjectContainer<StringTypeDef> m_stringTypeDef;
+	BasicObjectContainer<GenericTypeDef> m_genericTypedef;
 }
 
 const BoolTypeDef& BoolTypeDef::GetTypeDef()
 {
-	return m_boolTypeDef;
+	if (!m_boolTypeDef.m_object)
+	{
+		m_boolTypeDef.m_object = new BoolTypeDef();
+	}
+
+	return *m_boolTypeDef.m_object;
 }
 
 BoolTypeDef::BoolTypeDef() :
@@ -48,7 +54,11 @@ void BoolTypeDef::DeserializeFromJSON(Value& value, json_parser::JSONValue& json
 
 const IntTypeDef& IntTypeDef::GetTypeDef()
 {
-	return m_intTypeDef;
+	if (!m_intTypeDef.m_object)
+	{
+		m_intTypeDef.m_object = new IntTypeDef();
+	}
+	return *m_intTypeDef.m_object;
 }
 
 IntTypeDef::IntTypeDef() :
@@ -79,7 +89,11 @@ void IntTypeDef::DeserializeFromJSON(Value& value, json_parser::JSONValue& json)
 
 const FloatTypeDef& FloatTypeDef::GetTypeDef()
 {
-	return m_floatTypeDef;
+	if (!m_floatTypeDef.m_object)
+	{
+		m_floatTypeDef.m_object = new FloatTypeDef();
+	}
+	return *m_floatTypeDef.m_object;
 }
 
 FloatTypeDef::FloatTypeDef() :
@@ -110,7 +124,11 @@ void FloatTypeDef::DeserializeFromJSON(Value& value, json_parser::JSONValue& jso
 
 const StringTypeDef& StringTypeDef::GetTypeDef()
 {
-	return m_stringTypeDef;
+	if (!m_stringTypeDef.m_object)
+	{
+		m_stringTypeDef.m_object = new StringTypeDef();
+	}
+	return *m_stringTypeDef.m_object;
 }
 
 StringTypeDef::StringTypeDef() :
@@ -141,11 +159,16 @@ void StringTypeDef::DeserializeFromJSON(Value& value, json_parser::JSONValue& js
 
 const GenericTypeDef& GenericTypeDef::GetTypeDef()
 {
-	return m_genericTypedef;
+	if (!m_genericTypedef.m_object)
+	{
+		m_genericTypedef.m_object = new GenericTypeDef();
+	}
+
+	return *m_genericTypedef.m_object;
 }
 
 GenericTypeDef::GenericTypeDef() :
-	TypeDef(nullptr, "1D4363E5-BC6F-4B49-80F3-FAC358F5B296")
+	TypeDef(nullptr, m_genericTypeDefId)
 {
 	m_category = "Primitive";
 	m_name = "type";
@@ -165,7 +188,7 @@ void GenericTypeDef::GetReflectionData(json_parser::JSONValue& outData) const
 void TypeTypeDef::GetKey(const TypeDef& templateType, json_parser::JSONValue& outKey)
 {
 	using namespace json_parser;
-	GetDefaultTypeKey(m_typeTypeDefId, outKey);
+	GetDefaultTypeKey(m_genericTypeDefId, outKey);
 
 	auto& map = outKey.GetAsObj();
 	map["template"] = JSONValue(templateType.GetId());
