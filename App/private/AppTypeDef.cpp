@@ -2,6 +2,7 @@
 
 #include "PrimitiveTypes.h"
 #include "AppObj.h"
+#include "AppEntryTypeDef.h"
 
 namespace
 {
@@ -12,7 +13,7 @@ namespace
 
 app::AppTypeDef::AppTypeDef() :
 	ReferenceTypeDef(&ReferenceTypeDef::GetReferenceTypeDef(), m_appTypeId),
-	m_appEntry("A9E68EEE-504B-44B2-B3FF-6EF65493D3E9", TypeTypeDef::GetTypeDef(ReferenceTypeDef::GetReferenceTypeDef()))
+	m_appEntry("A9E68EEE-504B-44B2-B3FF-6EF65493D3E9", TypeTypeDef::GetTypeDef(AppEntryTypeDef::GetAppEntryTypeDef()))
 {
 	m_name = "App Type";
 	m_category = "App";

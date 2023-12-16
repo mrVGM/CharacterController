@@ -1,0 +1,13 @@
+#pragma once
+
+#include "CompositeTypeDef.h"
+
+namespace app
+{
+	class AppEntryTypeDef : public ReferenceTypeDef
+	{
+	public:
+		static const AppEntryTypeDef& GetAppEntryTypeDef();
+		AppEntryTypeDef();
+	};
+}
