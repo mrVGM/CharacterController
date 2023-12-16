@@ -17,6 +17,8 @@ add_library (Types
 	"private/AssetTypeDef.cpp"
 	"public/ObjectValueContainer.h"
 	"private/ObjectValueContainer.cpp"
+	"public/ListDef.h"
+	"private/ListDef.cpp"
 )
 
 target_include_directories(Types INTERFACE PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/public")

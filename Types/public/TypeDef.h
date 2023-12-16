@@ -11,13 +11,17 @@ template <typename T>
 struct BasicObjectContainer
 {
 	T* m_object = nullptr;
-	~BasicObjectContainer()
+	void Dispose()
 	{
 		if (m_object)
 		{
 			delete m_object;
 		}
 		m_object = nullptr;
+	}
+	~BasicObjectContainer()
+	{
+		Dispose();
 	}
 };
 

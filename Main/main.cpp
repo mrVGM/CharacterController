@@ -42,6 +42,7 @@ int main(int args, const char** argv)
 
 	assets::Boot();
 
+	assets::Shutdown();
 
 	return 0;
 }

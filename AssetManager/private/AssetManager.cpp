@@ -3,7 +3,7 @@
 #include "Files.h"
 #include "JSONValue.h"
 
-#include "GenericListDef.h"
+#include "ListDef.h"
 #include "CompositeValue.h"
 
 #include "TypeDef.h"
@@ -13,33 +13,15 @@
 
 namespace
 {
-    struct AssetListContainer
-    {
-        Value* m_assetList = nullptr;
-        
-        void Init()
-        {
-            if (m_assetList)
-            {
-                return;
-            }
-            m_assetList = new Value(ListDef::GetTypeDef(ReferenceTypeDef::GetTypeDef()), nullptr);
-        }
-        ~AssetListContainer()
-        {
-            if (m_assetList)
-            {
-                delete m_assetList;
-            }
-        }
-    };
-
-    AssetListContainer m_assetListContainer;
+    BasicObjectContainer<Value> m_assetList;
 
     Value& GetAssetList()
     {
-        m_assetListContainer.Init();
-        return *m_assetListContainer.m_assetList;
+        if (!m_assetList.m_object)
+        {
+            m_assetList.m_object = new Value(ListDef::GetTypeDef(ReferenceTypeDef::GetTypeDef()), nullptr);
+        }
+        return *m_assetList.m_object;
     }
 }
 
@@ -80,4 +62,9 @@ void assets::Boot()
             parent->DeserializeFromJSON(asset, defaults);
         }
     }
+}
+
+void assets::Shutdown()
+{
+    m_assetList.Dispose();
 }

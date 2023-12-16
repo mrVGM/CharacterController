@@ -1,7 +1,7 @@
 #pragma once
 
 #include "CompositeValue.h"
-#include "GenericListDef.h"
+#include "ListDef.h"
 
 #include "ObjectValueContainer.h"
 
