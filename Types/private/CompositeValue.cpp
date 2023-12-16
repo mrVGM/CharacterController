@@ -43,7 +43,6 @@ void Value::Initialize(const TypeDef& type, const CompositeValue* outer)
 {
 	m_type = &type;
 	m_outer = outer;
-	m_initialized = true;
 
 	if (m_type->IsA(ValueTypeDef::GetTypeDef()))
 	{
@@ -64,11 +63,6 @@ Value::Value(const TypeDef& type, const CompositeValue* outer)
 
 Value& Value::operator=(const Value& other)
 {
-	if (!m_initialized)
-	{
-		throw "Not Initialized!";
-	}
-
 	if (m_type->IsA(ValueTypeDef::GetTypeDef()))
 	{
 		CopyValue* self = static_cast<CopyValue*>(std::get<CompositeValue*>(m_payload));

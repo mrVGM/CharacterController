@@ -56,7 +56,6 @@ public:
 class Value
 {
 private:
-	bool m_initialized = false;
 	void Initialize(const TypeDef& type, const CompositeValue* outer);
 
 public:
