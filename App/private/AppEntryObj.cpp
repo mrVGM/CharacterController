@@ -7,4 +7,5 @@ app::AppEntryObj::AppEntryObj(const ReferenceTypeDef& appEntryTypeDef, const Com
 
 void app::AppEntryObj::Boot()
 {
+	TypeDef::SaveReflectionData();
 }

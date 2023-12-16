@@ -18,7 +18,7 @@ const reflection::ReflectionEntryTypeDef& reflection::ReflectionEntryTypeDef::Ge
 }
 
 reflection::ReflectionEntryTypeDef::ReflectionEntryTypeDef() :
-	ReferenceTypeDef(&ReferenceTypeDef::GetReferenceTypeDef(), "D3C7E002-FB82-486C-AF48-A49064A16502")
+	ReferenceTypeDef(&app::AppEntryTypeDef::GetAppEntryTypeDef(), "BB1063B7-C014-431C-9586-2EC9254E4892")
 {
 	m_name = "Reflection App Entry";
 	m_category = "Reflection";
