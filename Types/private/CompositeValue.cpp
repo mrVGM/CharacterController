@@ -39,10 +39,6 @@ CompositeValue::CompositeValue(const CompositeTypeDef& typeDef, const CompositeV
 {
 }
 
-Value::Value()
-{
-}
-
 void Value::Initialize(const TypeDef& type, const CompositeValue* outer)
 {
 	m_type = &type;
@@ -53,6 +49,11 @@ void Value::Initialize(const TypeDef& type, const CompositeValue* outer)
 	{
 		const ValueTypeDef& type = static_cast<const ValueTypeDef&>(*m_type);
 		type.Construct(*this);
+	}
+
+	if (m_type->IsA(ReferenceTypeDef::GetTypeDef()))
+	{
+		m_payload = static_cast<CompositeValue*>(nullptr);
 	}
 }
 
@@ -146,25 +147,25 @@ ValueList::ValueList(const ListDef& typeDef, const CompositeValue* outer) :
 {
 }
 
+ValueList::~ValueList()
+{
+	Clear();
+}
+
 void ValueList::Copy(const CopyValue& src)
 {
-	m_values.clear();
-	const ValueList& srcList = static_cast<const ValueList&>(src);
-
-	const ListDef& type = GetTypeDef();
-	for (int i = 0; i < srcList.m_values.size(); ++i)
+	if (&src.GetTypeDef() != &GetTypeDef())
 	{
-		Value& cur = m_values.emplace_back();
-		cur.Initialize(type.m_templateDef, this);
+		throw "Incompatible list types!";
 	}
 
-	auto srcIt = srcList.m_values.begin();
-	auto it = m_values.begin();
+	const ValueList& srcList = static_cast<const ValueList&>(src);
+	Clear();
 
-	for (; it != m_values.end(); ++it)
+	for (Iterator it = srcList.GetIterator(); it; ++it)
 	{
-		*it = *srcIt;
-		++srcIt;
+		Value& tmp = EmplaceBack();
+		tmp = *it;
 	}
 }
 
@@ -182,4 +183,64 @@ ObjectValue::ObjectValue(const CompositeTypeDef& typeDef, const CompositeValue* 
 ObjectValue::~ObjectValue()
 {
 	ObjectValueContainer::GetContainer().Unregister(this);
+}
+
+Value& ValueList::EmplaceBack()
+{
+	const ListDef& listDef = static_cast<const ListDef&>(GetTypeDef());
+
+	ListElem* newElem = new ListElem{ Value(listDef.m_templateDef, this), nullptr };
+	if (!m_first)
+	{
+		m_first = newElem;
+		m_last = newElem;
+		return newElem->m_value;
+	}
+
+	m_last->m_next = newElem;
+	m_last = newElem;
+	return newElem->m_value;
+}
+
+ValueList::Iterator ValueList::GetIterator() const
+{
+	Iterator res;
+	res.m_cur = m_first;
+
+	return res;
+}
+
+ValueList::Iterator::operator bool() const
+{
+	return m_cur;
+}
+
+Value& ValueList::Iterator::operator*() const
+{
+	return m_cur->m_value;
+}
+
+void ValueList::Iterator::operator++()
+{
+	m_cur = m_cur->m_next;
+}
+
+void ValueList::Clear()
+{
+	std::list<ListElem*> elements;
+
+	ListElem* cur = m_first;
+	while (cur)
+	{
+		elements.push_back(cur);
+		cur = cur->m_next;
+	}
+
+	for (auto it = elements.begin(); it != elements.end(); ++it)
+	{
+		delete *it;
+	}
+
+	m_first = nullptr;
+	m_last = nullptr;
 }

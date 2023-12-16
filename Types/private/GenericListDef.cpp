@@ -51,7 +51,7 @@ const ListDef& ListDef::GetTypeDef(const TypeDef& templateDef)
 	auto it = defsMap.find(tmp.ToString(false));
 	if (it != defsMap.end())
 	{
-		return *it->second;
+		return static_cast<const ListDef&>(*it->second);
 	}
 
 	ListDef* typeDef = new ListDef(templateDef);
@@ -98,12 +98,10 @@ void ListDef::DeserializeFromJSON(Value& value, json_parser::JSONValue& json) co
 	CompositeValue* compositeValue = std::get<CompositeValue*>(value.m_payload);
 	ValueList* valueList = static_cast<ValueList*>(compositeValue);
 
-	valueList->m_values.clear();
+	valueList->Clear();
 	for (auto it = list.begin(); it != list.end(); ++it)
 	{
-		Value& cur = valueList->m_values.emplace_back();
-		cur.Initialize(this->m_templateDef, compositeValue);
-
+		Value& cur = valueList->EmplaceBack();
 		m_templateDef.DeserializeFromJSON(cur, *it);
 	}
 }

@@ -23,7 +23,7 @@ public:
 	static const ListDef& GetTypeDef(const TypeDef& templateDef);
 	const TypeDef& m_templateDef;
 
-	ListDef(const TypeDef& templateDef);
+	explicit ListDef(const TypeDef& templateDef);
 
 	virtual void Construct(Value& container) const override;
 

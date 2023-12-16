@@ -57,11 +57,9 @@ class Value
 {
 private:
 	bool m_initialized = false;
-
-public:
-	Value();
 	void Initialize(const TypeDef& type, const CompositeValue* outer);
 
+public:
 	typedef std::variant<bool, int, float, std::string, const TypeDef*, CompositeValue*> ValuePayload;
 
 	ValuePayload m_payload;
@@ -82,10 +80,34 @@ class ListDef;
 
 class ValueList : public CopyValue
 {
+	struct ListElem
+	{
+		Value m_value;
+		ListElem* m_next;
+	};
+
+	ListElem* m_first = nullptr;
+	ListElem* m_last = nullptr;
+
 public:
-	std::list<Value> m_values;
+	class Iterator
+	{
+		friend class ValueList;
+	private:
+		ListElem* m_cur = nullptr;
+
+	public:
+		operator bool() const;
+		Value& operator*() const;
+		void operator++();
+	};
 
 	ValueList(const ListDef& typeDef, const CompositeValue* outer);
+	~ValueList();
 
 	virtual void Copy(const CopyValue& src) override;
+
+	Value& EmplaceBack();
+	Iterator GetIterator() const;
+	void Clear();
 };

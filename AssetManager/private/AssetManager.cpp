@@ -13,17 +13,44 @@
 
 namespace
 {
-    Value m_assetList;
+    struct AssetListContainer
+    {
+        Value* m_assetList = nullptr;
+        
+        void Init()
+        {
+            if (m_assetList)
+            {
+                return;
+            }
+            m_assetList = new Value(ListDef::GetTypeDef(ReferenceTypeDef::GetTypeDef()), nullptr);
+        }
+        ~AssetListContainer()
+        {
+            if (m_assetList)
+            {
+                delete m_assetList;
+            }
+        }
+    };
+
+    AssetListContainer m_assetListContainer;
+
+    Value& GetAssetList()
+    {
+        m_assetListContainer.Init();
+        return *m_assetListContainer.m_assetList;
+    }
 }
 
 void assets::Boot()
 {
     using namespace json_parser;
 
-    m_assetList.Initialize(ListDef::GetTypeDef(ReferenceTypeDef::GetTypeDef()), nullptr);
+    Value& assetList = GetAssetList();
 
     const TypeDef::TypeDefsMap& defsMap = TypeDef::GetDefsMap();
-    ValueList* valueList = static_cast<ValueList*>(std::get<CompositeValue*>(m_assetList.m_payload));
+    ValueList* valueList = static_cast<ValueList*>(std::get<CompositeValue*>(assetList.m_payload));
 
     for (const auto& entry : std::filesystem::directory_iterator(files::GetDataDir() + files::GetAssetsDir()))
     {
@@ -34,15 +61,19 @@ void assets::Boot()
             std::string contents;
             files::ReadTextFile(files::GetAssetsDir() + file, contents);
 
-            JSONValue tmp;
-            JSONValue::FromString(contents, tmp);
-            auto& map = tmp.GetAsObj();
+            JSONValue curAssetData;
+            JSONValue::FromString(contents, curAssetData);
+            auto& map = curAssetData.GetAsObj();
 
-            AssetTypeDef* assetTypeDef = new AssetTypeDef(tmp);
-            Value& asset = valueList->m_values.emplace_back();
-            asset.Initialize(static_cast<const ListDef&>(valueList->GetTypeDef()).m_templateDef, valueList);
+            AssetTypeDef* assetTypeDef = new AssetTypeDef(curAssetData);
+            Value& asset = valueList->EmplaceBack();
 
-            assetTypeDef->Construct(asset);
+            {
+                Value tmp(*assetTypeDef, nullptr);
+                assetTypeDef->Construct(tmp);
+                asset = tmp;
+            }
+
 
             JSONValue defaults = map["defaults"];
             const ReferenceTypeDef* parent = static_cast<const ReferenceTypeDef*>(assetTypeDef->GetParent());
