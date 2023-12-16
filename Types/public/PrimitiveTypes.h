@@ -65,7 +65,7 @@ private:
 public:
 	static const TypeTypeDef& GetTypeDef(const TypeDef& templateType);
 
-	TypeTypeDef(const TypeDef& templateType);
+	explicit TypeTypeDef(const TypeDef& templateType);
 	void GetTypeKey(json_parser::JSONValue& outKey) const override;
 	virtual void DeserializeFromJSON(Value& value, json_parser::JSONValue& json) const;
 };
