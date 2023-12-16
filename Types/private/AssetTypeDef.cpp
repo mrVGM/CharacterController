@@ -1,6 +1,7 @@
 #include "AssetTypeDef.h"
 #include "Value.h"
 #include "CompositeValue.h"
+#include "ObjectValueContainer.h"
 
 namespace
 {
@@ -56,8 +57,14 @@ AssetTypeDef::AssetTypeDef(json_parser::JSONValue& json) :
 
 void AssetTypeDef::Construct(Value& container) const
 {
+	ObjectValueContainer& objectValueContainer = ObjectValueContainer::GetContainer();
+
 	const ReferenceTypeDef* parent = static_cast<const ReferenceTypeDef*>(GetParent());
 	parent->Construct(container);
-	CompositeValue* tmp = std::get<CompositeValue*>(container.m_payload);
+
+	ObjectValue* tmp = static_cast<ObjectValue*>(std::get<CompositeValue*>(container.m_payload));
+	objectValueContainer.Unregister(tmp);
+
 	tmp->m_typeDef = this;
+	objectValueContainer.Register(tmp);
 }

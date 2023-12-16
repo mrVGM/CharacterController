@@ -22,3 +22,18 @@ void ObjectValueContainer::Unregister(ObjectValue* value)
 	const TypeDef& type = value->GetTypeDef();
 	m_typedValues[&type].erase(value);
 }
+
+void ObjectValueContainer::GetObjectsOfType(const TypeDef& typeDef, std::list<ObjectValue*>& outObjects)
+{
+	for (auto it = m_typedValues.begin(); it != m_typedValues.end(); ++it)
+	{
+		if (!it->first->IsA(typeDef))
+		{
+			continue;
+		}
+
+		for (auto setIt = it->second.begin(); setIt != it->second.end(); ++setIt) {
+			outObjects.push_back(*setIt);
+		}
+	}
+}

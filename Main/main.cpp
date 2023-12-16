@@ -37,13 +37,12 @@ int main(int args, const char** argv)
 	json_parser::Boot();
 
 	TestTypeDef::GetTypeDef();
-
 	BootTypeSystem();
+
 	app::Boot();
-
-	TypeDef::SaveReflectionData();
-
 	assets::Boot();
+
+	app::Run();
 
 	assets::Shutdown();
 

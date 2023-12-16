@@ -21,4 +21,6 @@ public:
 
 	void Register(ObjectValue* value);
 	void Unregister(ObjectValue* value);
+
+	void GetObjectsOfType(const TypeDef& typeDef, std::list<ObjectValue*>& outObjects);
 };
