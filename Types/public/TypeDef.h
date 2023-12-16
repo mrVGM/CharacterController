@@ -27,8 +27,6 @@ public:
 	typedef std::map<std::string, const TypeDef*> TypeDefsMap;
 
 private:
-	static TypeDefsMap* m_defsMap;
-
 	const TypeDef* m_parent = nullptr;
 	std::string m_id;
 

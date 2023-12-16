@@ -1,7 +1,10 @@
 #include "TypeDef.h"
 #include "Files.h"
 
-TypeDef::TypeDefsMap* TypeDef::m_defsMap = nullptr;
+namespace
+{
+	BasicObjectContainer<TypeDef::TypeDefsMap> m_typeDefsMap;
+}
 
 TypeDef::TypeDef(const TypeDef* parent, const std::string& id) :
 	m_id(id),
@@ -21,11 +24,11 @@ void TypeDef::GetTypeKey(json_parser::JSONValue& outTypeKey) const
 
 TypeDef::TypeDefsMap& TypeDef::GetDefsMap()
 {
-	if (!m_defsMap)
+	if (!m_typeDefsMap.m_object)
 	{
-		m_defsMap = new TypeDefsMap();
+		m_typeDefsMap.m_object = new TypeDefsMap();
 	}
-	return *m_defsMap;
+	return *m_typeDefsMap.m_object;
 }
 
 bool TypeDef::IsA(const TypeDef& type) const
