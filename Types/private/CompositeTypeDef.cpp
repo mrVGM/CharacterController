@@ -4,9 +4,9 @@
 
 namespace
 {
-	CompositeTypeDef m_compositeTypeDef(nullptr, "1A3E4D51-E1E3-4FD4-A487-A164913A74E2");
-	ValueTypeDef m_valueTypeDef(&CompositeTypeDef::GetTypeDef(), "43120139-ED19-4F10-8B14-703666C023AC");
-	ReferenceTypeDef m_referenceTypeDef(&CompositeTypeDef::GetTypeDef(), "361D902F-526F-452D-B925-7B59B0F5AB09");
+	BasicObjectContainer<CompositeTypeDef> m_compositeTypeDef;
+	BasicObjectContainer<ValueTypeDef> m_valueTypeDef;
+	BasicObjectContainer<ReferenceTypeDef> m_referenceTypeDef;
 }
 
 CompositeTypeDef::CompositeTypeDef(const TypeDef* parent, const std::string& id) :
@@ -16,7 +16,11 @@ CompositeTypeDef::CompositeTypeDef(const TypeDef* parent, const std::string& id)
 
 const CompositeTypeDef& CompositeTypeDef::GetTypeDef()
 {
-	return m_compositeTypeDef;
+	if (!m_compositeTypeDef.m_object)
+	{
+		m_compositeTypeDef.m_object = new CompositeTypeDef(nullptr, "1A3E4D51-E1E3-4FD4-A487-A164913A74E2");
+	}
+	return *m_compositeTypeDef.m_object;
 }
 
 void CompositeTypeDef::Construct(Value& container) const
@@ -65,7 +69,11 @@ ValueTypeDef::ValueTypeDef(const TypeDef* parent, const std::string& id) :
 
 const ValueTypeDef& ValueTypeDef::GetTypeDef()
 {
-	return m_valueTypeDef;
+	if (!m_valueTypeDef.m_object)
+	{
+		m_valueTypeDef.m_object = new ValueTypeDef(&CompositeTypeDef::GetTypeDef(), "43120139-ED19-4F10-8B14-703666C023AC");
+	}
+	return *m_valueTypeDef.m_object;
 }
 
 void ValueTypeDef::GetReflectionData(json_parser::JSONValue& outData) const
@@ -86,7 +94,12 @@ ReferenceTypeDef::ReferenceTypeDef(const TypeDef* parent, const std::string& id)
 
 const ReferenceTypeDef& ReferenceTypeDef::GetTypeDef()
 {
-	return m_referenceTypeDef;
+	if (!m_referenceTypeDef.m_object)
+	{
+		m_referenceTypeDef.m_object = new ReferenceTypeDef(&CompositeTypeDef::GetTypeDef(), "361D902F-526F-452D-B925-7B59B0F5AB09");
+	}
+
+	return *m_referenceTypeDef.m_object;
 }
 
 void ReferenceTypeDef::GetReflectionData(json_parser::JSONValue& outData) const
