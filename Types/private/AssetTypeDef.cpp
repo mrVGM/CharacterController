@@ -1,4 +1,6 @@
 #include "AssetTypeDef.h"
+#include "Value.h"
+#include "CompositeValue.h"
 
 namespace
 {
@@ -33,7 +35,9 @@ namespace
 		auto& map = json.GetAsObj();
 		JSONValue id = map["id"];
 
-		return id.ToString(false);
+		auto& idMap = id.GetAsObj();
+
+		return std::get<std::string>(idMap["id"].m_payload);
 	}
 }
 
@@ -54,4 +58,6 @@ void AssetTypeDef::Construct(Value& container) const
 {
 	const ReferenceTypeDef* parent = static_cast<const ReferenceTypeDef*>(GetParent());
 	parent->Construct(container);
+	CompositeValue* tmp = std::get<CompositeValue*>(container.m_payload);
+	tmp->m_typeDef = this;
 }

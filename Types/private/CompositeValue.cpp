@@ -25,7 +25,7 @@ namespace
 
 const CompositeTypeDef& CompositeValue::GetTypeDef() const
 {
-	return m_typeDef;
+	return *m_typeDef;
 }
 
 const CompositeValue* CompositeValue::GetOuter() const
@@ -34,7 +34,7 @@ const CompositeValue* CompositeValue::GetOuter() const
 }
 
 CompositeValue::CompositeValue(const CompositeTypeDef& typeDef, const CompositeValue* outer) :
-	m_typeDef(typeDef),
+	m_typeDef(&typeDef),
 	m_outer(outer)
 {
 }

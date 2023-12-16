@@ -233,11 +233,9 @@ void TypeTypeDef::DeserializeFromJSON(Value& value, json_parser::JSONValue& json
 	}
 
 	using namespace json_parser;
-	JSONValue key;
-	GetDefaultTypeKey(m_templateType.GetId(), key);
 
-	const TypeDef::TypeDefsMap& defsMap =TypeDef::GetDefsMap();
-	auto it = defsMap.find(key.ToString(false));
+	const TypeDef::TypeDefsMap& defsMap = TypeDef::GetDefsMap();
+	auto it = defsMap.find(json.ToString(false));
 
 	if (it == defsMap.end())
 	{

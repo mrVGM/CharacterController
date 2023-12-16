@@ -7,8 +7,9 @@
 
 class CompositeValue
 {
+	friend class AssetTypeDef;
 private:
-	const CompositeTypeDef& m_typeDef;
+	const CompositeTypeDef* m_typeDef = nullptr;
 	const CompositeValue* m_outer = nullptr;
 
 public:

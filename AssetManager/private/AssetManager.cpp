@@ -34,6 +34,8 @@ void assets::Boot()
     const TypeDef::TypeDefsMap& defsMap = TypeDef::GetDefsMap();
     ValueList* valueList = static_cast<ValueList*>(std::get<CompositeValue*>(assetList.m_payload));
 
+    std::list<JSONValue> defaultValues;
+
     for (const auto& entry : std::filesystem::directory_iterator(files::GetDataDir() + files::GetAssetsDir()))
     {
         if (entry.is_regular_file())
@@ -56,11 +58,20 @@ void assets::Boot()
                 asset = tmp;
             }
 
-
             JSONValue defaults = map["defaults"];
-            const ReferenceTypeDef* parent = static_cast<const ReferenceTypeDef*>(assetTypeDef->GetParent());
-            parent->DeserializeFromJSON(asset, defaults);
+            defaultValues.push_back(defaults);
         }
+    }
+
+    auto defaultValuesIt = defaultValues.begin();
+    for (auto it = valueList->GetIterator(); it; ++it)
+    {
+        Value& cur = *it;
+        CompositeValue* curVal = std::get<CompositeValue*>(cur.m_payload);
+        const AssetTypeDef& assetTypeDef = static_cast<const AssetTypeDef&>(curVal->GetTypeDef());
+        assetTypeDef.GetParent()->DeserializeFromJSON(cur, *defaultValuesIt);
+
+        ++defaultValuesIt;
     }
 }
 
