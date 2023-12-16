@@ -189,6 +189,10 @@ function createTypeProp(type, name, accessors) {
                 while (!cur.done) {
                     const def = cur.value;
                     cur = it.next();
+                    
+                    if (!def.isGenerated) {
+                        continue;
+                    }
 
                     assignable.push({
                         name: def.name,
