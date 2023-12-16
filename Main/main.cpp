@@ -13,6 +13,8 @@
 
 #include "TestTypeDef.h"
 
+#include "App.h"
+
 int main(int args, const char** argv)
 {
 	std::string executableName = argv[0];
@@ -37,6 +39,7 @@ int main(int args, const char** argv)
 	TestTypeDef::GetTypeDef();
 
 	BootTypeSystem();
+	app::Boot();
 
 	TypeDef::SaveReflectionData();
 

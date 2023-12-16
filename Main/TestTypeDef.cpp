@@ -15,7 +15,7 @@ namespace
 }
 
 TestTypeDef::TestTypeDef() :
-	ReferenceTypeDef(&ReferenceTypeDef::GetTypeDef(), "B49D7893-FCA8-4CBF-8B65-D72287B94BB9"),
+	ReferenceTypeDef(&ReferenceTypeDef::GetReferenceTypeDef(), "B49D7893-FCA8-4CBF-8B65-D72287B94BB9"),
 	m_floatProp(m_floatPropId, FloatTypeDef::GetTypeDef()),
 	m_stringProp(m_stringPropId, StringTypeDef::GetTypeDef()),
 	m_listProp(m_listPropId, ListDef::GetTypeDef(BoolTypeDef::GetTypeDef()))

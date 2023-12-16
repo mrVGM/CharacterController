@@ -18,7 +18,7 @@ namespace
 		}
 
 		const TypeDef* type = it->second;
-		if (!type->IsA(ReferenceTypeDef::GetTypeDef()))
+		if (!type->IsA(ReferenceTypeDef::GetReferenceTypeDef()))
 		{
 			throw "Can't cast to reference def!";
 		}

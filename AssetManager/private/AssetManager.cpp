@@ -19,7 +19,7 @@ namespace
     {
         if (!m_assetList.m_object)
         {
-            m_assetList.m_object = new Value(ListDef::GetTypeDef(ReferenceTypeDef::GetTypeDef()), nullptr);
+            m_assetList.m_object = new Value(ListDef::GetTypeDef(ReferenceTypeDef::GetReferenceTypeDef()), nullptr);
         }
         return *m_assetList.m_object;
     }

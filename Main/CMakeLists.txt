@@ -9,9 +9,8 @@ add_executable (Main
 )
 
 target_link_libraries(Main PRIVATE
-	JSONParser
 	AssetManager
-	Types
+	App
 )
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)

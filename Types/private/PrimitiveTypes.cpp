@@ -217,6 +217,7 @@ TypeTypeDef::TypeTypeDef(const TypeDef& templateType) :
 	TypeDef(&GenericTypeDef::GetTypeDef(), m_typeTypeDefId),
 	m_templateType(templateType)
 {
+	m_isGenerated = true;
 }
 
 void TypeTypeDef::GetTypeKey(json_parser::JSONValue& outKey) const

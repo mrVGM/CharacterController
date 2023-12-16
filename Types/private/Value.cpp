@@ -9,7 +9,7 @@ namespace
 	{
 		while (outer)
 		{
-			if (outer->GetTypeDef().IsA(ReferenceTypeDef::GetTypeDef()))
+			if (outer->GetTypeDef().IsA(ReferenceTypeDef::GetReferenceTypeDef()))
 			{
 				return static_cast<const ObjectValue*>(outer);
 			}
@@ -32,7 +32,7 @@ void Value::Initialize(const TypeDef& type, const CompositeValue* outer)
 		type.Construct(*this);
 	}
 
-	if (m_type->IsA(ReferenceTypeDef::GetTypeDef()))
+	if (m_type->IsA(ReferenceTypeDef::GetReferenceTypeDef()))
 	{
 		m_payload = static_cast<CompositeValue*>(nullptr);
 	}
@@ -54,7 +54,7 @@ Value& Value::operator=(const Value& other)
 		return *this;
 	}
 
-	if (m_type->IsA(ReferenceTypeDef::GetTypeDef()))
+	if (m_type->IsA(ReferenceTypeDef::GetReferenceTypeDef()))
 	{
 		ObjectValue* obj = static_cast<ObjectValue*>(std::get<CompositeValue*>(other.m_payload));
 		AssignObject(obj);
@@ -75,7 +75,7 @@ Value::~Value()
 		return;
 	}
 
-	if (m_type->IsA(ReferenceTypeDef::GetTypeDef()))
+	if (m_type->IsA(ReferenceTypeDef::GetReferenceTypeDef()))
 	{
 		ObjectValue* objectValue = static_cast<ObjectValue*>(std::get<CompositeValue*>(m_payload));
 		AssignObject(nullptr);
@@ -85,7 +85,7 @@ Value::~Value()
 
 void Value::AssignObject(ObjectValue* object)
 {
-	if (!m_type->IsA(ReferenceTypeDef::GetTypeDef()))
+	if (!m_type->IsA(ReferenceTypeDef::GetReferenceTypeDef()))
 	{
 		throw "Can't Assign Object!";
 	}
