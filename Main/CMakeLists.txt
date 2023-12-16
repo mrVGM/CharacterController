@@ -2,10 +2,6 @@
 
 add_executable (Main
 	"main.cpp"
-	"TestTypeDef.h"
-	"TestTypeDef.cpp"
-	"TestObject.h"
-	"TestObject.cpp"
 )
 
 target_link_libraries(Main PRIVATE

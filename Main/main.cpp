@@ -11,8 +11,6 @@
 #include "PrimitiveTypes.h"
 #include "Types.h"
 
-#include "TestTypeDef.h"
-
 #include "App.h"
 
 int main(int args, const char** argv)
@@ -36,7 +34,6 @@ int main(int args, const char** argv)
 	files::Init(dataPath.string());
 	json_parser::Boot();
 
-	TestTypeDef::GetTypeDef();
 	BootTypeSystem();
 
 	app::Boot();
