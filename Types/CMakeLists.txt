@@ -21,6 +21,9 @@ add_library (Types
 	"private/ListDef.cpp"
 	"public/Value.h"
 	"private/Value.cpp"
+	"public/StructValue.h"
+	"public/ValueList.h"
+	"private/ValueList.cpp"
 )
 
 target_include_directories(Types INTERFACE PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/public")

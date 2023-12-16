@@ -1,7 +1,7 @@
 #include "ListDef.h"
 
 #include "GenericListDef.h"
-#include "CompositeValue.h"
+#include "ValueList.h"
 
 namespace
 {

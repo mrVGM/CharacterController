@@ -4,7 +4,7 @@
 #include "JSONValue.h"
 
 #include "ListDef.h"
-#include "CompositeValue.h"
+#include "ValueList.h"
 
 #include "TypeDef.h"
 #include "AssetTypeDef.h"
