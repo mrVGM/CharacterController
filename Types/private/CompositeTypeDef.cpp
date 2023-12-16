@@ -12,6 +12,8 @@ namespace
 CompositeTypeDef::CompositeTypeDef(const TypeDef* parent, const std::string& id) :
 	TypeDef(parent, id)
 {
+	m_name = "Composite Type";
+	m_category = "Composite";
 }
 
 const CompositeTypeDef& CompositeTypeDef::GetTypeDef()

@@ -21,6 +21,8 @@ const GenericListDef& GenericListDef::GetTypeDef()
 GenericListDef::GenericListDef() :
 	TypeDef(&ValueTypeDef::GetTypeDef(), m_genericListDefId)
 {
+	m_name = "Generic List";
+	m_category = "Composite";
 }
 
 void GenericListDef::GetReflectionData(json_parser::JSONValue& outData) const

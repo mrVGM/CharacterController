@@ -2,11 +2,11 @@
   "parent": {
     "id": "43120139-ED19-4F10-8B14-703666C023AC"
   },
-  "name": "",
+  "name": "Generic List",
   "isGenerated": 0,
   "id": {
     "id": "B5883DED-257C-4E35-846C-DB5BB7E11289"
   },
   "hint": "list",
-  "category": ""
+  "category": "Composite"
 }
