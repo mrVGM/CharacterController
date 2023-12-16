@@ -8,7 +8,7 @@ namespace app
 	class AppEntryObj : public ObjectValue
 	{
 	public:
-		AppEntryObj(const AppEntryTypeDef& appEntryTypeDef, const CompositeValue* outer);
+		AppEntryObj(const ReferenceTypeDef& appEntryTypeDef, const CompositeValue* outer);
 		virtual void Boot();
 	};
 }

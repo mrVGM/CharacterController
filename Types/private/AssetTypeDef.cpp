@@ -47,6 +47,8 @@ AssetTypeDef::AssetTypeDef(json_parser::JSONValue& json) :
 {
 	using namespace json_parser;
 
+	m_isGenerated = true;
+
 	auto& map = json.GetAsObj();
 	JSONValue name = map["name"];
 	JSONValue category = map["category"];

@@ -12,6 +12,7 @@
 #include "Types.h"
 
 #include "App.h"
+#include "Reflection.h"
 
 int main(int args, const char** argv)
 {
@@ -36,6 +37,7 @@ int main(int args, const char** argv)
 
 	BootTypeSystem();
 
+	reflection::Boot();
 	app::Boot();
 	assets::Boot();
 

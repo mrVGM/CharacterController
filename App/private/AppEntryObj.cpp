@@ -1,6 +1,6 @@
 #include "AppEntryObj.h"
 
-app::AppEntryObj::AppEntryObj(const AppEntryTypeDef& appEntryTypeDef, const CompositeValue* outer) :
+app::AppEntryObj::AppEntryObj(const ReferenceTypeDef& appEntryTypeDef, const CompositeValue* outer) :
 	ObjectValue(appEntryTypeDef, outer)
 {
 }

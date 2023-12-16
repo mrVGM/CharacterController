@@ -3,17 +3,17 @@
 
 namespace
 {
-	BasicObjectContainer<app::AppEntryTypeDef> m_appEntryTypeDef;
+	BasicObjectContainer<app::AppEntryTypeDef> m_reflectionEntryTypeDef;
 }
 
 const app::AppEntryTypeDef& app::AppEntryTypeDef::GetAppEntryTypeDef()
 {
-	if (!m_appEntryTypeDef.m_object)
+	if (!m_reflectionEntryTypeDef.m_object)
 	{
-		m_appEntryTypeDef.m_object = new AppEntryTypeDef();
+		m_reflectionEntryTypeDef.m_object = new AppEntryTypeDef();
 	}
 
-	return *m_appEntryTypeDef.m_object;
+	return *m_reflectionEntryTypeDef.m_object;
 }
 
 app::AppEntryTypeDef::AppEntryTypeDef() :
