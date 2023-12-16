@@ -9,5 +9,7 @@ namespace app
 	public:
 		static const AppEntryTypeDef& GetAppEntryTypeDef();
 		AppEntryTypeDef();
-	};
+
+		void Construct(Value& container) const override;
+	};	
 }

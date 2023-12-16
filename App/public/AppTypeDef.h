@@ -12,5 +12,7 @@ namespace app
 		TypeProperty m_appEntry;
 
 		AppTypeDef();
+
+		void Construct(Value& container) const override;
 	};
 }

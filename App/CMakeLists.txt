@@ -9,6 +9,8 @@ add_library (App
 	"private/AppObj.cpp"
 	"public/AppEntryTypeDef.h"
 	"private/AppEntryTypeDef.cpp"
+	"public/AppEntryObj.h"
+	"private/AppEntryObj.cpp"
 )
 
 target_include_directories(App INTERFACE PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/public")

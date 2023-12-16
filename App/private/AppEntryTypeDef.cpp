@@ -1,4 +1,5 @@
 #include "AppEntryTypeDef.h"
+#include "AppEntryObj.h"
 
 namespace
 {
@@ -20,4 +21,10 @@ app::AppEntryTypeDef::AppEntryTypeDef() :
 {
 	m_name = "App Entry";
 	m_category = "App";
+}
+
+void app::AppEntryTypeDef::Construct(Value& container) const
+{
+	AppEntryObj* obj = new AppEntryObj(*this, nullptr);
+	container.AssignObject(obj);
 }
