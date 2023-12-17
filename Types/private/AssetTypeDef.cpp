@@ -43,7 +43,8 @@ namespace
 }
 
 AssetTypeDef::AssetTypeDef(json_parser::JSONValue& json) :
-	ReferenceTypeDef(GetParentFromJSON(json), GetIdFromJSON(json))
+	ReferenceTypeDef(GetParentFromJSON(json), GetIdFromJSON(json)),
+	m_data(json)
 {
 	using namespace json_parser;
 

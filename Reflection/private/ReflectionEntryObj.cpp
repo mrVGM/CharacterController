@@ -7,4 +7,5 @@ reflection::ReflectionEntryObj::ReflectionEntryObj(const ReflectionEntryTypeDef&
 
 void reflection::ReflectionEntryObj::Boot()
 {
+	TypeDef::SaveReflectionData();
 }
