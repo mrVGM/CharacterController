@@ -13,6 +13,8 @@
 #include "Reflection.h"
 #include "AssetManager.h"
 
+#include "RenderingCore.h"
+
 namespace
 {
 	void Run()
@@ -38,6 +40,7 @@ void app::Boot()
 	BootTypeSystem();
 
 	reflection::Boot();
+	rendering::core::Boot();
 
 	AppTypeDef::GetTypeDef();
 	AppEntryTypeDef::GetTypeDef();

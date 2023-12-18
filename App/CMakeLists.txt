@@ -17,6 +17,7 @@ target_link_libraries(App PUBLIC
 	AssetManager
 	Reflection
 	Jobs
+	RenderingCore
 )
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
