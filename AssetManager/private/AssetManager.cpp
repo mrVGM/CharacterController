@@ -14,15 +14,6 @@
 namespace
 {
     BasicObjectContainer<Value> m_assetList;
-
-    Value& GetAssetList()
-    {
-        if (!m_assetList.m_object)
-        {
-            m_assetList.m_object = new Value(ListDef::GetTypeDef(ReferenceTypeDef::GetReferenceTypeDef()), nullptr);
-        }
-        return *m_assetList.m_object;
-    }
 }
 
 void assets::Boot()
@@ -34,7 +25,8 @@ void assets::Boot()
     const TypeDef::TypeDefsMap& defsMap = TypeDef::GetDefsMap();
     ValueList* valueList = static_cast<ValueList*>(std::get<CompositeValue*>(assetList.m_payload));
 
-    std::list<JSONValue> defaultValues;
+    typedef std::pair<Value*, JSONValue> DefaultValuePair;
+    std::list<DefaultValuePair> defaultValues;
 
     for (const auto& entry : std::filesystem::directory_iterator(files::GetDataDir() + files::GetAssetsDir()))
     {
@@ -59,23 +51,28 @@ void assets::Boot()
             }
 
             JSONValue defaults = map["defaults"];
-            defaultValues.push_back(defaults);
+            defaultValues.push_back(DefaultValuePair(&asset, defaults));
         }
     }
-
-    auto defaultValuesIt = defaultValues.begin();
-    for (auto it = valueList->GetIterator(); it; ++it)
+    for (auto it = defaultValues.begin(); it != defaultValues.end(); ++it)
     {
-        Value& cur = *it;
+        Value& cur = *it->first;
         CompositeValue* curVal = std::get<CompositeValue*>(cur.m_payload);
         const AssetTypeDef& assetTypeDef = static_cast<const AssetTypeDef&>(curVal->GetTypeDef());
-        assetTypeDef.GetParent()->DeserializeFromJSON(cur, *defaultValuesIt);
-
-        ++defaultValuesIt;
+        assetTypeDef.GetParent()->DeserializeFromJSON(cur, it->second);
     }
 }
 
 void assets::Shutdown()
 {
     m_assetList.Dispose();
+}
+
+Value& assets::GetAssetList()
+{
+    if (!m_assetList.m_object)
+    {
+        m_assetList.m_object = new Value(ListDef::GetTypeDef(ReferenceTypeDef::GetReferenceTypeDef()), nullptr);
+    }
+    return *m_assetList.m_object;
 }

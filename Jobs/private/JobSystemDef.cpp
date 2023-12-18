@@ -21,7 +21,7 @@ const jobs::JobSystemDef& jobs::JobSystemDef::GetJobSystemTypeDef()
 }
 
 jobs::JobSystemDef::JobSystemDef() :
-	ReferenceTypeDef(nullptr, "061DFEE1-B9C6-406D-BFEC-E89830C7FD3D"),
+	ReferenceTypeDef(&ReferenceTypeDef::GetReferenceTypeDef(), "061DFEE1-B9C6-406D-BFEC-E89830C7FD3D"),
 	m_numThreads("C519F2FA-A756-42E1-B362-15556A2758D8", IntTypeDef::GetTypeDef())
 {
 	{
