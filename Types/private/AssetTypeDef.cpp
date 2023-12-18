@@ -65,7 +65,7 @@ void AssetTypeDef::Construct(Value& container) const
 	const ReferenceTypeDef* parent = static_cast<const ReferenceTypeDef*>(GetParent());
 	parent->Construct(container);
 
-	ObjectValue* tmp = static_cast<ObjectValue*>(std::get<CompositeValue*>(container.m_payload));
+	ObjectValue* tmp = container.GetValue<ObjectValue*>();
 	objectValueContainer.Unregister(tmp);
 
 	tmp->m_typeDef = this;

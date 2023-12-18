@@ -54,7 +54,7 @@ void CompositeTypeDef::DeserializeFromJSON(Value& value, json_parser::JSONValue&
 {
 	auto& map = json.GetAsObj();
 
-	CompositeValue* compositeValue = std::get<CompositeValue*>(value.m_payload);
+	CompositeValue* compositeValue = value.GetValue<CompositeValue*>();
 	for (auto it = m_properties.begin(); it != m_properties.end(); ++it)
 	{
 		Value& cur = it->second->m_getValue(compositeValue);

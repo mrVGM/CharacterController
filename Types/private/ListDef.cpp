@@ -84,7 +84,7 @@ void ListDef::DeserializeFromJSON(Value& value, json_parser::JSONValue& json) co
 		throw "Wrong value type!";
 	}
 
-	CompositeValue* compositeValue = std::get<CompositeValue*>(value.m_payload);
+	CompositeValue* compositeValue = value.GetValue<CompositeValue*>();
 	ValueList* valueList = static_cast<ValueList*>(compositeValue);
 
 	valueList->Clear();

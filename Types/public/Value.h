@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CompositeTypeDef.h"
+#include "CompositeValue.h"
 
 #include <variant>
 
@@ -24,4 +25,24 @@ public:
 	~Value();
 
 	void AssignObject(ObjectValue* object);
+
+	template<typename T>
+	T Get() const
+	{
+		return std::get<T>(m_payload);
+	}
+
+	template<typename T>
+	T GetValue() const
+	{
+		CompositeValue* compositeValue = std::get<CompositeValue*>(m_payload);
+		return static_cast<T>(compositeValue);
+	}
+
+	template<typename T>
+	T GetType() const
+	{
+		const TypeDef* typeValue = std::get<const TypeDef*>(m_payload);
+		return static_cast<T>(typeValue);
+	}
 };

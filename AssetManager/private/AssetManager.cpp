@@ -19,11 +19,10 @@ namespace
 void assets::Boot(const Value& preloadedAssets)
 {
     using namespace json_parser;
-
+    
     Value& assetList = GetAssetList();
-    ValueList* valueList = static_cast<ValueList*>(std::get<CompositeValue*>(assetList.m_payload));
-
-    ValueList* preloadedList = static_cast<ValueList*>(std::get<CompositeValue*>(preloadedAssets.m_payload));
+    ValueList* valueList = assetList.GetValue<ValueList*>();
+    ValueList* preloadedList = preloadedAssets.GetValue<ValueList*>();
     for (auto it = preloadedList->GetIterator(); it; ++it)
     {
         Value& tmp = valueList->EmplaceBack();
@@ -64,7 +63,7 @@ void assets::Boot(const Value& preloadedAssets)
     for (auto it = defaultValues.begin(); it != defaultValues.end(); ++it)
     {
         Value& cur = *it->first;
-        CompositeValue* curVal = std::get<CompositeValue*>(cur.m_payload);
+        CompositeValue* curVal = cur.GetValue<CompositeValue*>();
         const AssetTypeDef& assetTypeDef = static_cast<const AssetTypeDef&>(curVal->GetTypeDef());
         assetTypeDef.DeserializeFromJSON(cur, it->second);
     }

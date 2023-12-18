@@ -42,7 +42,7 @@ int main(int args, const char** argv)
 	BootTypeSystem();
 
 	Value jobSystems(ListDef::GetTypeDef(ReferenceTypeDef::GetReferenceTypeDef()), nullptr);
-	ValueList* vl = static_cast<ValueList*>(std::get<CompositeValue*>(jobSystems.m_payload));
+	ValueList* vl = jobSystems.GetValue<ValueList*>();
 
 	Value& mainJS = vl->EmplaceBack();
 	Value& asyncJS = vl->EmplaceBack();

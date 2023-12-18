@@ -47,8 +47,8 @@ Value& Value::operator=(const Value& other)
 {
 	if (m_type->IsA(ValueTypeDef::GetTypeDef()))
 	{
-		CopyValue* self = static_cast<CopyValue*>(std::get<CompositeValue*>(m_payload));
-		CopyValue* oth = static_cast<CopyValue*>(std::get<CompositeValue*>(other.m_payload));
+		CopyValue* self = GetValue<CopyValue*>();
+		CopyValue* oth = other.GetValue<CopyValue*>();
 
 		self->Copy(*oth);
 		return *this;
@@ -56,7 +56,7 @@ Value& Value::operator=(const Value& other)
 
 	if (m_type->IsA(ReferenceTypeDef::GetReferenceTypeDef()))
 	{
-		ObjectValue* obj = static_cast<ObjectValue*>(std::get<CompositeValue*>(other.m_payload));
+		ObjectValue* obj = other.GetValue<ObjectValue*>();
 		AssignObject(obj);
 		return *this;
 	}
@@ -70,14 +70,14 @@ Value::~Value()
 {
 	if (m_type->IsA(ValueTypeDef::GetTypeDef()))
 	{
-		CopyValue* copyValue = static_cast<CopyValue*>(std::get<CompositeValue*>(m_payload));
+		CopyValue* copyValue = GetValue<CopyValue*>();
 		delete copyValue;
 		return;
 	}
 
 	if (m_type->IsA(ReferenceTypeDef::GetReferenceTypeDef()))
 	{
-		ObjectValue* objectValue = static_cast<ObjectValue*>(std::get<CompositeValue*>(m_payload));
+		ObjectValue* objectValue = GetValue<ObjectValue*>();
 		AssignObject(nullptr);
 		return;
 	}
@@ -91,7 +91,7 @@ void Value::AssignObject(ObjectValue* object)
 	}
 
 	const ObjectValue* outer = GetOuterObject(m_outer);
-	const ObjectValue* cur = static_cast<ObjectValue*>(std::get<CompositeValue*>(m_payload));
+	const ObjectValue* cur = GetValue<ObjectValue*>();
 
 	if (outer)
 	{
