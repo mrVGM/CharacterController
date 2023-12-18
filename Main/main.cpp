@@ -10,6 +10,9 @@
 
 #include "PrimitiveTypes.h"
 #include "Types.h"
+#include "ListDef.h"
+#include "ValueList.h"
+#include "CompositeValue.h"
 
 #include "App.h"
 #include "Reflection.h"
@@ -38,10 +41,16 @@ int main(int args, const char** argv)
 
 	BootTypeSystem();
 
-	jobs::Boot();
+	Value jobSystems(ListDef::GetTypeDef(ReferenceTypeDef::GetReferenceTypeDef()), nullptr);
+	ValueList* vl = static_cast<ValueList*>(std::get<CompositeValue*>(jobSystems.m_payload));
+
+	Value& mainJS = vl->EmplaceBack();
+	Value& asyncJS = vl->EmplaceBack();
+	jobs::Boot(mainJS, asyncJS);
+
 	reflection::Boot();
 	app::Boot();
-	assets::Boot();
+	assets::Boot(jobSystems);
 
 	app::Run();
 

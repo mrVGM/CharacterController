@@ -6,7 +6,7 @@
 
 namespace assets
 {
-	void Boot();
+	void Boot(const Value& preloadedAssets);
 	void Shutdown();
 	Value& GetAssetList();
 }

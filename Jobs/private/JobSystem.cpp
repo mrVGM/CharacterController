@@ -28,7 +28,7 @@ jobs::JobSystem::~JobSystem()
 
 void jobs::JobSystem::Start()
 {
-	int numThreads = static_cast<int>(std::get<float>(m_numThreads.m_payload));
+	int numThreads = std::get<int>(m_numThreads.m_payload);
 	for (int i = 0; i < numThreads; ++i)
 	{
 		m_threads.push_back(new Thread(*this));

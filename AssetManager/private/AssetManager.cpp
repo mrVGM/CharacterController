@@ -16,14 +16,21 @@ namespace
     BasicObjectContainer<Value> m_assetList;
 }
 
-void assets::Boot()
+void assets::Boot(const Value& preloadedAssets)
 {
     using namespace json_parser;
 
     Value& assetList = GetAssetList();
+    ValueList* valueList = static_cast<ValueList*>(std::get<CompositeValue*>(assetList.m_payload));
+
+    ValueList* preloadedList = static_cast<ValueList*>(std::get<CompositeValue*>(preloadedAssets.m_payload));
+    for (auto it = preloadedList->GetIterator(); it; ++it)
+    {
+        Value& tmp = valueList->EmplaceBack();
+        tmp = *it;
+    }
 
     const TypeDef::TypeDefsMap& defsMap = TypeDef::GetDefsMap();
-    ValueList* valueList = static_cast<ValueList*>(std::get<CompositeValue*>(assetList.m_payload));
 
     typedef std::pair<Value*, JSONValue> DefaultValuePair;
     std::list<DefaultValuePair> defaultValues;
