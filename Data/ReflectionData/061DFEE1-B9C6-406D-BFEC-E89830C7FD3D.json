@@ -1,0 +1,18 @@
+{
+  "properties": {
+    "C519F2FA-A756-42E1-B362-15556A2758D8": {
+      "type": {
+        "id": "8E993D4A-B13D-4D59-92D1-43F0FC138DBD"
+      },
+      "name": "Num Threads",
+      "id": "C519F2FA-A756-42E1-B362-15556A2758D8",
+      "category": "Setup"
+    }
+  },
+  "name": "Job System",
+  "isGenerated": 0,
+  "id": {
+    "id": "061DFEE1-B9C6-406D-BFEC-E89830C7FD3D"
+  },
+  "category": "Jobs"
+}
