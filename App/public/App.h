@@ -5,5 +5,5 @@
 namespace app
 {
 	void Boot();
-	void Run();
+	void Shutdown();
 }

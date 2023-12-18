@@ -1,25 +1,8 @@
-﻿#include "JSONParser.h"
+﻿#include "App.h"
 #include "Files.h"
-
-#include "JSONBuilder.h"
-
-#include "AssetManager.h"
 
 #include <iostream>
 #include <filesystem>
-
-#include "PrimitiveTypes.h"
-#include "Types.h"
-#include "ListDef.h"
-#include "ValueList.h"
-#include "CompositeValue.h"
-
-#include "App.h"
-#include "Reflection.h"
-#include "Jobs.h"
-#include "Job.h"
-
-#include <iostream>
 
 int main(int args, const char** argv)
 {
@@ -40,34 +23,11 @@ int main(int args, const char** argv)
 #endif
 
 	files::Init(dataPath.string());
-	json_parser::Boot();
-
-	BootTypeSystem();
-
-	Value jobSystems(ListDef::GetTypeDef(ReferenceTypeDef::GetTypeDef()), nullptr);
-	ValueList* vl = jobSystems.GetValue<ValueList*>();
-
-	Value& mainJS = vl->EmplaceBack();
-	Value& asyncJS = vl->EmplaceBack();
-	jobs::Boot(mainJS, asyncJS);
-
-	reflection::Boot();
 	app::Boot();
-
-	class StartAppJob : public jobs::Job
-	{
-	public:
-		void Do() override
-		{
-			app::Run();
-		}
-	};
-
-	assets::Boot(jobSystems, new StartAppJob());
 
 	std::cin.get();
 
-	assets::Shutdown();
+	app::Shutdown();
 
 	return 0;
 }
