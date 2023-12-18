@@ -35,7 +35,7 @@ namespace
         }
 
         JSONValue defaultValues = map["defaults"];
-        assetTypeDef->GetParent()->DeserializeFromJSON(asset, defaultValues);
+        assetTypeDef->DeserializeFromJSON(asset, defaultValues);
 
         return assetTypeDef;
     }

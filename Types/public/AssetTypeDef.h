@@ -10,4 +10,6 @@ class AssetTypeDef : public ReferenceTypeDef
 public:
 	AssetTypeDef(json_parser::JSONValue& json);
 	virtual void Construct(Value& container) const override;
+
+	virtual void DeserializeFromJSON(Value& value, json_parser::JSONValue& json) const override;
 };

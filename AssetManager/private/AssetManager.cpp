@@ -59,7 +59,7 @@ void assets::Boot()
         Value& cur = *it->first;
         CompositeValue* curVal = std::get<CompositeValue*>(cur.m_payload);
         const AssetTypeDef& assetTypeDef = static_cast<const AssetTypeDef&>(curVal->GetTypeDef());
-        assetTypeDef.GetParent()->DeserializeFromJSON(cur, it->second);
+        assetTypeDef.DeserializeFromJSON(cur, it->second);
     }
 }
 

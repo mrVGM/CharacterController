@@ -71,3 +71,9 @@ void AssetTypeDef::Construct(Value& container) const
 	tmp->m_typeDef = this;
 	objectValueContainer.Register(tmp);
 }
+
+void AssetTypeDef::DeserializeFromJSON(Value& value, json_parser::JSONValue& json) const
+{
+	const ReferenceTypeDef* parent = static_cast<const ReferenceTypeDef*>(GetParent());
+	parent->DeserializeFromJSON(value, json);
+}
