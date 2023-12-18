@@ -31,13 +31,13 @@ TypeDef::TypeDefsMap& TypeDef::GetDefsMap()
 	return *m_typeDefsMap.m_object;
 }
 
-bool TypeDef::IsA(const TypeDef& type) const
+bool TypeDef::IsA(const TypeDef& type1, const TypeDef& type2)
 {
-	const TypeDef* cur = this;
+	const TypeDef* cur = &type1;
 
 	while (cur)
 	{
-		if (cur == &type)
+		if (cur == &type2)
 		{
 			return true;
 		}

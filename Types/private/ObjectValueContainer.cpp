@@ -27,7 +27,7 @@ void ObjectValueContainer::GetObjectsOfType(const TypeDef& typeDef, std::list<Ob
 {
 	for (auto it = m_typedValues.begin(); it != m_typedValues.end(); ++it)
 	{
-		if (!it->first->IsA(typeDef))
+		if (!TypeDef::IsA(*it->first, typeDef))
 		{
 			continue;
 		}

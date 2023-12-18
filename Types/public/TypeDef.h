@@ -51,7 +51,7 @@ public:
 
 	const std::string& GetId() const;
 	const TypeDef* GetParent() const;
-	bool IsA(const TypeDef& type) const;
+	static bool IsA(const TypeDef& type1, const TypeDef& type2);
 
 	virtual void DeserializeFromJSON(Value& value, json_parser::JSONValue& json) const;
 

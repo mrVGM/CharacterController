@@ -11,7 +11,7 @@ namespace
 	{
 		while (outer)
 		{
-			if (outer->GetTypeDef().IsA(ReferenceTypeDef::GetReferenceTypeDef()))
+			if (TypeDef::IsA(outer->GetTypeDef(), ReferenceTypeDef::GetReferenceTypeDef()))
 			{
 				return static_cast<const ObjectValue*>(outer);
 			}

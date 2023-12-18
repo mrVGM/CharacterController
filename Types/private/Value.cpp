@@ -9,7 +9,7 @@ namespace
 	{
 		while (outer)
 		{
-			if (outer->GetTypeDef().IsA(ReferenceTypeDef::GetReferenceTypeDef()))
+			if (TypeDef::IsA(outer->GetTypeDef(), ReferenceTypeDef::GetReferenceTypeDef()))
 			{
 				return static_cast<const ObjectValue*>(outer);
 			}
@@ -26,13 +26,13 @@ void Value::Initialize(const TypeDef& type, const CompositeValue* outer)
 	m_type = &type;
 	m_outer = outer;
 
-	if (m_type->IsA(ValueTypeDef::GetTypeDef()))
+	if (TypeDef::IsA(*m_type, ValueTypeDef::GetTypeDef()))
 	{
 		const ValueTypeDef& type = static_cast<const ValueTypeDef&>(*m_type);
 		type.Construct(*this);
 	}
 
-	if (m_type->IsA(ReferenceTypeDef::GetReferenceTypeDef()))
+	if (TypeDef::IsA(*m_type, ReferenceTypeDef::GetReferenceTypeDef()))
 	{
 		m_payload = static_cast<CompositeValue*>(nullptr);
 	}
@@ -45,7 +45,7 @@ Value::Value(const TypeDef& type, const CompositeValue* outer)
 
 Value& Value::operator=(const Value& other)
 {
-	if (m_type->IsA(ValueTypeDef::GetTypeDef()))
+	if (TypeDef::IsA(*m_type, ValueTypeDef::GetTypeDef()))
 	{
 		CopyValue* self = GetValue<CopyValue*>();
 		CopyValue* oth = other.GetValue<CopyValue*>();
@@ -54,7 +54,7 @@ Value& Value::operator=(const Value& other)
 		return *this;
 	}
 
-	if (m_type->IsA(ReferenceTypeDef::GetReferenceTypeDef()))
+	if (TypeDef::IsA(*m_type, ReferenceTypeDef::GetReferenceTypeDef()))
 	{
 		ObjectValue* obj = other.GetValue<ObjectValue*>();
 		AssignObject(obj);
@@ -68,14 +68,14 @@ Value& Value::operator=(const Value& other)
 
 Value::~Value()
 {
-	if (m_type->IsA(ValueTypeDef::GetTypeDef()))
+	if (TypeDef::IsA(*m_type, ValueTypeDef::GetTypeDef()))
 	{
 		CopyValue* copyValue = GetValue<CopyValue*>();
 		delete copyValue;
 		return;
 	}
 
-	if (m_type->IsA(ReferenceTypeDef::GetReferenceTypeDef()))
+	if (TypeDef::IsA(*m_type, ReferenceTypeDef::GetReferenceTypeDef()))
 	{
 		ObjectValue* objectValue = GetValue<ObjectValue*>();
 		AssignObject(nullptr);
@@ -85,7 +85,7 @@ Value::~Value()
 
 void Value::AssignObject(ObjectValue* object)
 {
-	if (!m_type->IsA(ReferenceTypeDef::GetReferenceTypeDef()))
+	if (!TypeDef::IsA(*m_type, ReferenceTypeDef::GetReferenceTypeDef()))
 	{
 		throw "Can't Assign Object!";
 	}

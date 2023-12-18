@@ -79,7 +79,7 @@ void ListDef::DeserializeFromJSON(Value& value, json_parser::JSONValue& json) co
 {
 	auto list = json.GetAsList();
 
-	if (!value.m_type->IsA(*this))
+	if (!TypeDef::IsA(*value.m_type, *this))
 	{
 		throw "Wrong value type!";
 	}

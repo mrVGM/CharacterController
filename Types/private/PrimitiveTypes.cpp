@@ -44,7 +44,7 @@ void BoolTypeDef::GetReflectionData(json_parser::JSONValue& outData) const
 
 void BoolTypeDef::DeserializeFromJSON(Value& value, json_parser::JSONValue& json) const
 {
-	if (!value.m_type->IsA(GetTypeDef()))
+	if (!IsA(*value.m_type, *this))
 	{
 		throw "Wrong value type!";
 	}
@@ -79,7 +79,7 @@ void IntTypeDef::GetReflectionData(json_parser::JSONValue& outData) const
 
 void IntTypeDef::DeserializeFromJSON(Value& value, json_parser::JSONValue& json) const
 {
-	if (!value.m_type->IsA(*this))
+	if (!TypeDef::IsA(*value.m_type, *this))
 	{
 		throw "Wrong value type!";
 	}
@@ -114,7 +114,7 @@ void FloatTypeDef::GetReflectionData(json_parser::JSONValue& outData) const
 
 void FloatTypeDef::DeserializeFromJSON(Value& value, json_parser::JSONValue& json) const
 {
-	if (!value.m_type->IsA(*this))
+	if (!TypeDef::IsA(*value.m_type, *this))
 	{
 		throw "Wrong value type!";
 	}
@@ -149,7 +149,7 @@ void StringTypeDef::GetReflectionData(json_parser::JSONValue& outData) const
 
 void StringTypeDef::DeserializeFromJSON(Value& value, json_parser::JSONValue& json) const
 {
-	if (!value.m_type->IsA(*this))
+	if (!TypeDef::IsA(*value.m_type, *this))
 	{
 		throw "Wrong value type!";
 	}
@@ -227,7 +227,7 @@ void TypeTypeDef::GetTypeKey(json_parser::JSONValue& outKey) const
 
 void TypeTypeDef::DeserializeFromJSON(Value& value, json_parser::JSONValue& json) const
 {
-	if (!value.m_type->IsA(*this))
+	if (!TypeDef::IsA(*value.m_type, *this))
 	{
 		throw "Wrong value type!";
 	}
