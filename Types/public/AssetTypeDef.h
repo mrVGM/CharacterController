@@ -14,4 +14,5 @@ public:
 	virtual void Construct(Value& container) const override;
 
 	virtual void DeserializeFromJSON(Value& value, json_parser::JSONValue& json) const override;
+	const json_parser::JSONValue& GetJSONData() const;
 };

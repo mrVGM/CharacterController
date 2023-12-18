@@ -17,6 +17,9 @@
 #include "App.h"
 #include "Reflection.h"
 #include "Jobs.h"
+#include "Job.h"
+
+#include <iostream>
 
 int main(int args, const char** argv)
 {
@@ -50,9 +53,19 @@ int main(int args, const char** argv)
 
 	reflection::Boot();
 	app::Boot();
-	assets::Boot(jobSystems);
 
-	app::Run();
+	class StartAppJob : public jobs::Job
+	{
+	public:
+		void Do() override
+		{
+			app::Run();
+		}
+	};
+
+	assets::Boot(jobSystems, new StartAppJob());
+
+	std::cin.get();
 
 	assets::Shutdown();
 

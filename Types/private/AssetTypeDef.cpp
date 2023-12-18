@@ -77,3 +77,8 @@ void AssetTypeDef::DeserializeFromJSON(Value& value, json_parser::JSONValue& jso
 	const ReferenceTypeDef* parent = static_cast<const ReferenceTypeDef*>(GetParent());
 	parent->DeserializeFromJSON(value, json);
 }
+
+const json_parser::JSONValue& AssetTypeDef::GetJSONData() const
+{
+	return m_data;
+}
