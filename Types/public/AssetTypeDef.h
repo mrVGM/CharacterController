@@ -6,6 +6,8 @@
 
 class AssetTypeDef : public ReferenceTypeDef
 {
+	TYPE_DEF_BODY(AssetTypeDef)
+
 	json_parser::JSONValue m_data;
 public:
 	AssetTypeDef(json_parser::JSONValue& json);

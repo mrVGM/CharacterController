@@ -6,8 +6,9 @@ namespace app
 {
 	class AppEntryTypeDef : public ReferenceTypeDef
 	{
+		TYPE_DEF_BODY(AppEntryTypeDef)
+
 	public:
-		static const AppEntryTypeDef& GetAppEntryTypeDef();
 		AppEntryTypeDef();
 
 		void Construct(Value& container) const override;

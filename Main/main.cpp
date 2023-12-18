@@ -41,7 +41,7 @@ int main(int args, const char** argv)
 
 	BootTypeSystem();
 
-	Value jobSystems(ListDef::GetTypeDef(ReferenceTypeDef::GetReferenceTypeDef()), nullptr);
+	Value jobSystems(ListDef::GetTypeDef(ReferenceTypeDef::GetTypeDef()), nullptr);
 	ValueList* vl = jobSystems.GetValue<ValueList*>();
 
 	Value& mainJS = vl->EmplaceBack();

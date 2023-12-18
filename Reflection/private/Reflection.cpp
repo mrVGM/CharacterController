@@ -4,5 +4,5 @@
 
 void reflection::Boot()
 {
-	reflection::ReflectionEntryTypeDef::GetReflectionEntryTypeDef();
+	reflection::ReflectionEntryTypeDef::GetTypeDef();
 }

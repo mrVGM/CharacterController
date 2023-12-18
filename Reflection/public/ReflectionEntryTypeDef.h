@@ -6,8 +6,9 @@ namespace reflection
 {
 	class ReflectionEntryTypeDef : public ReferenceTypeDef
 	{
+		TYPE_DEF_BODY(ReflectionEntryTypeDef)
+
 	public:
-		static const ReflectionEntryTypeDef& GetReflectionEntryTypeDef();
 		ReflectionEntryTypeDef();
 
 		void Construct(Value& container) const override;

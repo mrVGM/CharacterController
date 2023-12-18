@@ -5,6 +5,11 @@
 #include <string>
 #include <map>
 
+#define TYPE_DEF_BODY(Name)\
+public:\
+	static const Name& GetTypeDef();\
+
+
 class Value;
 
 template <typename T>
@@ -27,6 +32,8 @@ struct BasicObjectContainer
 
 class TypeDef
 {
+	TYPE_DEF_BODY(TypeDef)
+
 public:
 	typedef std::map<std::string, const TypeDef*> TypeDefsMap;
 

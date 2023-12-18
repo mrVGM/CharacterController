@@ -12,8 +12,8 @@ namespace
 }
 
 app::AppTypeDef::AppTypeDef() :
-	ReferenceTypeDef(&ReferenceTypeDef::GetReferenceTypeDef(), m_appTypeId),
-	m_appEntry("A9E68EEE-504B-44B2-B3FF-6EF65493D3E9", TypeTypeDef::GetTypeDef(AppEntryTypeDef::GetAppEntryTypeDef()))
+	ReferenceTypeDef(&ReferenceTypeDef::GetTypeDef(), m_appTypeId),
+	m_appEntry("A9E68EEE-504B-44B2-B3FF-6EF65493D3E9", TypeTypeDef::GetTypeDef(AppEntryTypeDef::GetTypeDef()))
 {
 	m_name = "App Type";
 	m_category = "App";
@@ -34,7 +34,7 @@ void app::AppTypeDef::Construct(Value& container) const
 	container.AssignObject(appObj);
 }
 
-const app::AppTypeDef& app::AppTypeDef::GetAppTypeDef()
+const app::AppTypeDef& app::AppTypeDef::GetTypeDef()
 {
 	if (!m_appTypeDef.m_object)
 	{

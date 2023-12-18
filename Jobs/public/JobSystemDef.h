@@ -6,10 +6,10 @@ namespace jobs
 {
 	class JobSystemDef : public ReferenceTypeDef
 	{
+		TYPE_DEF_BODY(JobSystemDef)
+
 	public:
 		TypeProperty m_numThreads;
-
-		static const JobSystemDef& GetJobSystemTypeDef();
 
 		JobSystemDef();
 

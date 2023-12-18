@@ -6,7 +6,7 @@ namespace
 	BasicObjectContainer<app::AppEntryTypeDef> m_reflectionEntryTypeDef;
 }
 
-const app::AppEntryTypeDef& app::AppEntryTypeDef::GetAppEntryTypeDef()
+const app::AppEntryTypeDef& app::AppEntryTypeDef::GetTypeDef()
 {
 	if (!m_reflectionEntryTypeDef.m_object)
 	{
@@ -17,7 +17,7 @@ const app::AppEntryTypeDef& app::AppEntryTypeDef::GetAppEntryTypeDef()
 }
 
 app::AppEntryTypeDef::AppEntryTypeDef() :
-	ReferenceTypeDef(&ReferenceTypeDef::GetReferenceTypeDef(), "7D79EC02-6FBC-48F3-BB6F-1C07BE762DE8")
+	ReferenceTypeDef(&ReferenceTypeDef::GetTypeDef(), "7D79EC02-6FBC-48F3-BB6F-1C07BE762DE8")
 {
 	m_name = "App Entry";
 	m_category = "App";

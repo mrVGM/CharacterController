@@ -7,7 +7,7 @@ namespace
 	BasicObjectContainer<reflection::ReflectionEntryTypeDef> m_reflectionEntryTypeDef;
 }
 
-const reflection::ReflectionEntryTypeDef& reflection::ReflectionEntryTypeDef::GetReflectionEntryTypeDef()
+const reflection::ReflectionEntryTypeDef& reflection::ReflectionEntryTypeDef::GetTypeDef()
 {
 	if (!m_reflectionEntryTypeDef.m_object)
 	{
@@ -18,7 +18,7 @@ const reflection::ReflectionEntryTypeDef& reflection::ReflectionEntryTypeDef::Ge
 }
 
 reflection::ReflectionEntryTypeDef::ReflectionEntryTypeDef() :
-	ReferenceTypeDef(&app::AppEntryTypeDef::GetAppEntryTypeDef(), "BB1063B7-C014-431C-9586-2EC9254E4892")
+	ReferenceTypeDef(&app::AppEntryTypeDef::GetTypeDef(), "BB1063B7-C014-431C-9586-2EC9254E4892")
 {
 	m_name = "Reflection App Entry";
 	m_category = "Reflection";

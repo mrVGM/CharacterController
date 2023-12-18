@@ -5,9 +5,9 @@
 
 class GenericListDef : public TypeDef
 {
-public:
-	static const GenericListDef& GetTypeDef();
+	TYPE_DEF_BODY(GenericListDef)
 
+public:
 	GenericListDef();
 	
 	virtual void GetReflectionData(json_parser::JSONValue& outData) const override;

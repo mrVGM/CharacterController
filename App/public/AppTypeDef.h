@@ -6,9 +6,9 @@ namespace app
 {
 	class AppTypeDef : public ReferenceTypeDef
 	{
-	public:
-		static const AppTypeDef& GetAppTypeDef();
+		TYPE_DEF_BODY(AppTypeDef)
 
+	public:
 		TypeProperty m_appEntry;
 
 		AppTypeDef();

@@ -4,6 +4,8 @@
 
 class ListDef : public ValueTypeDef
 {
+	TYPE_DEF_BODY(ListDef)
+
 private:
 	static void GetKey(const TypeDef& templateDef, json_parser::JSONValue& outKey);
 

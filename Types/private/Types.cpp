@@ -13,6 +13,6 @@ void BootTypeSystem()
 	GenericTypeDef::GetTypeDef();
 
 	ValueTypeDef::GetTypeDef();
-	ReferenceTypeDef::GetReferenceTypeDef();
+	ReferenceTypeDef::GetTypeDef();
 	GenericListDef::GetTypeDef();
 }

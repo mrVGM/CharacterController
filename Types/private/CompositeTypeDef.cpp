@@ -16,7 +16,7 @@ CompositeTypeDef::CompositeTypeDef(const TypeDef* parent, const std::string& id)
 	m_category = "Composite";
 }
 
-const CompositeTypeDef& CompositeTypeDef::GetCompositeTypeDef()
+const CompositeTypeDef& CompositeTypeDef::GetTypeDef()
 {
 	if (!m_compositeTypeDef.m_object)
 	{
@@ -73,7 +73,7 @@ const ValueTypeDef& ValueTypeDef::GetTypeDef()
 {
 	if (!m_valueTypeDef.m_object)
 	{
-		m_valueTypeDef.m_object = new ValueTypeDef(&CompositeTypeDef::GetCompositeTypeDef(), "43120139-ED19-4F10-8B14-703666C023AC");
+		m_valueTypeDef.m_object = new ValueTypeDef(&CompositeTypeDef::GetTypeDef(), "43120139-ED19-4F10-8B14-703666C023AC");
 	}
 	return *m_valueTypeDef.m_object;
 }
@@ -94,11 +94,11 @@ ReferenceTypeDef::ReferenceTypeDef(const TypeDef* parent, const std::string& id)
 	m_name = "Reference Type";
 }
 
-const ReferenceTypeDef& ReferenceTypeDef::GetReferenceTypeDef()
+const ReferenceTypeDef& ReferenceTypeDef::GetTypeDef()
 {
 	if (!m_referenceTypeDef.m_object)
 	{
-		m_referenceTypeDef.m_object = new ReferenceTypeDef(&CompositeTypeDef::GetCompositeTypeDef(), "361D902F-526F-452D-B925-7B59B0F5AB09");
+		m_referenceTypeDef.m_object = new ReferenceTypeDef(&CompositeTypeDef::GetTypeDef(), "361D902F-526F-452D-B925-7B59B0F5AB09");
 	}
 
 	return *m_referenceTypeDef.m_object;
@@ -110,7 +110,7 @@ void ReferenceTypeDef::GetReflectionData(json_parser::JSONValue& outData) const
 	CompositeTypeDef::GetReflectionData(outData);
 	auto& map = outData.GetAsObj();
 
-	if (this == &GetReferenceTypeDef())
+	if (this == &ReferenceTypeDef::GetTypeDef())
 	{
 		map["hint"] = JSONValue("reference_type");
 	}

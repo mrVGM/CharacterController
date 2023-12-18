@@ -10,8 +10,8 @@
 
 void app::Boot()
 {
-	AppTypeDef::GetAppTypeDef();
-	AppEntryTypeDef::GetAppEntryTypeDef();
+	AppTypeDef::GetTypeDef();
+	AppEntryTypeDef::GetTypeDef();
 }
 
 void app::Run()
@@ -19,12 +19,12 @@ void app::Run()
 	ObjectValueContainer& container = ObjectValueContainer::GetContainer();
 
 	std::list<ObjectValue*> objs;
-	container.GetObjectsOfType(AppTypeDef::GetAppTypeDef(), objs);
+	container.GetObjectsOfType(AppTypeDef::GetTypeDef(), objs);
 
 	AppObj* app = static_cast<AppObj*>(objs.front());
 
 	objs.clear();
-	container.GetObjectsOfType(AppEntryTypeDef::GetAppEntryTypeDef(), objs);
+	container.GetObjectsOfType(AppEntryTypeDef::GetTypeDef(), objs);
 
 	AppEntryObj* entry = static_cast<AppEntryObj*>(objs.front());
 	entry->Boot();

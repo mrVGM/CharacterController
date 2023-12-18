@@ -78,7 +78,7 @@ Value& assets::GetAssetList()
 {
     if (!m_assetList.m_object)
     {
-        m_assetList.m_object = new Value(ListDef::GetTypeDef(ReferenceTypeDef::GetReferenceTypeDef()), nullptr);
+        m_assetList.m_object = new Value(ListDef::GetTypeDef(ReferenceTypeDef::GetTypeDef()), nullptr);
     }
     return *m_assetList.m_object;
 }

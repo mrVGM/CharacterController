@@ -40,7 +40,7 @@ namespace
 
 void jobs::Boot(Value& mainJobSystemAsset, Value& asyncJobSystemAsset)
 {
-    JobSystemDef::GetJobSystemTypeDef();
+    JobSystemDef::GetTypeDef();
 
     AssetTypeDef* mainJobSystem = InitJobSystem(m_mainJobSystemData, mainJobSystemAsset);
     AssetTypeDef* asyncJobSystem = InitJobSystem(m_asyncJobSystemData, asyncJobSystemAsset);

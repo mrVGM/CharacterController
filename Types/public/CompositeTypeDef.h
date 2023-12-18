@@ -31,11 +31,12 @@ public:
 
 class CompositeTypeDef : public TypeDef
 {
+	TYPE_DEF_BODY(CompositeTypeDef)
+
 protected:
 	std::map<std::string, const TypeProperty*> m_properties;
 public:
 	CompositeTypeDef(const TypeDef* parent, const std::string& id);
-	static const CompositeTypeDef& GetCompositeTypeDef();
 
 	virtual void Construct(Value& container) const;
 	virtual void GetReflectionData(json_parser::JSONValue& outData) const override;
@@ -44,19 +45,21 @@ public:
 
 class ValueTypeDef : public CompositeTypeDef
 {
+	TYPE_DEF_BODY(ValueTypeDef)
+
 public:
 	ValueTypeDef(const TypeDef* parent, const std::string& id);
-	static const ValueTypeDef& GetTypeDef();
 
 	virtual void GetReflectionData(json_parser::JSONValue& outData) const override;
 };
 
 class ReferenceTypeDef : public CompositeTypeDef
 {
+	TYPE_DEF_BODY(ReferenceTypeDef)
+
 public:
 	ReferenceTypeDef(const TypeDef* parent, const std::string& id);
-	static const ReferenceTypeDef& GetReferenceTypeDef();
-
+	
 	virtual void GetReflectionData(json_parser::JSONValue& outData) const override;
 	virtual void Construct(Value& container) const override;
 };
