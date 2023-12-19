@@ -54,6 +54,8 @@ geo::Mesh::Mesh(const CompositeTypeDef& type, const CompositeValue* outer) :
 
 void geo::Mesh::Load(jobs::Job* done)
 {
+	using namespace xml_reader;
+
 	std::string colladaFile = "Geometry\\" + m_colladaFile.Get<std::string>();
 
 	std::string contents;
@@ -61,6 +63,24 @@ void geo::Mesh::Load(jobs::Job* done)
 
 	xml_reader::XMLTree tree;
 	xml_reader::ReadXML(contents, tree);
+
+
+	const Node* libGeometries = tree.FindNode([](const Node* node) {
+		return node->m_tagName == "library_geometries";
+	});
+
+	const Node* geometry = tree.FindChildNode(libGeometries, [](const Node* node) {
+		return node->m_tagName == "geometry";
+	}, true);
+
+	const Node* mesh = tree.FindChildNode(geometry, [](const Node* node) {
+		return node->m_tagName == "mesh";
+	}, true);
+
+	std::list<const Node*> triangles;
+	tree.FindChildNodes(mesh, [](const Node* node) {
+		return node->m_tagName == "triangles";
+	}, true, triangles);
 
 	jobs::RunSync(done);
 }

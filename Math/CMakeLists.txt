@@ -1,8 +1,8 @@
 ﻿cmake_minimum_required (VERSION 3.8)
 
 add_library (Math
-	"public/Math.h"
-	"private/Math.cpp"
+	"public/MathUtils.h"
+	"private/MathUtils.cpp"
 )
 
 target_include_directories(Math INTERFACE PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/public")

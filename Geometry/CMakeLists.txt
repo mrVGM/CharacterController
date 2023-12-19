@@ -18,6 +18,7 @@ target_link_libraries(Geometry PUBLIC
 	XMLReader
 	Jobs
 	CommonTypeDefs
+	Math
 )
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
