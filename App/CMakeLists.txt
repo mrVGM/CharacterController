@@ -18,6 +18,7 @@ target_link_libraries(App PUBLIC
 	Reflection
 	Jobs
 	RenderingCore
+	XMLReader
 )
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)

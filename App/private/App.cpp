@@ -1,11 +1,12 @@
 #include "App.h"
 
+#include "JSONParser.h"
+#include "XMLReader.h"
 #include "AppTypeDef.h"
 #include "AppEntryTypeDef.h"
 #include "AppObj.h"
 #include "AppEntryObj.h"
 #include "ObjectValueContainer.h"
-#include "JSONParser.h"
 #include "Types.h"
 #include "ListDef.h"
 #include "ValueList.h"
@@ -38,6 +39,8 @@ namespace
 void app::Boot()
 {
 	json_parser::Boot();
+	xml_reader::Boot();
+
 	BootTypeSystem();
 
 	reflection::Boot();
