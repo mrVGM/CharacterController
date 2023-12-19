@@ -27,7 +27,7 @@ namespace
 		app::AppObj* app = static_cast<app::AppObj*>(objs.front());
 
 		objs.clear();
-		container.GetObjectsOfType(app::AppEntryTypeDef::GetTypeDef(), objs);
+		container.GetObjectsOfType(*app->m_appEntry.GetType<const app::AppEntryTypeDef*>(), objs);
 
 		app::AppEntryObj* entry = static_cast<app::AppEntryObj*>(objs.front());
 		entry->Boot();
