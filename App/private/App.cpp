@@ -16,6 +16,7 @@
 
 #include "CommonTypeDefs.h"
 #include "RenderingCore.h"
+#include "Geometry.h"
 
 namespace
 {
@@ -46,6 +47,7 @@ void app::Boot()
 	reflection::Boot();
 	common_defs::Boot();
 	rendering::core::Boot();
+	geo::Boot();
 
 	AppTypeDef::GetTypeDef();
 	AppEntryTypeDef::GetTypeDef();

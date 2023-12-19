@@ -1,0 +1,21 @@
+{
+  "properties": {
+    "130EF692-9CC6-4C8C-89B2-49A5D2F8EED2": {
+      "type": {
+        "id": "B641BC7D-49F6-4194-B4C9-239FDDAAA623"
+      },
+      "name": "Shader Name",
+      "id": "130EF692-9CC6-4C8C-89B2-49A5D2F8EED2",
+      "category": "Setup"
+    }
+  },
+  "parent": {
+    "id": "361D902F-526F-452D-B925-7B59B0F5AB09"
+  },
+  "name": "Shader",
+  "isGenerated": 0,
+  "id": {
+    "id": "7D55F6EB-BDB6-4199-83E8-5069BE1EB80F"
+  },
+  "category": "Rendering"
+}
