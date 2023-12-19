@@ -81,6 +81,7 @@ void rendering::WindowObj::Start()
 			container.GetObjectsOfType(*jsDef, tmp);
 
 			jobs::JobSystem* js = static_cast<jobs::JobSystem*>(tmp.front());
+			js->Start();
 
 			js->ScheduleJob(new WindowUpdateJob(m_ctx.m_self));
 		}
