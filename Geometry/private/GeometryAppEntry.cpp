@@ -2,6 +2,13 @@
 
 #include "AppEntryTypeDef.h"
 
+#include "Jobs.h"
+#include "Job.h"
+
+#include "Mesh.h"
+
+#include "ObjectValueContainer.h"
+
 namespace
 {
 	BasicObjectContainer<geo::GeometryAppEntryTypeDef> m_geometryAppEntryTypeDef;
@@ -37,4 +44,29 @@ geo::GeometryAppEntryObj::GeometryAppEntryObj(const ReferenceTypeDef& typeDef, c
 
 void geo::GeometryAppEntryObj::Boot()
 {
+	class LoadDone : public jobs::Job
+	{
+	public:
+		void Do() override
+		{
+		}
+	};
+
+	class LoadMesh : public jobs::Job
+	{
+	public:
+		void Do() override
+		{
+			ObjectValueContainer& container = ObjectValueContainer::GetContainer();
+
+			std::list<ObjectValue*> tmp;
+			container.GetObjectsOfType(MeshTypeDef::GetTypeDef(), tmp);
+
+			Mesh* mesh = static_cast<Mesh*>(tmp.front());
+
+			mesh->Load(new LoadDone());
+		}
+	};
+
+	jobs::RunSync(new LoadMesh());
 }

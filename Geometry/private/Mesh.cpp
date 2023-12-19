@@ -2,6 +2,11 @@
 
 #include "PrimitiveTypes.h"
 
+#include "Jobs.h"
+
+#include "Files.h"
+#include "XMLReader.h"
+
 namespace
 {
 	BasicObjectContainer<geo::MeshTypeDef> m_meshTypeDef;
@@ -49,5 +54,13 @@ geo::Mesh::Mesh(const CompositeTypeDef& type, const CompositeValue* outer) :
 
 void geo::Mesh::Load(jobs::Job* done)
 {
-	bool t = true;
+	std::string colladaFile = "Geometry\\" + m_colladaFile.Get<std::string>();
+
+	std::string contents;
+	files::ReadTextFile(colladaFile, contents);
+
+	xml_reader::XMLTree tree;
+	xml_reader::ReadXML(contents, tree);
+
+	jobs::RunSync(done);
 }
