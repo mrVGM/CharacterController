@@ -5,6 +5,8 @@ add_library (CommonTypeDefs
 	"private/AppEntryTypeDef.cpp"
 	"public/AppEntryObj.h"
 	"private/AppEntryObj.cpp"
+	"public/CommonTypeDefs.h"
+	"private/CommonTypeDefs.cpp"
 )
 
 target_include_directories(CommonTypeDefs INTERFACE PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/public")

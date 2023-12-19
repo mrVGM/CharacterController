@@ -13,6 +13,7 @@
 #include "Reflection.h"
 #include "AssetManager.h"
 
+#include "CommonTypeDefs.h"
 #include "RenderingCore.h"
 
 namespace
@@ -40,6 +41,7 @@ void app::Boot()
 	BootTypeSystem();
 
 	reflection::Boot();
+	common_defs::Boot();
 	rendering::core::Boot();
 
 	AppTypeDef::GetTypeDef();
