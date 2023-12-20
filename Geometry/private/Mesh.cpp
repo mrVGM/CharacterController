@@ -10,9 +10,12 @@
 #include "MathUtils.h"
 #include "Geometry.h"
 
+#include "JSONValue.h"
+
 #include <map>
 #include <string>
 #include <vector>
+#include <list>
 #include <sstream>
 
 namespace
@@ -29,7 +32,7 @@ namespace
 		std::vector<math::Vector2> m_uvs;
 
 		std::vector<geo::MeshVertex> m_verts;
-		std::map<std::string, geo::MeshVertex*> m_vertexMap;
+		std::map<std::string, int> m_vertexMap;
 
 		MeshReader(const xml_reader::XMLTree& tree) :
 			m_tree(tree)
@@ -260,7 +263,7 @@ namespace
 			}
 		}
 
-		void ReadTriangles(const xml_reader::Node* triangles)
+		void ReadTriangles(const xml_reader::Node* triangles, std::list<int>& indices)
 		{
 			using namespace xml_reader;
 			const Node* vertexInput = m_tree.FindChildNode(
@@ -372,6 +375,111 @@ namespace
 			ReadVector3s(vertexSourceNode, m_positions);
 			ReadVector3s(normalSourceNode, m_normals);
 			ReadUVs(uvSourceNode, m_uvs);
+
+			const Node* p = m_tree.FindChildNode(
+				triangles,
+				[](const Node* node) {
+					return node->m_tagName == "p";
+				},
+				true);
+
+			int count;
+			std::stringstream ss;
+			ss << triangles->m_tagProps.find("count")->second;
+			ss >> count;
+
+			int stride = 0;
+			{
+				std::list<const Node*> inputNodes;
+				m_tree.FindChildNodes(
+					triangles,
+					[](const Node* node) {
+						return node->m_tagName == "input";
+					},
+					true,
+					inputNodes);
+				stride = inputNodes.size();
+			}
+
+			int vertexOffset = -1;
+			int normalOffset = -1;
+			int uvOffset = -1;
+
+			{
+				ss.clear();
+				ss << vertexInput->m_tagProps.find("offset")->second;
+				ss >> vertexOffset;
+
+				ss.clear();
+				ss << normalInput->m_tagProps.find("offset")->second;
+				ss >> normalOffset;
+
+				ss.clear();
+				ss << uvInput->m_tagProps.find("offset")->second;
+				ss >> uvOffset;
+			}
+
+			auto pIt = p->m_data.begin();
+			for (int i = 0; i < count; ++i)
+			{
+				for (int k = 0; k < 3; ++k)
+				{
+
+					int vertIndex = -1;
+					int normalIndex = -1;
+					int uvIndex = -1;
+
+					for (int j = 0; j < stride; ++j)
+					{
+						scripting::ISymbol* cur = *pIt;
+						++pIt;
+
+						if (j == vertexOffset)
+						{
+							vertIndex = static_cast<int>(cur->m_symbolData.m_number);
+							continue;
+						}
+						if (j == normalOffset)
+						{
+							normalIndex = static_cast<int>(cur->m_symbolData.m_number);
+							continue;
+						}
+						if (j == uvOffset)
+						{
+							uvIndex = static_cast<int>(cur->m_symbolData.m_number);
+							continue;
+						}
+					}
+
+					json_parser::JSONValue key(json_parser::ValueType::Object);
+					{
+						auto& map = key.GetAsObj();
+						map["position"] = json_parser::JSONValue(static_cast<float>(vertIndex));
+						map["normal"] = json_parser::JSONValue(static_cast<float>(normalIndex));
+						map["uv"] = json_parser::JSONValue(static_cast<float>(uvIndex));
+					}
+
+					std::string keyStr = key.ToString(false);
+
+					int meshVertexIndex = -1;
+					auto vertIt = m_vertexMap.find(keyStr);
+					if (vertIt == m_vertexMap.end())
+					{
+						geo::MeshVertex& vert = m_verts.emplace_back();
+						vert.m_position = m_positions[vertIndex];
+						vert.m_normal = m_normals[normalIndex] ;
+						vert.m_uv = m_uvs[uvIndex];
+						meshVertexIndex = m_verts.size() - 1;
+						m_vertexMap[keyStr] = meshVertexIndex;
+					}
+					else
+					{
+						meshVertexIndex = vertIt->second;
+					}
+
+					indices.push_back(meshVertexIndex);
+				}
+			}
 		}
 	};
 }
@@ -449,7 +557,8 @@ void geo::Mesh::Load(jobs::Job* done)
 	MeshReader mr(tree);
 	for (auto it = triangles.begin(); it != triangles.end(); ++it)
 	{
-		mr.ReadTriangles(*it);
+		std::list<int> indices;
+		mr.ReadTriangles(*it, indices);
 	}
 
 	jobs::RunSync(done);

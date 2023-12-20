@@ -16,6 +16,7 @@ target_link_libraries(Geometry PUBLIC
 	Types
 	Files
 	XMLReader
+	JSONParser
 	Jobs
 	CommonTypeDefs
 	Math
