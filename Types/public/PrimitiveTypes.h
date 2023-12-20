@@ -61,14 +61,12 @@ class TypeTypeDef : public TypeDef
 	TYPE_DEF_BODY(TypeTypeDef)
 
 private:
-	static void GetKey(const TypeDef& templateType, json_parser::JSONValue& outKey);
 	const TypeDef& m_templateType;
 
 public:
 	static const TypeTypeDef& GetTypeDef(const TypeDef& templateType);
 
 	explicit TypeTypeDef(const TypeDef& templateType);
-	void GetTypeKey(json_parser::JSONValue& outKey) const override;
 	virtual void DeserializeFromJSON(Value& value, json_parser::JSONValue& json) const;
 };
 

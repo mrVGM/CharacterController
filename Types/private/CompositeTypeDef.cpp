@@ -9,6 +9,13 @@ namespace
 	BasicObjectContainer<ReferenceTypeDef> m_referenceTypeDef;
 }
 
+CompositeTypeDef::CompositeTypeDef(const TypeDef* parent, const std::string& id, const TypeDef::TypeKeyGen& keyGenerator) :
+	TypeDef(parent, id, keyGenerator)
+{
+	m_name = "Composite Type";
+	m_category = "Composite";
+}
+
 CompositeTypeDef::CompositeTypeDef(const TypeDef* parent, const std::string& id) :
 	TypeDef(parent, id)
 {
@@ -60,6 +67,13 @@ void CompositeTypeDef::DeserializeFromJSON(Value& value, json_parser::JSONValue&
 		Value& cur = it->second->m_getValue(compositeValue);
 		cur.m_type->DeserializeFromJSON(cur, map[it->first]);
 	}
+}
+
+ValueTypeDef::ValueTypeDef(const TypeDef* parent, const std::string& id, const TypeDef::TypeKeyGen& keyGenerator) :
+	CompositeTypeDef(parent, id, keyGenerator)
+{
+	m_category = "Composite";
+	m_name = "Value Type";
 }
 
 ValueTypeDef::ValueTypeDef(const TypeDef* parent, const std::string& id) :
@@ -136,10 +150,7 @@ void TypeProperty::GetReflectionData(json_parser::JSONValue& outData) const
 	map["id"] = JSONValue(m_id);
 	map["name"] = JSONValue(m_name);
 	map["category"] = JSONValue(m_category);
-
-	JSONValue type;
-	m_type.GetTypeKey(type);
-	map["type"] = type;
+	map["type"] = m_type.GetTypeKey();
 
 	outData = res;
 }

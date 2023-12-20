@@ -6,26 +6,30 @@
 namespace
 {
 	const char* m_listDefId = "61BE566E-F055-4537-BCBD-2E1A7335EB55";
-}
 
-void ListDef::GetKey(const TypeDef& templateDef, json_parser::JSONValue& outKey)
-{
-	using namespace json_parser;
-
-	const GenericListDef& genericListDef = GenericListDef::GetTypeDef();
-	JSONValue genericListDefId;
-	genericListDef.GetTypeKey(genericListDefId);
-
-	std::string id;
+	struct ListKeyGen : public TypeDef::TypeKeyGen
 	{
-		const auto& map = genericListDefId.GetAsObj();
-		JSONValue tmp = map.find("id")->second;
-		id = std::get<std::string>(tmp.m_payload);
-	}
+	private:
+		const TypeDef& m_template;
 
-	GetDefaultTypeKey(id, outKey);
-	auto& map = outKey.GetAsObj();
-	map["template"] = JSONValue(templateDef.GetId());
+	public:
+		ListKeyGen(const TypeDef& templateType) :
+			m_template(templateType)
+		{
+		}
+
+		void GenerateKey(json_parser::JSONValue& key) const override
+		{
+			using namespace json_parser;
+			JSONValue tmp;
+			TypeDef::GetDefaultTypeKey(GenericListDef::GetTypeDef().GetId(), tmp);
+
+			auto& map = tmp.GetAsObj();
+			map["template"] = JSONValue(m_template.GetId());
+
+			key = tmp;
+		}
+	};
 }
 
 const ListDef& ListDef::GetTypeDef(const TypeDef& templateDef)
@@ -33,7 +37,10 @@ const ListDef& ListDef::GetTypeDef(const TypeDef& templateDef)
 	using namespace json_parser;
 
 	JSONValue tmp;
-	GetKey(templateDef, tmp);
+	{
+		ListKeyGen keyGen(templateDef);
+		keyGen.GenerateKey(tmp);
+	}
 
 	const TypeDef::TypeDefsMap& defsMap = TypeDef::GetDefsMap();
 
@@ -48,7 +55,7 @@ const ListDef& ListDef::GetTypeDef(const TypeDef& templateDef)
 }
 
 ListDef::ListDef(const TypeDef& templateDef) :
-	ValueTypeDef(&GenericListDef::GetTypeDef(), m_listDefId),
+	ValueTypeDef(&GenericListDef::GetTypeDef(), m_listDefId, ListKeyGen(templateDef)),
 	m_templateDef(templateDef)
 {
 	m_isGenerated = true;
@@ -58,11 +65,6 @@ void ListDef::Construct(Value& container) const
 {
 	ValueList* tmp = new ValueList(*this, container.m_outer);
 	container.m_payload = tmp;
-}
-
-void ListDef::GetTypeKey(json_parser::JSONValue& outTypeKey) const
-{
-	GetKey(m_templateDef, outTypeKey);
 }
 
 void ListDef::GetReflectionData(json_parser::JSONValue& outData) const

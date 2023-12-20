@@ -37,15 +37,22 @@ class TypeDef
 public:
 	typedef std::map<std::string, const TypeDef*> TypeDefsMap;
 
+	struct TypeKeyGen
+	{
+		virtual void GenerateKey(json_parser::JSONValue& key) const = 0;
+	};
+
 private:
 	const TypeDef* m_parent = nullptr;
 	std::string m_id;
+	json_parser::JSONValue m_typeKey;
 
 protected:
 	std::string m_name;
 	std::string m_category;
 	bool m_isGenerated = false;
 
+	TypeDef(const TypeDef* parent, const std::string& id, const TypeKeyGen& keyGenerator);
 	TypeDef(const TypeDef* parent, const std::string& id);
 
 public:
@@ -53,7 +60,7 @@ public:
 
 	static void GetDefaultTypeKey(const std::string& id, json_parser::JSONValue& outTypeKey);
 
-	virtual void GetTypeKey(json_parser::JSONValue& outTypeKey) const;
+	const json_parser::JSONValue& GetTypeKey() const;
 	virtual void GetReflectionData(json_parser::JSONValue& outData) const;
 
 	const std::string& GetId() const;

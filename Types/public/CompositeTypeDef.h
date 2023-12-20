@@ -35,6 +35,8 @@ class CompositeTypeDef : public TypeDef
 
 protected:
 	std::map<std::string, const TypeProperty*> m_properties;
+	CompositeTypeDef(const TypeDef* parent, const std::string& id, const TypeDef::TypeKeyGen& keyGenerator);
+
 public:
 	CompositeTypeDef(const TypeDef* parent, const std::string& id);
 
@@ -46,6 +48,9 @@ public:
 class ValueTypeDef : public CompositeTypeDef
 {
 	TYPE_DEF_BODY(ValueTypeDef)
+
+protected:
+	ValueTypeDef(const TypeDef* parent, const std::string& id, const TypeDef::TypeKeyGen& keyGenerator);
 
 public:
 	ValueTypeDef(const TypeDef* parent, const std::string& id);

@@ -4,22 +4,46 @@
 namespace
 {
 	BasicObjectContainer<TypeDef::TypeDefsMap> m_typeDefsMap;
+
+	class KeyGen : public TypeDef::TypeKeyGen
+	{
+	private:
+		std::string m_id;
+	public:
+		KeyGen(const std::string& id) :
+			m_id(id)
+		{
+		}
+		void GenerateKey(json_parser::JSONValue& key) const override
+		{
+			using namespace json_parser;
+
+			JSONValue tmp;
+			TypeDef::GetDefaultTypeKey(m_id, tmp);
+			key = tmp;
+		}
+	};
 }
 
-TypeDef::TypeDef(const TypeDef* parent, const std::string& id) :
+TypeDef::TypeDef(const TypeDef* parent, const std::string& id, const TypeDef::TypeKeyGen& keyGenerator) :
 	m_id(id),
 	m_parent(parent)
 {
-	using namespace json_parser;
-	JSONValue tmp;
-	GetTypeKey(tmp);
+	keyGenerator.GenerateKey(m_typeKey);
+	TypeDefsMap& defsMap = GetDefsMap();
 
-	GetDefsMap()[tmp.ToString(false)] = this;
+	std::string typeKey = m_typeKey.ToString(false);
+	defsMap[typeKey] = this;
 }
 
-void TypeDef::GetTypeKey(json_parser::JSONValue& outTypeKey) const
+TypeDef::TypeDef(const TypeDef* parent, const std::string& id) :
+	TypeDef(parent, id, KeyGen(id))
 {
-	GetDefaultTypeKey(m_id, outTypeKey);
+}
+
+const json_parser::JSONValue& TypeDef::GetTypeKey() const
+{
+	return m_typeKey;
 }
 
 TypeDef::TypeDefsMap& TypeDef::GetDefsMap()
@@ -90,15 +114,12 @@ void TypeDef::GetReflectionData(json_parser::JSONValue& outData) const
 	outData = json_parser::JSONValue(ValueType::Object);
 	auto& map = outData.GetAsObj();
 
-	JSONValue typeKey;
-	GetTypeKey(typeKey);
+	JSONValue typeKey = m_typeKey;
 	map["id"] = typeKey;
 
 	if (m_parent)
 	{
-		JSONValue parentTypeKey;
-		m_parent->GetTypeKey(parentTypeKey);
-		map["parent"] = parentTypeKey;
+		map["parent"] = m_parent->m_typeKey;
 	}
 
 	map["name"] = JSONValue(m_name);

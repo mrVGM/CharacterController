@@ -14,6 +14,30 @@ namespace
 	BasicObjectContainer<FloatTypeDef> m_floatTypeDef;
 	BasicObjectContainer<StringTypeDef> m_stringTypeDef;
 	BasicObjectContainer<GenericTypeDef> m_genericTypedef;
+
+	struct TypeTypeKeyGen : public TypeDef::TypeKeyGen
+	{
+	private:
+		const TypeDef& m_template;
+
+	public:
+		TypeTypeKeyGen(const TypeDef& templateType) :
+			m_template(templateType)
+		{
+		}
+
+		void GenerateKey(json_parser::JSONValue& key) const override
+		{
+			using namespace json_parser;
+			JSONValue tmp;
+			TypeDef::GetDefaultTypeKey(m_genericTypeDefId, tmp);
+
+			auto& map = tmp.GetAsObj();
+			map["template"] = JSONValue(m_template.GetId());
+
+			key = tmp;
+		}
+	};
 }
 
 const BoolTypeDef& BoolTypeDef::GetTypeDef()
@@ -184,22 +208,15 @@ void GenericTypeDef::GetReflectionData(json_parser::JSONValue& outData) const
 	map["hint"] = JSONValue("type");
 }
 
-
-void TypeTypeDef::GetKey(const TypeDef& templateType, json_parser::JSONValue& outKey)
-{
-	using namespace json_parser;
-	GetDefaultTypeKey(m_genericTypeDefId, outKey);
-
-	auto& map = outKey.GetAsObj();
-	map["template"] = JSONValue(templateType.GetId());
-}
-
 const TypeTypeDef& TypeTypeDef::GetTypeDef(const TypeDef& templateType)
 {
 	using namespace json_parser;
 
 	JSONValue key;
-	GetKey(templateType, key);
+	{
+		TypeTypeKeyGen tmp(templateType);
+		tmp.GenerateKey(key);
+	}
 
 	TypeDefsMap& defsMap = GetDefsMap();
 	auto it = defsMap.find(key.ToString(false));
@@ -214,15 +231,10 @@ const TypeTypeDef& TypeTypeDef::GetTypeDef(const TypeDef& templateType)
 }
 
 TypeTypeDef::TypeTypeDef(const TypeDef& templateType) :
-	TypeDef(&GenericTypeDef::GetTypeDef(), m_typeTypeDefId),
+	TypeDef(&GenericTypeDef::GetTypeDef(), m_typeTypeDefId, TypeTypeKeyGen(templateType)),
 	m_templateType(templateType)
 {
 	m_isGenerated = true;
-}
-
-void TypeTypeDef::GetTypeKey(json_parser::JSONValue& outKey) const
-{
-	GetKey(m_templateType, outKey);
 }
 
 void TypeTypeDef::DeserializeFromJSON(Value& value, json_parser::JSONValue& json) const
