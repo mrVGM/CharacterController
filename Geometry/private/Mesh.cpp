@@ -524,6 +524,21 @@ geo::Mesh::Mesh(const CompositeTypeDef& type, const CompositeValue* outer) :
 {
 }
 
+geo::Mesh::~Mesh()
+{
+	if (m_vertices)
+	{
+		delete[] m_vertices;
+	}
+	if (m_indices)
+	{
+		delete[] m_indices;
+	}
+
+	m_vertices = nullptr;
+	m_indices = nullptr;
+}
+
 void geo::Mesh::Load(jobs::Job* done)
 {
 	using namespace xml_reader;
@@ -554,11 +569,33 @@ void geo::Mesh::Load(jobs::Job* done)
 		return node->m_tagName == "triangles";
 	}, true, triangles);
 
+	m_numIndices = 0;
+	std::list<std::list<int>> indices;
 	MeshReader mr(tree);
 	for (auto it = triangles.begin(); it != triangles.end(); ++it)
 	{
-		std::list<int> indices;
-		mr.ReadTriangles(*it, indices);
+		std::list<int>& curIndices = indices.emplace_back();
+		mr.ReadTriangles(*it, curIndices);
+		MaterialRange& range = m_materials.emplace_back();
+		range.m_start = m_numIndices;
+		range.m_count = curIndices.size();
+		m_numIndices += curIndices.size();
+	}
+
+	m_numVertices = mr.m_verts.size();
+	m_vertices = new MeshVertex[m_numVertices];
+
+	m_indices = new int[m_numIndices];
+	{
+		int index = 0;
+		for (auto it = indices.begin(); it != indices.end(); ++it)
+		{
+			const std::list<int>& cur = *it;
+			for (auto curIt = cur.begin(); curIt != cur.end(); ++curIt)
+			{
+				m_indices[index++] = *curIt;
+			}
+		}
 	}
 
 	jobs::RunSync(done);
