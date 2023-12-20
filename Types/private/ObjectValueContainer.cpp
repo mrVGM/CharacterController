@@ -6,6 +6,19 @@ ObjectValueContainer::ObjectValueContainer()
 {
 }
 
+void ObjectValueContainer::CheckAccess()
+{
+	if (!m_exclusiveThreadAccess)
+	{
+		return;
+	}
+
+	if (m_exclusiveThreadAccessId != std::this_thread::get_id())
+	{
+		throw "Illegal Access!";
+	}
+}
+
 ObjectValueContainer& ObjectValueContainer::GetContainer()
 {
 	return m_container;
@@ -13,18 +26,24 @@ ObjectValueContainer& ObjectValueContainer::GetContainer()
 
 void ObjectValueContainer::Register(ObjectValue* value)
 {
+	CheckAccess();
+
 	const TypeDef& type = value->GetTypeDef();
 	m_typedValues[&type].insert(value);
 }
 
 void ObjectValueContainer::Unregister(ObjectValue* value)
 {
+	CheckAccess();
+
 	const TypeDef& type = value->GetTypeDef();
 	m_typedValues[&type].erase(value);
 }
 
 void ObjectValueContainer::GetObjectsOfType(const TypeDef& typeDef, std::list<ObjectValue*>& outObjects)
 {
+	CheckAccess();
+
 	for (auto it = m_typedValues.begin(); it != m_typedValues.end(); ++it)
 	{
 		if (!TypeDef::IsA(*it->first, typeDef))
@@ -36,4 +55,10 @@ void ObjectValueContainer::GetObjectsOfType(const TypeDef& typeDef, std::list<Ob
 			outObjects.push_back(*setIt);
 		}
 	}
+}
+
+void ObjectValueContainer::StartExclusiveThreadAccess()
+{
+	m_exclusiveThreadAccess = true;
+	m_exclusiveThreadAccessId = std::this_thread::get_id();
 }

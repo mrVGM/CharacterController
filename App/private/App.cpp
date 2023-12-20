@@ -52,8 +52,18 @@ void app::Boot()
 	AppTypeDef::GetTypeDef();
 	AppEntryTypeDef::GetTypeDef();
 
-	Value jobSystems(ListDef::GetTypeDef(ReferenceTypeDef::GetTypeDef()), nullptr);
-	ValueList* vl = jobSystems.GetValue<ValueList*>();
+	struct Context
+	{
+		Value m_jobSystems;
+
+		Context() :
+			m_jobSystems(ListDef::GetTypeDef(ReferenceTypeDef::GetTypeDef()), nullptr)
+		{
+		}
+	};
+	Context ctx;
+
+	ValueList* vl = ctx.m_jobSystems.GetValue<ValueList*>();
 
 	Value& mainJS = vl->EmplaceBack();
 	Value& asyncJS = vl->EmplaceBack();
@@ -69,7 +79,25 @@ void app::Boot()
 		}
 	};
 
-	assets::Boot(jobSystems, new StartAppJob());
+	class StartExclusiveAccess : public jobs::Job
+	{
+		Context m_ctx;
+	public:
+		StartExclusiveAccess(const Context& ctx)
+		{
+			m_ctx = ctx;
+		}
+
+		void Do() override
+		{
+			ObjectValueContainer& container = ObjectValueContainer::GetContainer();
+			container.StartExclusiveThreadAccess();
+
+			assets::Boot(m_ctx.m_jobSystems, new StartAppJob());
+		}
+	};
+
+	jobs::RunSync(new StartExclusiveAccess(ctx));
 }
 
 

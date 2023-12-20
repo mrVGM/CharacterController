@@ -6,6 +6,7 @@
 #include <map>
 #include <set>
 #include <list>
+#include <thread>
 
 class ObjectValueContainer
 {
@@ -16,6 +17,11 @@ private:
 
 	ObjectValueContainer();
 
+	bool m_exclusiveThreadAccess = false;
+	std::thread::id m_exclusiveThreadAccessId;
+
+	void CheckAccess();
+
 public:
 	static ObjectValueContainer& GetContainer();
 
@@ -23,4 +29,6 @@ public:
 	void Unregister(ObjectValue* value);
 
 	void GetObjectsOfType(const TypeDef& typeDef, std::list<ObjectValue*>& outObjects);
+
+	void StartExclusiveThreadAccess();
 };
