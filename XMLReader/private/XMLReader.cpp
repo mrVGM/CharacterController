@@ -82,7 +82,7 @@ namespace
 
 void xml_reader::ReadXML(const std::string& src, XMLTree& xmlTree)
 {
-	scripting::CodeSource cs;
+	scripting::CodeSource& cs = xmlTree.m_codeSource;
 	cs.m_code = src;
 
 	cs.Tokenize();

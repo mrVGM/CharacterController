@@ -1,6 +1,7 @@
 #pragma once
 
 #include "symbol.h"
+#include "codeSource.h"
 
 #include <map>
 #include <list>
@@ -28,6 +29,7 @@ namespace xml_reader
 		friend void ReadXML(const std::string& src, XMLTree& xmlTree);
 
 	private:
+		scripting::CodeSource m_codeSource;
 		std::list<Node*> m_allNodes;
 		std::list<Node*> m_rootNodes;
 
