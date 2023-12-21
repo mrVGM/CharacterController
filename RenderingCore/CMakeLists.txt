@@ -12,6 +12,8 @@ add_library (RenderingCore
 	"private/RenderingEntryTypeDef.cpp"
 	"public/DXShader.h"
 	"private/DXShader.cpp"
+	"public/DXDevice.h"
+	"private/DXDevice.cpp"
 )
 
 target_include_directories(RenderingCore INTERFACE PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/public")

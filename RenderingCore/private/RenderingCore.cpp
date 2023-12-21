@@ -3,6 +3,7 @@
 #include "RenderWindow.h"
 #include "RenderingEntryTypeDef.h"
 #include "DXShader.h"
+#include "DXDevice.h"
 
 void rendering::core::Boot()
 {
@@ -12,4 +13,6 @@ void rendering::core::Boot()
 	DXShaderTypeDef::GetTypeDef();
 	DXVertexShaderTypeDef::GetTypeDef();
 	DXPixelShaderTypeDef::GetTypeDef();
+
+	DXDeviceTypeDef::GetTypeDef();
 }
