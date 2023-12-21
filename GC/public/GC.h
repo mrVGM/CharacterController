@@ -1,5 +1,7 @@
 #pragma once
 
+#include <list>
+
 namespace gc
 {
 	class ManagedObject
@@ -11,4 +13,6 @@ namespace gc
 
 	void AddLink(const ManagedObject* from, const ManagedObject* to);
 	void RemoveLink(const ManagedObject* from, const ManagedObject* to);
+
+	void GCTick(std::list<const ManagedObject*>& managedObjectsToDelete);
 }

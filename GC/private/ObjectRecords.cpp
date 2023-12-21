@@ -61,7 +61,7 @@ gc::ObjectRecordManager& gc::ObjectRecordManager::GetManager()
 	return m_manager;
 }
 
-void gc::ObjectRecordManager::Tick()
+void gc::ObjectRecordManager::Tick(std::list<const ManagedObject*>& managedObjectsToDelete)
 {
 	m_queueMutex.lock();
 	
@@ -69,19 +69,45 @@ void gc::ObjectRecordManager::Tick()
 
 	m_queueMutex.unlock();
 
-	std::list<const ManagedObject*> toCheck;
-	UpdateObjectsState(GetSecondaryQueue(), toCheck);
-
 	for (auto it = m_records.begin(); it != m_records.end(); ++it)
 	{
-		ObjectRecord& cur = it->second;
-		if (cur.m_state == GCObjectState::Alive)
+		if (it->second.m_state == GCObjectState::Dead)
 		{
-			cur.m_state = GCObjectState::Unchecked;
+			++it->second.m_age;
+			continue;
+		}
+
+		it->second.m_state = Unchecked;
+	}
+
+	std::list<const ManagedObject*> toCheck;
+	UpdateObjectsState(GetSecondaryQueue(), toCheck);
+	UpdateVitality(toCheck);
+
+	std::list<const ManagedObject*> toDelete;
+	for (auto it = m_records.begin(); it != m_records.end(); ++it)
+	{
+		if (it->second.m_state != GCObjectState::Dead)
+		{
+			continue;
+		}
+
+		if (it->second.m_age == 0)
+		{
+			managedObjectsToDelete.push_back(it->second.m_object);
+			continue;
+		}
+
+		if (it->second.m_age > 0)
+		{
+			toDelete.push_back(it->first);
 		}
 	}
 
-	UpdateVitality(toCheck);
+	for (auto it = toDelete.begin(); it != toDelete.end(); ++it)
+	{
+		m_records.erase(*it);
+	}
 }
 
 void gc::ObjectRecordManager::UpdateObjectsState(std::queue<GCOperation>& operations, std::list<const ManagedObject*>& toCheck)
@@ -222,6 +248,11 @@ void gc::ObjectRecordManager::UpdateVitality(std::list<const ManagedObject*> obj
 		}
 
 		cur->UpdateTask();
+	}
+
+	for (auto it = initialTasks.begin(); it != initialTasks.end(); ++it)
+	{
+		delete *it;
 	}
 }
 

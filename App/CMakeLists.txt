@@ -20,6 +20,7 @@ target_link_libraries(App PUBLIC
 	RenderingCore
 	XMLReader
 	Geometry
+	GCWorker
 )
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)

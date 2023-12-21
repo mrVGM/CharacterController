@@ -18,6 +18,8 @@
 #include "RenderingCore.h"
 #include "Geometry.h"
 
+#include "GCWorker.h"
+
 namespace
 {
 	void Run()
@@ -69,6 +71,7 @@ void app::Boot()
 	Value& asyncJS = vl->EmplaceBack();
 	jobs::Boot(mainJS, asyncJS);
 
+	gc::Boot();
 
 	class StartAppJob : public jobs::Job
 	{
@@ -104,5 +107,6 @@ void app::Boot()
 
 void app::Shutdown()
 {
+	gc::Shutdown();
 	assets::Shutdown();
 }

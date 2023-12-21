@@ -51,7 +51,7 @@ namespace gc
 	public:
 		static ObjectRecordManager& GetManager();
 
-		void Tick();
+		void Tick(std::list<const ManagedObject*>& managedObjectsToDelete);
 		void UpdateObjectsState(std::queue<GCOperation>& operations, std::list<const ManagedObject*>& toCheck);
 		void UpdateVitality(std::list<const ManagedObject*> objects);
 	};

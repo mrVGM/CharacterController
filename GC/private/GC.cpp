@@ -25,3 +25,10 @@ void gc::RemoveLink(const ManagedObject* from, const ManagedObject* to)
 	GCOperation op{ GCOp::RemoveLinkOp, from, to };
 	PushOp(op);
 }
+
+
+void gc::GCTick(std::list<const ManagedObject*>& managedObjectsToDelete)
+{
+	ObjectRecordManager& manager = ObjectRecordManager::GetManager();
+	manager.Tick(managedObjectsToDelete);
+}
