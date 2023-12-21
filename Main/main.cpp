@@ -27,6 +27,10 @@ int main(int args, const char** argv)
 
 	std::cin.get();
 
+	app::Test();
+
+	std::cin.get();
+
 	app::Shutdown();
 	std::cout << "Shut Down!" << std::endl;
 

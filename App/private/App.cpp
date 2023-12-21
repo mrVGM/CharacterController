@@ -110,3 +110,19 @@ void app::Shutdown()
 	gc::Shutdown();
 	assets::Shutdown();
 }
+
+void app::Test()
+{
+	Value& assetList = assets::GetAssetList();
+
+	ValueList* l = assetList.GetValue<ValueList*>();
+
+	auto it = l->GetIterator();
+	++it;
+	++it;
+	++it;
+	++it;
+
+	Value& val = *it;
+	val.AssignObject(nullptr);
+}

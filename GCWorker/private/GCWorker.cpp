@@ -41,7 +41,7 @@ namespace
 	{
 		for (auto it = m_ctx.m_toDelete.begin(); it != m_ctx.m_toDelete.end(); ++it)
 		{
-			ObjectValue* tmp = const_cast<ObjectValue*>(static_cast<const ObjectValue*>(*it));
+			const gc::ManagedObject* tmp = *it;
 			delete tmp;
 		}
 
