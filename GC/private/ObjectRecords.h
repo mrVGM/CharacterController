@@ -46,7 +46,7 @@ namespace gc
 	class ObjectRecordManager
 	{
 	private:
-		std::map<const ManagedObject*, ObjectRecord> m_records;
+		std::map<size_t, ObjectRecord> m_records;
 		ObjectRecord& GetRecord(const ManagedObject* object);
 	public:
 		static ObjectRecordManager& GetManager();

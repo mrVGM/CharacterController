@@ -6,6 +6,14 @@ namespace gc
 {
 	class ManagedObject
 	{
+	private:
+		static size_t m_index;
+		size_t m_id = 0;
+
+	public:
+		ManagedObject();
+
+		size_t GetId() const;
 	};
 
 	void IncrementRefs(const ManagedObject* object);

@@ -39,12 +39,12 @@ namespace
 gc::ObjectRecord& gc::ObjectRecordManager::GetRecord(const ManagedObject* object)
 {
 	ObjectRecord* rec = nullptr;
-	auto it = m_records.find(object);
+	auto it = m_records.find(object->GetId());
 
 	if (it == m_records.end())
 	{
-		m_records[object] = ObjectRecord();
-		ObjectRecord& tmp = m_records[object];
+		m_records[object->GetId()] = ObjectRecord();
+		ObjectRecord& tmp = m_records[object->GetId()];
 		tmp.m_object = object;
 		rec = &tmp;
 	}
@@ -84,7 +84,7 @@ void gc::ObjectRecordManager::Tick(std::list<const ManagedObject*>& managedObjec
 	UpdateObjectsState(GetSecondaryQueue(), toCheck);
 	UpdateVitality(toCheck);
 
-	std::list<const ManagedObject*> toDelete;
+	std::list<size_t> toDelete;
 	for (auto it = m_records.begin(); it != m_records.end(); ++it)
 	{
 		if (it->second.m_state != GCObjectState::Dead)

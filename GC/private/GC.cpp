@@ -2,6 +2,18 @@
 
 #include "ObjectRecords.h"
 
+size_t gc::ManagedObject::m_index = 0;
+
+gc::ManagedObject::ManagedObject()
+{
+	m_id = m_index++;
+}
+
+size_t gc::ManagedObject::GetId() const
+{
+	return m_id;
+}
+
 void gc::IncrementRefs(const ManagedObject* object)
 {
 	GCOperation op{ GCOp::IncrementRefsOp, object };
