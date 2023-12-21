@@ -17,6 +17,12 @@ namespace gc
 		size_t GetId() const;
 	};
 
+	class GCActivatedListener
+	{
+	public:
+		virtual void OnActivated() const = 0;
+	};
+
 	void IncrementRefs(const ManagedObject* object);
 	void DecrementRefs(const ManagedObject* object);
 
@@ -24,4 +30,6 @@ namespace gc
 	void RemoveLink(const ManagedObject* from, const ManagedObject* to);
 
 	void GCTick(std::list<const ManagedObject*>& managedObjectsToDelete);
+
+	void SetGCActivatedListener(const GCActivatedListener& listener);
 }

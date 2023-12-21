@@ -9,6 +9,9 @@ namespace
 {
 	bool m_shouldContinue = true;
 
+	bool m_gcHasWorkToDo = true;
+	bool m_gcIdle = false;
+
 	struct Context
 	{
 		std::list<const gc::ManagedObject*> m_toDelete;
@@ -45,14 +48,50 @@ namespace
 			delete tmp;
 		}
 
-		if (m_shouldContinue)
+		if (!m_shouldContinue)
+		{
+			return;
+		}
+
+		if (m_gcHasWorkToDo)
 		{
 			jobs::RunAsync(new GCTick());
+			m_gcHasWorkToDo = false;
+			return;
 		}
+
+		m_gcIdle = true;
 	}
+
+	class GCActivatedListener : public gc::GCActivatedListener
+	{
+	public:
+		void OnActivated() const override
+		{
+			class ActivateGC : public jobs::Job
+			{
+			public:
+				void Do() override
+				{
+					if (!m_gcIdle)
+					{
+						m_gcHasWorkToDo = true;
+						return;
+					}
+
+					jobs::RunAsync(new GCTick());
+				}
+			};
+
+			jobs::RunSync(new ActivateGC());
+		}
+	};
+
+	GCActivatedListener m_listener;
 
 	void BootGC()
 	{
+		gc::SetGCActivatedListener(m_listener);
 		jobs::RunAsync(new GCTick());
 	}
 }

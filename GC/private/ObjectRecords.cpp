@@ -1,10 +1,14 @@
 #include "ObjectRecords.h"
 
+#include "GC.h"
+
 #include <mutex>
 #include <stack>
 
 namespace
 {
+	const gc::GCActivatedListener* m_listener = nullptr;
+
 	std::queue<gc::GCOperation>* m_primaryQueue = nullptr;
 	std::mutex m_queueMutex;
 	
@@ -256,6 +260,11 @@ void gc::ObjectRecordManager::UpdateVitality(std::list<const ManagedObject*> obj
 	}
 }
 
+void gc::ObjectRecordManager::SetGCActivatedListener(const GCActivatedListener& listener)
+{
+	m_listener = &listener;
+}
+
 void gc::PushOp(const GCOperation& op)
 {
 	m_queueMutex.lock();
@@ -264,4 +273,9 @@ void gc::PushOp(const GCOperation& op)
 	primaryQueue.push(op);
 
 	m_queueMutex.unlock();
+
+	if (m_listener && primaryQueue.size() == 1)
+	{
+		m_listener->OnActivated();
+	}
 }

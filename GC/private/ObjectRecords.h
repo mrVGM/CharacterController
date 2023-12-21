@@ -54,6 +54,8 @@ namespace gc
 		void Tick(std::list<const ManagedObject*>& managedObjectsToDelete);
 		void UpdateObjectsState(std::queue<GCOperation>& operations, std::list<const ManagedObject*>& toCheck);
 		void UpdateVitality(std::list<const ManagedObject*> objects);
+
+		void SetGCActivatedListener(const GCActivatedListener& listener);
 	};
 
 	void PushOp(const GCOperation& op);
