@@ -41,7 +41,8 @@ namespace
 	{
 		for (auto it = m_ctx.m_toDelete.begin(); it != m_ctx.m_toDelete.end(); ++it)
 		{
-			delete* it;
+			ObjectValue* tmp = const_cast<ObjectValue*>(static_cast<const ObjectValue*>(*it));
+			delete tmp;
 		}
 
 		if (m_shouldContinue)

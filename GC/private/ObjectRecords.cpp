@@ -126,7 +126,7 @@ void gc::ObjectRecordManager::UpdateObjectsState(std::queue<GCOperation>& operat
 			GetRecord(cur.m_object1).m_links.push_back(&GetRecord(cur.m_object2));
 			break;
 		case DecrementRefsOp:
-			++GetRecord(cur.m_object1).m_refs;
+			--GetRecord(cur.m_object1).m_refs;
 			toCheck.push_back(cur.m_object1);
 			break;
 		case RemoveLinkOp:
