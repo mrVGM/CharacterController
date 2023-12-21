@@ -31,6 +31,12 @@ const rendering::DXDeviceTypeDef& rendering::DXDeviceTypeDef::GetTypeDef()
     return *m_deviceTypeDef.m_object;
 }
 
+void rendering::DXDeviceTypeDef::Construct(Value& value) const
+{
+    DXDevice* device = new DXDevice(*this);
+    value.AssignObject(device);
+}
+
 void rendering::DXDevice::Create()
 {
     using Microsoft::WRL::ComPtr;

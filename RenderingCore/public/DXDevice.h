@@ -18,6 +18,8 @@ namespace rendering
     public:
         DXDeviceTypeDef();
         virtual ~DXDeviceTypeDef();
+
+        void Construct(Value& value) const override;
     };
 
     class DXDevice : public ObjectValue
