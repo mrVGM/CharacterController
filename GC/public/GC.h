@@ -12,6 +12,7 @@ namespace gc
 
 	public:
 		ManagedObject();
+		virtual ~ManagedObject();
 
 		size_t GetId() const;
 	};

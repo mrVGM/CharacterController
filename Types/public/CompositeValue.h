@@ -13,6 +13,7 @@ private:
 
 public:
 	CompositeValue(const CompositeTypeDef& typeDef);
+	virtual ~CompositeValue();
 
 	const CompositeTypeDef& GetTypeDef() const;
 };
@@ -31,6 +32,7 @@ private:
 
 public:
 	CopyValue(const ValueTypeDef& typeDef, const CompositeValue* outer);
+	virtual ~CopyValue();
 
 	virtual void Copy(const CopyValue& src) = 0;
 	const CompositeValue* GetOuter() const;

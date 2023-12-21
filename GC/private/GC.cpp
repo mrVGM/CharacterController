@@ -9,6 +9,10 @@ gc::ManagedObject::ManagedObject()
 	m_id = m_index++;
 }
 
+gc::ManagedObject::~ManagedObject()
+{
+}
+
 size_t gc::ManagedObject::GetId() const
 {
 	return m_id;

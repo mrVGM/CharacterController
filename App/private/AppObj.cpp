@@ -7,3 +7,7 @@ app::AppObj::AppObj(const AppTypeDef& appTypedef) :
 	m_appEntry(AppTypeDef::GetTypeDef().m_appEntry.GetType(), this)
 {
 }
+
+app::AppObj::~AppObj()
+{
+}

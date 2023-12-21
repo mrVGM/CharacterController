@@ -29,7 +29,7 @@ public:
 	};
 
 	ValueList(const ListDef& typeDef, const CompositeValue* outer);
-	~ValueList();
+	virtual ~ValueList();
 
 	virtual void Copy(const CopyValue& src) override;
 

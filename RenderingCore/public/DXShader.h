@@ -44,6 +44,7 @@ namespace rendering
 		Value m_name;
 
 		DXShader(const ReferenceTypeDef& type);
+		virtual ~DXShader();
 
 		ID3DBlob* GetCompiledShader() const;
 	};

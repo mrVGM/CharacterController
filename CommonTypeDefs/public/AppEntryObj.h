@@ -9,6 +9,7 @@ namespace app
 	{
 	public:
 		AppEntryObj(const ReferenceTypeDef& appEntryTypeDef);
+		virtual ~AppEntryObj();
 		virtual void Boot();
 	};
 }

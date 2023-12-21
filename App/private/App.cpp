@@ -113,16 +113,28 @@ void app::Shutdown()
 
 void app::Test()
 {
-	Value& assetList = assets::GetAssetList();
+	class GGG : public jobs::Job
+	{
+	public:
+		void Do() override
+		{
+			Value& assetList = assets::GetAssetList();
 
-	ValueList* l = assetList.GetValue<ValueList*>();
+			ValueList* l = assetList.GetValue<ValueList*>();
 
-	auto it = l->GetIterator();
-	++it;
-	++it;
-	++it;
-	++it;
+			auto it = l->GetIterator();
+			++it;
+			++it;
+			++it;
+			++it;
 
-	Value& val = *it;
-	val.AssignObject(nullptr);
+			ObjectValue* val = (*it).GetValue<ObjectValue*>();
+			gc::ManagedObject* g = val;
+
+			delete g;
+		}
+	};
+	
+
+	jobs::RunSync(new GGG());
 }

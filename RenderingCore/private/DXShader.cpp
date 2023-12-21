@@ -85,6 +85,10 @@ rendering::DXShader::DXShader(const ReferenceTypeDef& type) :
 {
 }
 
+rendering::DXShader::~DXShader()
+{
+}
+
 ID3DBlob* rendering::DXShader::GetCompiledShader() const
 {
 	return m_shader.Get();

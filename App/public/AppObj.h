@@ -10,5 +10,6 @@ namespace app
 		Value m_appEntry;
 
 		AppObj(const AppTypeDef& appTypedef);
+		virtual ~AppObj();
 	};
 }

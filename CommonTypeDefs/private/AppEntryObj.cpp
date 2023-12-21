@@ -5,6 +5,10 @@ app::AppEntryObj::AppEntryObj(const ReferenceTypeDef& appEntryTypeDef) :
 {
 }
 
+app::AppEntryObj::~AppEntryObj()
+{
+}
+
 void app::AppEntryObj::Boot()
 {
 	TypeDef::SaveReflectionData();
