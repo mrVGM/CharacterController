@@ -14,7 +14,8 @@ namespace
 				return static_cast<const ObjectValue*>(outer);
 			}
 
-			outer = outer->GetOuter();
+			const CopyValue* copyValue = static_cast<const CopyValue*>(outer);
+			outer = copyValue->GetOuter();
 		}
 
 		return nullptr;

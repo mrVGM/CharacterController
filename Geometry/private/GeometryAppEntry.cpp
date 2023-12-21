@@ -23,7 +23,7 @@ geo::GeometryAppEntryTypeDef::GeometryAppEntryTypeDef() :
 
 void geo::GeometryAppEntryTypeDef::Construct(Value& container) const
 {
-	GeometryAppEntryObj* appEntry = new GeometryAppEntryObj(*this, nullptr);
+	GeometryAppEntryObj* appEntry = new GeometryAppEntryObj(*this);
 	container.AssignObject(appEntry);
 }
 
@@ -37,8 +37,8 @@ const geo::GeometryAppEntryTypeDef& geo::GeometryAppEntryTypeDef::GetTypeDef()
 	return *m_geometryAppEntryTypeDef.m_object;
 }
 
-geo::GeometryAppEntryObj::GeometryAppEntryObj(const ReferenceTypeDef& typeDef, const CompositeValue* outer) :
-	AppEntryObj(typeDef, outer)
+geo::GeometryAppEntryObj::GeometryAppEntryObj(const ReferenceTypeDef& typeDef) :
+	AppEntryObj(typeDef)
 {
 }
 

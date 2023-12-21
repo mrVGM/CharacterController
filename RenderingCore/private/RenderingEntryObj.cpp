@@ -5,8 +5,8 @@
 #include "WindowTypeDef.h"
 #include "WindowObj.h"
 
-rendering::core::RenderingEntryObj::RenderingEntryObj(const ReferenceTypeDef& typeDef, const CompositeValue* outer) :
-	app::AppEntryObj(typeDef, outer)
+rendering::core::RenderingEntryObj::RenderingEntryObj(const ReferenceTypeDef& typeDef) :
+	app::AppEntryObj(typeDef)
 {
 }
 

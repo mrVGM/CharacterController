@@ -43,7 +43,7 @@ namespace rendering
 	public:
 		Value m_name;
 
-		DXShader(const CompositeTypeDef& type, const CompositeValue* outer);
+		DXShader(const ReferenceTypeDef& type);
 
 		ID3DBlob* GetCompiledShader() const;
 	};

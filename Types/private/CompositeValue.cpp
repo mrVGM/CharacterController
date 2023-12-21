@@ -16,7 +16,8 @@ namespace
 				return static_cast<const ObjectValue*>(outer);
 			}
 
-			outer = outer->GetOuter();
+			const CopyValue* copyValue = static_cast<const CopyValue*>(outer);
+			outer = copyValue->GetOuter();
 		}
 
 		return nullptr;
@@ -28,24 +29,24 @@ const CompositeTypeDef& CompositeValue::GetTypeDef() const
 	return *m_typeDef;
 }
 
-const CompositeValue* CompositeValue::GetOuter() const
+CompositeValue::CompositeValue(const CompositeTypeDef& typeDef) :
+	m_typeDef(&typeDef)
 {
-	return m_outer;
 }
 
-CompositeValue::CompositeValue(const CompositeTypeDef& typeDef, const CompositeValue* outer) :
-	m_typeDef(&typeDef),
+CopyValue::CopyValue(const ValueTypeDef& typeDef, const CompositeValue* outer) :
+	CompositeValue(typeDef),
 	m_outer(outer)
 {
 }
 
-CopyValue::CopyValue(const CompositeTypeDef& typeDef, const CompositeValue* outer) :
-	CompositeValue(typeDef, outer)
+const CompositeValue* CopyValue::GetOuter() const
 {
+	return m_outer;
 }
 
-ObjectValue::ObjectValue(const CompositeTypeDef& typeDef, const CompositeValue* outer) :
-	CompositeValue(typeDef, outer)
+ObjectValue::ObjectValue(const ReferenceTypeDef& typeDef) :
+	CompositeValue(typeDef)
 {
 	ObjectValueContainer::GetContainer().Register(this);
 }

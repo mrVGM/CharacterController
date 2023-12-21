@@ -9,7 +9,7 @@ namespace rendering::core
 	class RenderingEntryObj : public app::AppEntryObj
 	{
 	public:
-		RenderingEntryObj(const ReferenceTypeDef& typeDef, const CompositeValue* outer);
+		RenderingEntryObj(const ReferenceTypeDef& typeDef);
 		virtual void Boot() override;
 	};
 }

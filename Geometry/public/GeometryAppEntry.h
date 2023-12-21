@@ -18,7 +18,7 @@ namespace geo
 	class GeometryAppEntryObj : public app::AppEntryObj
 	{
 	public:
-		GeometryAppEntryObj(const ReferenceTypeDef& typeDef, const CompositeValue* outer);
+		GeometryAppEntryObj(const ReferenceTypeDef& typeDef);
 		virtual void Boot() override;
 	};
 }

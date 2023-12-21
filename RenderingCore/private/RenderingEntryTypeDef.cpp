@@ -26,6 +26,6 @@ rendering::core::RenderingEntryTypeDef::RenderingEntryTypeDef() :
 
 void rendering::core::RenderingEntryTypeDef::Construct(Value& container) const
 {
-	RenderingEntryObj* obj = new RenderingEntryObj(*this, nullptr);
+	RenderingEntryObj* obj = new RenderingEntryObj(*this);
 	container.AssignObject(obj);
 }

@@ -5,8 +5,8 @@
 #include "Job.h"
 #include "Thread.h"
 
-jobs::JobSystem::JobSystem(const JobSystemDef& def, CompositeValue* outer) :
-	ObjectValue(def, outer),
+jobs::JobSystem::JobSystem(const JobSystemDef& def) :
+	ObjectValue(def),
 	m_numThreads(IntTypeDef::GetTypeDef(), this)
 {
 }

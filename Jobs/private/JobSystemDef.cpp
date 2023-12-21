@@ -42,6 +42,6 @@ jobs::JobSystemDef::JobSystemDef() :
 
 void jobs::JobSystemDef::Construct(Value& container) const
 {
-	JobSystem* js = new JobSystem(*this, nullptr);
+	JobSystem* js = new JobSystem(*this);
 	container.AssignObject(js);
 }

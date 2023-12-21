@@ -1,7 +1,7 @@
 #include "ReflectionEntryObj.h"
 
-reflection::ReflectionEntryObj::ReflectionEntryObj(const ReflectionEntryTypeDef& reflectionEntryTypeDef, const CompositeValue* outer) :
-	app::AppEntryObj(reflectionEntryTypeDef, outer)
+reflection::ReflectionEntryObj::ReflectionEntryObj(const ReflectionEntryTypeDef& reflectionEntryTypeDef) :
+	app::AppEntryObj(reflectionEntryTypeDef)
 {
 }
 

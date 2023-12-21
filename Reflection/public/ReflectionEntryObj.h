@@ -9,7 +9,7 @@ namespace reflection
 	class ReflectionEntryObj : public app::AppEntryObj
 	{
 	public:
-		ReflectionEntryObj(const ReflectionEntryTypeDef& reflectionEntryTypeDef, const CompositeValue* outer);
+		ReflectionEntryObj(const ReflectionEntryTypeDef& reflectionEntryTypeDef);
 		virtual void Boot() override;
 	};
 }

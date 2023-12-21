@@ -52,7 +52,7 @@ rendering::WindowTypeDef::WindowTypeDef() :
 
 void rendering::WindowTypeDef::Construct(Value& container) const
 {
-	WindowObj* obj = new WindowObj(WindowTypeDef::GetTypeDef(), nullptr);
+	WindowObj* obj = new WindowObj(WindowTypeDef::GetTypeDef());
 	container.AssignObject(obj);
 }
 

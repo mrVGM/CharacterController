@@ -17,8 +17,8 @@ namespace
 	const wchar_t* m_className = L"MyWindow";
 }
 
-rendering::WindowObj::WindowObj(const CompositeTypeDef& typeDef, const CompositeValue* outer) :
-	ObjectValue(typeDef, outer),
+rendering::WindowObj::WindowObj(const ReferenceTypeDef& typeDef) :
+	ObjectValue(typeDef),
 	m_width(WindowTypeDef::GetTypeDef().m_width.GetType(), this),
 	m_height(WindowTypeDef::GetTypeDef().m_height.GetType(), this),
 	m_windowUpdateJobSystem(WindowTypeDef::GetTypeDef().m_windowUpdateJobSystem.GetType(), this)

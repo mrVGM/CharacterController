@@ -504,7 +504,7 @@ geo::MeshTypeDef::MeshTypeDef() :
 
 void geo::MeshTypeDef::Construct(Value& container) const
 {
-	Mesh* mesh = new Mesh(*this, nullptr);
+	Mesh* mesh = new Mesh(*this);
 	container.AssignObject(mesh);
 }
 
@@ -518,8 +518,8 @@ const geo::MeshTypeDef& geo::MeshTypeDef::GetTypeDef()
 	return *m_meshTypeDef.m_object;
 }
 
-geo::Mesh::Mesh(const CompositeTypeDef& type, const CompositeValue* outer) :
-	ObjectValue(type, outer),
+geo::Mesh::Mesh(const ReferenceTypeDef& type) :
+	ObjectValue(type),
 	m_colladaFile(MeshTypeDef::GetTypeDef().m_colladaFile.GetType(), this)
 {
 }

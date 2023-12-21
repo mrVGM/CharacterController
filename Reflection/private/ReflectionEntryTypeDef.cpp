@@ -26,6 +26,6 @@ reflection::ReflectionEntryTypeDef::ReflectionEntryTypeDef() :
 
 void reflection::ReflectionEntryTypeDef::Construct(Value& container) const
 {
-	ReflectionEntryObj* obj = new ReflectionEntryObj(*this, nullptr);
+	ReflectionEntryObj* obj = new ReflectionEntryObj(*this);
 	container.AssignObject(obj);
 }

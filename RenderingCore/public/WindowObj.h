@@ -39,7 +39,7 @@ namespace rendering
 
 		HWND m_hwnd = nullptr;
 
-		WindowObj(const CompositeTypeDef& typeDef, const CompositeValue* outer);
+		WindowObj(const ReferenceTypeDef& typeDef);
 		virtual ~WindowObj();
 
 		void Start();

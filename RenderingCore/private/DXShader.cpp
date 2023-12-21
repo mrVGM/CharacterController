@@ -44,7 +44,7 @@ rendering::DXVertexShaderTypeDef::DXVertexShaderTypeDef() :
 
 void rendering::DXVertexShaderTypeDef::Construct(Value& container) const
 {
-	DXShader* shader = new DXShader(GetTypeDef(), nullptr);
+	DXShader* shader = new DXShader(GetTypeDef());
 	container.AssignObject(shader);
 }
 
@@ -65,7 +65,7 @@ rendering::DXPixelShaderTypeDef::DXPixelShaderTypeDef() :
 
 void rendering::DXPixelShaderTypeDef::Construct(Value& container) const
 {
-	DXShader* shader = new DXShader(GetTypeDef(), nullptr);
+	DXShader* shader = new DXShader(GetTypeDef());
 	container.AssignObject(shader);
 }
 
@@ -79,8 +79,8 @@ const rendering::DXPixelShaderTypeDef& rendering::DXPixelShaderTypeDef::GetTypeD
 	return *m_pixelShaderTypeDef.m_object;
 }
 
-rendering::DXShader::DXShader(const CompositeTypeDef& type, const CompositeValue* outer) :
-	ObjectValue(type, outer),
+rendering::DXShader::DXShader(const ReferenceTypeDef& type) :
+	ObjectValue(type),
 	m_name(StringTypeDef::GetTypeDef(), this)
 {
 }

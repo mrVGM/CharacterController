@@ -9,6 +9,6 @@ namespace app
 	public:
 		Value m_appEntry;
 
-		AppObj(const AppTypeDef& appTypedef, const CompositeValue* outer);
+		AppObj(const AppTypeDef& appTypedef);
 	};
 }

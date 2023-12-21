@@ -41,7 +41,7 @@ namespace geo
 		
 		std::list<MaterialRange> m_materials;
 
-		Mesh(const CompositeTypeDef& type, const CompositeValue* outer);
+		Mesh(const ReferenceTypeDef& type);
 		virtual ~Mesh();
 
 		void Load(jobs::Job* done);

@@ -30,7 +30,7 @@ app::AppTypeDef::AppTypeDef() :
 
 void app::AppTypeDef::Construct(Value& container) const
 {
-	AppObj* appObj = new AppObj(*this, nullptr);
+	AppObj* appObj = new AppObj(*this);
 	container.AssignObject(appObj);
 }
 
