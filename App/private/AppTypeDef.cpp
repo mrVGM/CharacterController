@@ -28,6 +28,10 @@ app::AppTypeDef::AppTypeDef() :
 	m_properties[m_appEntry.GetId()] = &m_appEntry;
 }
 
+app::AppTypeDef::~AppTypeDef()
+{
+}
+
 void app::AppTypeDef::Construct(Value& container) const
 {
 	AppObj* appObj = new AppObj(*this);

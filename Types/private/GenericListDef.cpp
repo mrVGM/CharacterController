@@ -25,6 +25,10 @@ GenericListDef::GenericListDef() :
 	m_category = "Composite";
 }
 
+GenericListDef::~GenericListDef()
+{
+}
+
 void GenericListDef::GetReflectionData(json_parser::JSONValue& outData) const
 {
 	using namespace json_parser;

@@ -8,17 +8,19 @@ class BoolTypeDef : public TypeDef
 
 public:
 	BoolTypeDef();
+	virtual ~BoolTypeDef();
 
 	virtual void GetReflectionData(json_parser::JSONValue& outData) const override;
 	virtual void DeserializeFromJSON(Value& value, json_parser::JSONValue& json) const override;
 };
-
+ 
 class IntTypeDef : public TypeDef
 {
 	TYPE_DEF_BODY(IntTypeDef)
 
 public:
 	IntTypeDef();
+	virtual ~IntTypeDef();
 
 	virtual void GetReflectionData(json_parser::JSONValue& outData) const override;
 	virtual void DeserializeFromJSON(Value& value, json_parser::JSONValue& json) const override;
@@ -30,6 +32,7 @@ class FloatTypeDef : public TypeDef
 
 public:
 	FloatTypeDef();
+	virtual ~FloatTypeDef();
 
 	virtual void GetReflectionData(json_parser::JSONValue& outData) const override;
 	virtual void DeserializeFromJSON(Value& value, json_parser::JSONValue& json) const;
@@ -41,6 +44,7 @@ class StringTypeDef : public TypeDef
 
 public:
 	StringTypeDef();
+	virtual ~StringTypeDef();
 
 	virtual void GetReflectionData(json_parser::JSONValue& outData) const override;
 	virtual void DeserializeFromJSON(Value& value, json_parser::JSONValue& json) const;
@@ -52,6 +56,7 @@ class GenericTypeDef : public TypeDef
 
 public:
 	GenericTypeDef();
+	virtual ~GenericTypeDef();
 
 	virtual void GetReflectionData(json_parser::JSONValue& outData) const override;
 };
@@ -65,6 +70,7 @@ private:
 
 public:
 	static const TypeTypeDef& GetTypeDef(const TypeDef& templateType);
+	virtual ~TypeTypeDef();
 
 	explicit TypeTypeDef(const TypeDef& templateType);
 	virtual void DeserializeFromJSON(Value& value, json_parser::JSONValue& json) const;

@@ -24,6 +24,10 @@ rendering::core::RenderingEntryTypeDef::RenderingEntryTypeDef() :
 	m_category = "Rendering";
 }
 
+rendering::core::RenderingEntryTypeDef::~RenderingEntryTypeDef()
+{
+}
+
 void rendering::core::RenderingEntryTypeDef::Construct(Value& container) const
 {
 	RenderingEntryObj* obj = new RenderingEntryObj(*this);

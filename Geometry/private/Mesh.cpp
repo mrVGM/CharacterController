@@ -502,6 +502,10 @@ geo::MeshTypeDef::MeshTypeDef() :
 	m_category = "Geometry";
 }
 
+geo::MeshTypeDef::~MeshTypeDef()
+{
+}
+
 void geo::MeshTypeDef::Construct(Value& container) const
 {
 	Mesh* mesh = new Mesh(*this);

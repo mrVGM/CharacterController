@@ -10,6 +10,7 @@ namespace app
 
 	public:
 		AppEntryTypeDef();
+		virtual ~AppEntryTypeDef();
 
 		void Construct(Value& container) const override;
 	};	

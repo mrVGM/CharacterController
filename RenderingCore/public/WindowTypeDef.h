@@ -14,6 +14,8 @@ namespace rendering
 		TypeProperty m_windowUpdateJobSystem;
 
 		WindowTypeDef();
+		virtual ~WindowTypeDef();
+
 		virtual void Construct(Value& container) const override;
 	};
 }

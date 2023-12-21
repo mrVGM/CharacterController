@@ -58,6 +58,10 @@ AssetTypeDef::AssetTypeDef(json_parser::JSONValue& json) :
 	m_category = std::get<std::string>(category.m_payload);
 }
 
+AssetTypeDef::~AssetTypeDef()
+{
+}
+
 void AssetTypeDef::Construct(Value& container) const
 {
 	ObjectValueContainer& objectValueContainer = ObjectValueContainer::GetContainer();

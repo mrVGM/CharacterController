@@ -21,6 +21,10 @@ geo::GeometryAppEntryTypeDef::GeometryAppEntryTypeDef() :
 	m_category = "Geometry";
 }
 
+geo::GeometryAppEntryTypeDef::~GeometryAppEntryTypeDef()
+{
+}
+
 void geo::GeometryAppEntryTypeDef::Construct(Value& container) const
 {
 	GeometryAppEntryObj* appEntry = new GeometryAppEntryObj(*this);

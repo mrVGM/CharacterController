@@ -10,6 +10,7 @@ namespace rendering::core
 
 	public:
 		RenderingEntryTypeDef();
+		virtual ~RenderingEntryTypeDef();
 
 		void Construct(Value& container) const override;
 	};	

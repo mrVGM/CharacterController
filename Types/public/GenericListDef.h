@@ -9,6 +9,7 @@ class GenericListDef : public TypeDef
 
 public:
 	GenericListDef();
+	virtual ~GenericListDef();
 	
 	virtual void GetReflectionData(json_parser::JSONValue& outData) const override;
 };

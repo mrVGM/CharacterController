@@ -17,6 +17,7 @@ namespace rendering
 		TypeProperty m_shaderName;
 
 		DXShaderTypeDef();
+		virtual ~DXShaderTypeDef();
 	};
 
 	class DXVertexShaderTypeDef : public ReferenceTypeDef
@@ -25,6 +26,8 @@ namespace rendering
 
 	public:
 		DXVertexShaderTypeDef();
+		virtual ~DXVertexShaderTypeDef();
+
 		virtual void Construct(Value& container) const override;
 	};
 
@@ -34,6 +37,8 @@ namespace rendering
 
 	public:
 		DXPixelShaderTypeDef();
+		virtual ~DXPixelShaderTypeDef();
+
 		virtual void Construct(Value& container) const override;
 	};
 

@@ -24,6 +24,10 @@ reflection::ReflectionEntryTypeDef::ReflectionEntryTypeDef() :
 	m_category = "Reflection";
 }
 
+reflection::ReflectionEntryTypeDef::~ReflectionEntryTypeDef()
+{
+}
+
 void reflection::ReflectionEntryTypeDef::Construct(Value& container) const
 {
 	ReflectionEntryObj* obj = new ReflectionEntryObj(*this);

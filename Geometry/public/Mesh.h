@@ -17,6 +17,7 @@ namespace geo
 		TypeProperty m_colladaFile;
 
 		MeshTypeDef();
+		virtual ~MeshTypeDef();
 
 		void Construct(Value& container) const override;
 	};

@@ -23,6 +23,10 @@ CompositeTypeDef::CompositeTypeDef(const TypeDef* parent, const std::string& id)
 	m_category = "Composite";
 }
 
+CompositeTypeDef::~CompositeTypeDef()
+{
+}
+
 const CompositeTypeDef& CompositeTypeDef::GetTypeDef()
 {
 	if (!m_compositeTypeDef.m_object)
@@ -83,6 +87,10 @@ ValueTypeDef::ValueTypeDef(const TypeDef* parent, const std::string& id) :
 	m_name = "Value Type";
 }
 
+ValueTypeDef::~ValueTypeDef()
+{
+}
+
 const ValueTypeDef& ValueTypeDef::GetTypeDef()
 {
 	if (!m_valueTypeDef.m_object)
@@ -106,6 +114,10 @@ ReferenceTypeDef::ReferenceTypeDef(const TypeDef* parent, const std::string& id)
 {
 	m_category = "Composite";
 	m_name = "Reference Type";
+}
+
+ReferenceTypeDef::~ReferenceTypeDef()
+{
 }
 
 const ReferenceTypeDef& ReferenceTypeDef::GetTypeDef()

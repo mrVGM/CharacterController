@@ -56,6 +56,8 @@ protected:
 	TypeDef(const TypeDef* parent, const std::string& id);
 
 public:
+	virtual ~TypeDef();
+
 	static TypeDefsMap& GetDefsMap();
 
 	static void GetDefaultTypeKey(const std::string& id, json_parser::JSONValue& outTypeKey);

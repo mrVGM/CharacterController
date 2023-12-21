@@ -27,6 +27,10 @@ rendering::DXShaderTypeDef::DXShaderTypeDef() :
 	m_category = "Rendering";
 }
 
+rendering::DXShaderTypeDef::~DXShaderTypeDef()
+{
+}
+
 const rendering::DXShaderTypeDef& rendering::DXShaderTypeDef::GetTypeDef()
 {
 	if (!m_shaderTypeDef.m_object)
@@ -48,6 +52,10 @@ void rendering::DXVertexShaderTypeDef::Construct(Value& container) const
 	container.AssignObject(shader);
 }
 
+rendering::DXVertexShaderTypeDef::~DXVertexShaderTypeDef()
+{
+}
+
 const rendering::DXVertexShaderTypeDef& rendering::DXVertexShaderTypeDef::GetTypeDef()
 {
 	if (!m_vertexShaderTypeDef.m_object)
@@ -60,6 +68,10 @@ const rendering::DXVertexShaderTypeDef& rendering::DXVertexShaderTypeDef::GetTyp
 
 rendering::DXPixelShaderTypeDef::DXPixelShaderTypeDef() :
 	ReferenceTypeDef(&rendering::DXShaderTypeDef::GetTypeDef(), "3823F212-4D44-453B-9DB9-F270A15FD135")
+{
+}
+
+rendering::DXPixelShaderTypeDef::~DXPixelShaderTypeDef()
 {
 }
 

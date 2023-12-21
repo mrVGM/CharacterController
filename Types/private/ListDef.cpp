@@ -61,6 +61,10 @@ ListDef::ListDef(const TypeDef& templateDef) :
 	m_isGenerated = true;
 }
 
+ListDef::~ListDef()
+{
+}
+
 void ListDef::Construct(Value& container) const
 {
 	ValueList* tmp = new ValueList(*this, container.m_outer);

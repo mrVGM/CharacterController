@@ -57,6 +57,10 @@ BoolTypeDef::BoolTypeDef() :
 	m_name = "bool";
 }
 
+BoolTypeDef::~BoolTypeDef()
+{
+}
+
 void BoolTypeDef::GetReflectionData(json_parser::JSONValue& outData) const
 {
 	using namespace json_parser;
@@ -90,6 +94,10 @@ IntTypeDef::IntTypeDef() :
 {
 	m_category = "Primitive";
 	m_name = "int";
+}
+
+IntTypeDef::~IntTypeDef()
+{
 }
 
 void IntTypeDef::GetReflectionData(json_parser::JSONValue& outData) const
@@ -127,6 +135,10 @@ FloatTypeDef::FloatTypeDef() :
 	m_name = "float";
 }
 
+FloatTypeDef::~FloatTypeDef()
+{
+}
+
 void FloatTypeDef::GetReflectionData(json_parser::JSONValue& outData) const
 {
 	using namespace json_parser;
@@ -160,6 +172,10 @@ StringTypeDef::StringTypeDef() :
 {
 	m_category = "Primitive";
 	m_name = "string";
+}
+
+StringTypeDef::~StringTypeDef()
+{
 }
 
 void StringTypeDef::GetReflectionData(json_parser::JSONValue& outData) const
@@ -196,6 +212,10 @@ GenericTypeDef::GenericTypeDef() :
 {
 	m_category = "Primitive";
 	m_name = "type";
+}
+
+GenericTypeDef::~GenericTypeDef()
+{
 }
 
 void GenericTypeDef::GetReflectionData(json_parser::JSONValue& outData) const
@@ -235,6 +255,10 @@ TypeTypeDef::TypeTypeDef(const TypeDef& templateType) :
 	m_templateType(templateType)
 {
 	m_isGenerated = true;
+}
+
+TypeTypeDef::~TypeTypeDef()
+{
 }
 
 void TypeTypeDef::DeserializeFromJSON(Value& value, json_parser::JSONValue& json) const

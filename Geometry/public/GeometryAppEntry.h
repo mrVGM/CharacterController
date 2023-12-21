@@ -11,6 +11,7 @@ namespace geo
 
 	public:
 		GeometryAppEntryTypeDef();
+		virtual ~GeometryAppEntryTypeDef();
 
 		void Construct(Value& container) const override;
 	};

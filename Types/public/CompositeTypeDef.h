@@ -39,6 +39,7 @@ protected:
 
 public:
 	CompositeTypeDef(const TypeDef* parent, const std::string& id);
+	virtual ~CompositeTypeDef();
 
 	virtual void Construct(Value& container) const;
 	virtual void GetReflectionData(json_parser::JSONValue& outData) const override;
@@ -54,6 +55,7 @@ protected:
 
 public:
 	ValueTypeDef(const TypeDef* parent, const std::string& id);
+	virtual ~ValueTypeDef();
 
 	virtual void GetReflectionData(json_parser::JSONValue& outData) const override;
 };
@@ -64,6 +66,7 @@ class ReferenceTypeDef : public CompositeTypeDef
 
 public:
 	ReferenceTypeDef(const TypeDef* parent, const std::string& id);
+	virtual ~ReferenceTypeDef();
 	
 	virtual void GetReflectionData(json_parser::JSONValue& outData) const override;
 	virtual void Construct(Value& container) const override;

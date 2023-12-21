@@ -41,6 +41,10 @@ TypeDef::TypeDef(const TypeDef* parent, const std::string& id) :
 {
 }
 
+TypeDef::~TypeDef()
+{
+}
+
 const json_parser::JSONValue& TypeDef::GetTypeKey() const
 {
 	return m_typeKey;

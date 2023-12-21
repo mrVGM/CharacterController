@@ -23,6 +23,10 @@ app::AppEntryTypeDef::AppEntryTypeDef() :
 	m_category = "App";
 }
 
+app::AppEntryTypeDef::~AppEntryTypeDef()
+{
+}
+
 void app::AppEntryTypeDef::Construct(Value& container) const
 {
 	AppEntryObj* obj = new AppEntryObj(*this);

@@ -40,6 +40,10 @@ jobs::JobSystemDef::JobSystemDef() :
 	m_category = "Jobs";
 }
 
+jobs::JobSystemDef::~JobSystemDef()
+{
+}
+
 void jobs::JobSystemDef::Construct(Value& container) const
 {
 	JobSystem* js = new JobSystem(*this);

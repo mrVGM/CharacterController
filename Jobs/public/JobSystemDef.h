@@ -12,6 +12,7 @@ namespace jobs
 		TypeProperty m_numThreads;
 
 		JobSystemDef();
+		virtual ~JobSystemDef();
 
 		void Construct(Value& container) const override;
 	};

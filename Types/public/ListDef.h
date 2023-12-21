@@ -11,6 +11,7 @@ public:
 	const TypeDef& m_templateDef;
 
 	explicit ListDef(const TypeDef& templateDef);
+	virtual ~ListDef();
 
 	virtual void Construct(Value& container) const override;
 	virtual void GetReflectionData(json_parser::JSONValue& outData) const override;

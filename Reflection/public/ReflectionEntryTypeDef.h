@@ -10,6 +10,7 @@ namespace reflection
 
 	public:
 		ReflectionEntryTypeDef();
+		virtual ~ReflectionEntryTypeDef();
 
 		void Construct(Value& container) const override;
 	};	
