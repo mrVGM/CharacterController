@@ -51,4 +51,6 @@ void gc::GCTick(std::list<const ManagedObject*>& managedObjectsToDelete)
 
 void gc::SetGCActivatedListener(const GCActivatedListener& listener)
 {
+	ObjectRecordManager& manager = ObjectRecordManager::GetManager();
+	manager.SetGCActivatedListener(listener);
 }
