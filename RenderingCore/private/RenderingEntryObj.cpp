@@ -2,8 +2,7 @@
 
 #include "ObjectValueContainer.h"
 
-#include "WindowTypeDef.h"
-#include "WindowObj.h"
+#include "RenderWindow.h"
 
 rendering::core::RenderingEntryObj::RenderingEntryObj(const ReferenceTypeDef& typeDef) :
 	app::AppEntryObj(typeDef)

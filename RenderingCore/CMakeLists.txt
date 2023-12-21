@@ -2,10 +2,8 @@
 
 add_library (RenderingCore
 	"public/d3dx12.h"
-	"public/WindowObj.h"
-	"private/WindowObj.cpp"
-	"public/WindowTypeDef.h"
-	"private/WindowTypeDef.cpp"
+	"public/RenderWindow.h"
+	"private/RenderWindow.cpp"
 	"public/RenderingCore.h"
 	"private/RenderingCore.cpp"
 	"public/RenderingEntryObj.h"

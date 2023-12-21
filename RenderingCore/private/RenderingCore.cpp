@@ -1,6 +1,6 @@
 #include "RenderingCore.h"
 
-#include "WindowTypeDef.h"
+#include "RenderWindow.h"
 #include "RenderingEntryTypeDef.h"
 #include "DXShader.h"
 
