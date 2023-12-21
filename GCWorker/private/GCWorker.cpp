@@ -73,6 +73,11 @@ namespace
 			public:
 				void Do() override
 				{
+					if (!m_shouldContinue)
+					{
+						return;
+					}
+
 					if (!m_gcIdle)
 					{
 						m_gcHasWorkToDo = true;
