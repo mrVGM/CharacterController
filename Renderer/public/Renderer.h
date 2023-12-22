@@ -2,7 +2,7 @@
 
 #include <string>
 
-namespace rendering
+namespace rendering::renderer
 {
 	void Boot();
 }

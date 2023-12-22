@@ -2,7 +2,7 @@
 
 #include "RendererAppEntry.h"
 
-void rendering::Boot()
+void rendering::renderer::Boot()
 {
 	RendererAppEntryTypeDef::GetTypeDef();
 }

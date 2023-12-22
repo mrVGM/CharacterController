@@ -1,0 +1,12 @@
+{
+  "properties": {},
+  "parent": {
+    "id": "361D902F-526F-452D-B925-7B59B0F5AB09"
+  },
+  "name": "Generic Render Pass",
+  "isGenerated": 0,
+  "id": {
+    "id": "F451A96F-F3AB-4C7C-B510-499716FB4617"
+  },
+  "category": "Render Pass"
+}

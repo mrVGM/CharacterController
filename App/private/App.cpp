@@ -18,6 +18,7 @@
 #include "RenderingCore.h"
 #include "Renderer.h"
 #include "Geometry.h"
+#include "RenderPass.h"
 
 #include "GCWorker.h"
 
@@ -52,7 +53,8 @@ void app::Boot()
 	reflection::Boot();
 	common_defs::Boot();
 	rendering::core::Boot();
-	rendering::Boot();
+	rendering::renderer::Boot();
+	rendering::render_pass::Boot();
 	geo::Boot();
 
 #pragma endregion
