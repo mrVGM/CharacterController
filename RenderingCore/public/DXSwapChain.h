@@ -44,6 +44,8 @@ namespace rendering
 		DXSwapChain(const ReferenceTypeDef& typeDef);
 		virtual ~DXSwapChain();
 
+		void Load(jobs::Job* done);
+
 		void Present();
 		void UpdateCurrentFrameIndex();
 

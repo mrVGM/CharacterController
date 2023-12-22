@@ -2,6 +2,8 @@
 
 #include "RenderWindow.h"
 
+#include "Jobs.h"
+
 #include "CoreUtils.h"
 
 #define THROW_ERROR(hRes, error) \
@@ -18,6 +20,8 @@ namespace
 rendering::DXSwapChainTypeDef::DXSwapChainTypeDef() :
     ReferenceTypeDef(&ReferenceTypeDef::GetTypeDef(), "BAAA0222-EFEE-476B-BDB6-43C97EC9741E")
 {
+    m_name = "Swap Chain";
+    m_category = "Rendering";
 }
 
 rendering::DXSwapChainTypeDef::~DXSwapChainTypeDef()
@@ -56,15 +60,14 @@ void rendering::DXSwapChain::Create()
         throw "No Device found!";
     }
 
-#if false
     DXCommandQueue* commandQueue = core::utils::GetCommandQueue();
     if (!commandQueue)
     {
         throw "No Command Queue found!";
     }
 
-    int width = window->m_width;
-    int height = window->m_height;
+    int width = window->m_width.Get<int>();
+    int height = window->m_height.Get<int>();
     m_frameIndex = 0;
     m_viewport = CD3DX12_VIEWPORT(0.0f, 0.0f, static_cast<float>(width), static_cast<float>(height));
     m_scissorRect = CD3DX12_RECT(0, 0, static_cast<LONG>(width), static_cast<LONG>(height));
@@ -128,7 +131,6 @@ void rendering::DXSwapChain::Create()
             rtvHandle.Offset(1, m_rtvDescriptorSize);
         }
     }
-#endif
 }
 
 void rendering::DXSwapChain::Present()
@@ -166,6 +168,38 @@ rendering::DXSwapChain::DXSwapChain(const ReferenceTypeDef& typeDef) :
 
 rendering::DXSwapChain::~DXSwapChain()
 {
+}
+
+void rendering::DXSwapChain::Load(jobs::Job* done)
+{
+    struct Context
+    {
+        DXSwapChain* m_self = nullptr;
+        jobs::Job* m_done = nullptr;
+    };
+
+    Context ctx{ this, done };
+
+    class LoadJob : public jobs::Job
+    {
+    private:
+        Context m_ctx;
+    public:
+        LoadJob(const Context& ctx) :
+            m_ctx(ctx)
+        {
+        }
+
+        void Do() override
+        {
+            m_ctx.m_self->Create();
+
+            jobs::RunSync(m_ctx.m_done);
+        }
+    };
+
+
+    jobs::RunSync(new LoadJob(ctx));
 }
 
 const CD3DX12_VIEWPORT& rendering::DXSwapChain::GetViewport() const

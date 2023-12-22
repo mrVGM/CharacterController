@@ -18,6 +18,8 @@ add_library (RenderingCore
 	"private/DXSwapChain.cpp"
 	"public/CoreUtils.h"
 	"private/CoreUtils.cpp"
+	"private/DXCommandQueue.cpp"
+	"public/DXCommandQueue.h"
 )
 
 target_include_directories(RenderingCore INTERFACE PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/public")
