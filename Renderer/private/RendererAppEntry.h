@@ -19,6 +19,9 @@ namespace rendering
 
 	class RendererAppEntryObj : public app::AppEntryObj
 	{
+	private:
+		Value m_renderer;
+
 	public:
 		RendererAppEntryObj(const ReferenceTypeDef& typeDef);
 		virtual ~RendererAppEntryObj();

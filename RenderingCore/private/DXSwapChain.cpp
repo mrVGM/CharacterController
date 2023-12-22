@@ -68,7 +68,6 @@ void rendering::DXSwapChain::Create()
 
     int width = window->m_width.Get<int>();
     int height = window->m_height.Get<int>();
-    m_frameIndex = 0;
     m_viewport = CD3DX12_VIEWPORT(0.0f, 0.0f, static_cast<float>(width), static_cast<float>(height));
     m_scissorRect = CD3DX12_RECT(0, 0, static_cast<LONG>(width), static_cast<LONG>(height));
     m_rtvDescriptorSize = 0;
@@ -94,13 +93,12 @@ void rendering::DXSwapChain::Create()
         &swapChain
     ), "Can't Create Swap Chain")
 
-        // This sample does not support fullscreen transitions.
-        THROW_ERROR(
-            factory->MakeWindowAssociation(window->m_hwnd, DXGI_MWA_NO_ALT_ENTER),
-            "Can't Associate to Window!")
+    // This sample does not support fullscreen transitions.
+    THROW_ERROR(
+        factory->MakeWindowAssociation(window->m_hwnd, DXGI_MWA_NO_ALT_ENTER),
+        "Can't Associate to Window!")
 
-        THROW_ERROR(swapChain.As(&m_swapChain), "Can't cast to swap chain!")
-        m_frameIndex = m_swapChain->GetCurrentBackBufferIndex();
+    THROW_ERROR(swapChain.As(&m_swapChain), "Can't cast to swap chain!")
 
     // Create descriptor heaps.
     {
@@ -139,20 +137,17 @@ void rendering::DXSwapChain::Present()
         "Can't present Swap Chain!")
 }
 
-void rendering::DXSwapChain::UpdateCurrentFrameIndex()
-{
-    m_frameIndex = m_swapChain->GetCurrentBackBufferIndex();
-}
-
 
 CD3DX12_CPU_DESCRIPTOR_HANDLE rendering::DXSwapChain::GetCurrentRTVDescriptor() const
 {
-    return CD3DX12_CPU_DESCRIPTOR_HANDLE(m_rtvHeap->GetCPUDescriptorHandleForHeapStart(), m_frameIndex, m_rtvDescriptorSize);
+    int frameIndex = m_swapChain->GetCurrentBackBufferIndex();
+    return CD3DX12_CPU_DESCRIPTOR_HANDLE(m_rtvHeap->GetCPUDescriptorHandleForHeapStart(), frameIndex, m_rtvDescriptorSize);
 }
 
 ID3D12Resource* rendering::DXSwapChain::GetCurrentRenderTarget() const
 {
-    return m_renderTargets[m_frameIndex].Get();
+    int frameIndex = m_swapChain->GetCurrentBackBufferIndex();
+    return m_renderTargets[frameIndex].Get();
 }
 
 UINT rendering::DXSwapChain::GetCurrentSwapChainIndex()

@@ -31,7 +31,6 @@ namespace rendering
 		CD3DX12_RECT m_scissorRect;
 
 		Microsoft::WRL::ComPtr<IDXGISwapChain3> m_swapChain;
-		UINT m_frameIndex;
 
 		Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> m_rtvHeap;
 		UINT m_rtvDescriptorSize;
@@ -47,7 +46,6 @@ namespace rendering
 		void Load(jobs::Job* done);
 
 		void Present();
-		void UpdateCurrentFrameIndex();
 
 		const CD3DX12_VIEWPORT& GetViewport() const;
 		const CD3DX12_RECT& GetScissorRect() const;

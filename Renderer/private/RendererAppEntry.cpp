@@ -40,7 +40,8 @@ void rendering::RendererAppEntryTypeDef::Construct(Value& container) const
 }
 
 rendering::RendererAppEntryObj::RendererAppEntryObj(const ReferenceTypeDef& typeDef) :
-	AppEntryObj(typeDef)
+	AppEntryObj(typeDef),
+	m_renderer(renderer::RendererTypeDef::GetTypeDef(), this)
 {
 }
 
@@ -50,17 +51,60 @@ rendering::RendererAppEntryObj::~RendererAppEntryObj()
 
 void rendering::RendererAppEntryObj::Boot()
 {
-	class RendererLoaded : public jobs::Job
+	struct Context
 	{
+		RendererAppEntryObj* m_self = nullptr;
+	};
+
+	Context ctx{ this };
+
+	class RenderFrame : public jobs::Job
+	{
+	private:
+		Context m_ctx;
+
 	public:
+		RenderFrame(const Context& ctx) :
+			m_ctx(ctx)
+		{
+		}
+
 		void Do() override
 		{
+			renderer::RendererObj* renderer = m_ctx.m_self->m_renderer.GetValue<renderer::RendererObj*>();
+			renderer->RenderFrame(new RenderFrame(m_ctx));
+		}
+	};
+
+	class RendererLoaded : public jobs::Job
+	{
+	private:
+		Context m_ctx;
+
+	public:
+		RendererLoaded(const Context& ctx) :
+			m_ctx(ctx)
+		{
+		}
+
+		void Do() override
+		{
+			renderer::RendererObj* renderer = m_ctx.m_self->m_renderer.GetValue<renderer::RendererObj*>();
+			jobs::RunAsync(new RenderFrame(m_ctx));
 		}
 	};
 
 	class LoadRenderer : public jobs::Job
 	{
+	private:
+		Context m_ctx;
+
 	public:
+		LoadRenderer(const Context& ctx) :
+			m_ctx(ctx)
+		{
+		}
+
 		void Do() override
 		{
 			std::list<ObjectValue*> tmp;
@@ -68,10 +112,12 @@ void rendering::RendererAppEntryObj::Boot()
 			container.GetObjectsOfType(renderer::RendererTypeDef::GetTypeDef(), tmp);
 
 			renderer::RendererObj* renderer = static_cast<renderer::RendererObj*>(tmp.front());
-			renderer->Load(new RendererLoaded());
+			m_ctx.m_self->m_renderer.AssignObject(renderer);
+
+			renderer->Load(new RendererLoaded(m_ctx));
 		}
 	};
 
-	jobs::RunSync(new LoadRenderer());
+	jobs::RunSync(new LoadRenderer(ctx));
 
 }

@@ -136,13 +136,16 @@ void rendering::renderer::RendererObj::Load(jobs::Job* done)
 			std::list<ObjectValue*> tmp;
 			ObjectValueContainer& container = ObjectValueContainer::GetContainer();
 
-			container.GetObjectsOfType(*m_ctx.m_self->m_renderFence.GetType<const TypeDef*>(), tmp);
-			m_ctx.m_self->m_renderFence.AssignObject(tmp.front());
+			container.GetObjectsOfType(*m_ctx.m_self->m_renderFenceDef.GetType<const TypeDef*>(), tmp);
+			DXFence* fence = static_cast<DXFence*>(tmp.front());
+			m_ctx.m_self->m_renderFence.AssignObject(fence);
+
+			m_ctx.m_loading = 1;
+			fence->Load(new RPLoaded(m_ctx));
 
 			ValueList* prDefs = m_ctx.m_self->m_renderPassesDefs.GetValue<ValueList*>();
 			ValueList* prs = m_ctx.m_self->m_renderPasses.GetValue<ValueList*>();
 
-			m_ctx.m_loading = 0;
 			for (auto it = prDefs->GetIterator(); it; ++it)
 			{
 				const render_pass::RenderPassTypeDef* curRPDef = (*it).GetType<const render_pass::RenderPassTypeDef*>();
