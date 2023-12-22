@@ -2,7 +2,9 @@
   "properties": {
     "BE6AE599-53DC-4932-9536-74D398FD1003": {
       "type": {
-        "template": "061DFEE1-B9C6-406D-BFEC-E89830C7FD3D",
+        "template": {
+          "id": "061DFEE1-B9C6-406D-BFEC-E89830C7FD3D"
+        },
         "id": "1D4363E5-BC6F-4B49-80F3-FAC358F5B296"
       },
       "name": "Window Update Job System",

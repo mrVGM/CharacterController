@@ -2,7 +2,12 @@
   "properties": {
     "DA9E00D1-A9AD-4B23-9DD9-F66F7BF140CA": {
       "type": {
-        "template": "A4885F01-547F-4C21-BE40-A21C7BE0BA24",
+        "template": {
+          "template": {
+            "id": "F451A96F-F3AB-4C7C-B510-499716FB4617"
+          },
+          "id": "1D4363E5-BC6F-4B49-80F3-FAC358F5B296"
+        },
         "id": "B5883DED-257C-4E35-846C-DB5BB7E11289"
       },
       "name": "Render Passes",

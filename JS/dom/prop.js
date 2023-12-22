@@ -53,8 +53,6 @@ function createStringProp(name, accessors) {
 }
 
 function createListProp(type, name, accessors) {
-    const template = document.appData.defs[type.template];
-
     const listContainer = LoadEJSElement('listContainer.ejs');
 
     if (!accessors.get()) {
@@ -110,7 +108,7 @@ function createListProp(type, name, accessors) {
         }
 
         const slot = listPanel.data.addSlot('');
-        const prop = createProp(template.id, index.toString(), createAccessors(index));
+        const prop = createProp(type.template, index.toString(), createAccessors(index));
         listPanel.data.addItem(prop, index, slot.slotId);
         itemsAdded.push(prop);
         index++;
@@ -154,8 +152,6 @@ function createListProp(type, name, accessors) {
 }
 
 function createTypeProp(type, name, accessors) {
-    const template = document.appData.defs[type.template];
-
     function getVal() {
         let val = accessors.get();
         if (val) {
@@ -182,7 +178,7 @@ function createTypeProp(type, name, accessors) {
             const { openModal, closeModal } = require('./modalUtils');
 
             const assignable = [];
-            const it = document.appData.enumerateAssignable(template);
+            const it = document.appData.enumerateAssignable(type.template);
             let cur = it.next();
 
             const pr = new Promise((resolve, reject) => {

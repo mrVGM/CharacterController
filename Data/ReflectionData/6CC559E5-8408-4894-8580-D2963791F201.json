@@ -2,7 +2,9 @@
   "properties": {
     "A9E68EEE-504B-44B2-B3FF-6EF65493D3E9": {
       "type": {
-        "template": "7D79EC02-6FBC-48F3-BB6F-1C07BE762DE8",
+        "template": {
+          "id": "7D79EC02-6FBC-48F3-BB6F-1C07BE762DE8"
+        },
         "id": "1D4363E5-BC6F-4B49-80F3-FAC358F5B296"
       },
       "name": "App Entry Point",

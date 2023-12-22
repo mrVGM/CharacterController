@@ -90,7 +90,7 @@
 
                         let cur = it.next();
                         while (!cur.done) {
-                            if (appData.isAssignable(cur.value.id.id, type.id.id)) {
+                            if (appData.isAssignable(cur.value.id.id, type.id)) {
                                 yield cur.value;
                             }
                             cur = it.next();

@@ -25,7 +25,7 @@ namespace
 			TypeDef::GetDefaultTypeKey(GenericListDef::GetTypeDef().GetId(), tmp);
 
 			auto& map = tmp.GetAsObj();
-			map["template"] = JSONValue(m_template.GetId());
+			map["template"] = JSONValue(m_template.GetTypeKey());
 
 			key = tmp;
 		}

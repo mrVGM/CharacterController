@@ -33,7 +33,7 @@ namespace
 			TypeDef::GetDefaultTypeKey(m_genericTypeDefId, tmp);
 
 			auto& map = tmp.GetAsObj();
-			map["template"] = JSONValue(m_template.GetId());
+			map["template"] = JSONValue(m_template.GetTypeKey());
 
 			key = tmp;
 		}
