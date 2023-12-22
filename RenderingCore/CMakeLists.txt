@@ -22,6 +22,8 @@ add_library (RenderingCore
 	"public/DXCommandQueue.h"
 	"public/DXFence.h"
 	"private/DXFence.cpp"
+	"private/WaitFence.cpp"
+	"public/WaitFence.h"
 )
 
 target_include_directories(RenderingCore INTERFACE PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/public")

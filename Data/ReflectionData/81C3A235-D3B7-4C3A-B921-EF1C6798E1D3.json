@@ -13,6 +13,17 @@
       "name": "Render Passes",
       "id": "DA9E00D1-A9AD-4B23-9DD9-F66F7BF140CA",
       "category": "Setup"
+    },
+    "27D603E6-8128-4546-8AE0-28459ED1553A": {
+      "type": {
+        "template": {
+          "id": "B5E6EB43-2F57-4CAE-97B1-AAB34F7A0100"
+        },
+        "id": "1D4363E5-BC6F-4B49-80F3-FAC358F5B296"
+      },
+      "name": "Render Fence",
+      "id": "27D603E6-8128-4546-8AE0-28459ED1553A",
+      "category": "Setup"
     }
   },
   "parent": {

@@ -12,6 +12,7 @@ namespace rendering::renderer
 		TYPE_DEF_BODY(RendererTypeDef)
 
 	public:
+		TypeProperty m_renderFence;
 		TypeProperty m_renderPasses;
 
 		RendererTypeDef();
@@ -23,13 +24,21 @@ namespace rendering::renderer
 	class RendererObj : public ObjectValue
 	{
 	private:
+		int m_frameIndex = 1;
 		Value m_renderPasses;
+
+		Value m_swapChain;
+		Value m_commandQueue;
+		Value m_renderFence;
 	public:
+		Value m_renderFenceDef;
 		Value m_renderPassesDefs;
 
 		RendererObj(const ReferenceTypeDef& typeDef);
 
 		void Load(jobs::Job* done);
+
+		void RenderFrame(jobs::Job* done);
 	};
 
 	void Boot();
