@@ -16,6 +16,7 @@
 
 #include "CommonTypeDefs.h"
 #include "RenderingCore.h"
+#include "Renderer.h"
 #include "Geometry.h"
 
 #include "GCWorker.h"
@@ -46,10 +47,15 @@ void app::Boot()
 
 	BootTypeSystem();
 
+#pragma region Boot Libs
+
 	reflection::Boot();
 	common_defs::Boot();
 	rendering::core::Boot();
+	rendering::Boot();
 	geo::Boot();
+
+#pragma endregion
 
 	AppTypeDef::GetTypeDef();
 	AppEntryTypeDef::GetTypeDef();

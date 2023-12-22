@@ -18,6 +18,7 @@ target_link_libraries(App PUBLIC
 	Reflection
 	Jobs
 	RenderingCore
+	Renderer
 	XMLReader
 	Geometry
 	GCWorker
