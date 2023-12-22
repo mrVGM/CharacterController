@@ -6,6 +6,7 @@
 #include "DXDevice.h"
 #include "DXSwapChain.h"
 #include "DXCommandQueue.h"
+#include "DXFence.h"
 
 void rendering::core::Boot()
 {
@@ -19,4 +20,5 @@ void rendering::core::Boot()
 	DXDeviceTypeDef::GetTypeDef();
 	DXSwapChainTypeDef::GetTypeDef();
 	DXCommandQueueTypeDef::GetTypeDef();
+	DXFenceTypeDef::GetTypeDef();
 }
