@@ -3,6 +3,8 @@
 add_library (RenderPass
 	"public/RenderPass.h"
 	"private/RenderPass.cpp"
+	"private/ClearScreenRP.h"
+	"private/ClearScreenRP.cpp"
 )
 
 target_include_directories(RenderPass INTERFACE PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/public")
@@ -11,6 +13,7 @@ target_include_directories(RenderPass PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/priva
 target_link_libraries(RenderPass PUBLIC
 	Types
 	Jobs
+	RenderingCore
 )
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)

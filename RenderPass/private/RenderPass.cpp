@@ -2,17 +2,17 @@
 
 namespace
 {
-	BasicObjectContainer<rendering::render_pass::RenderPassTypeDef> m_renderPass;
+	BasicObjectContainer<rendering::render_pass::RenderPassTypeDef> m_clearScreenRP;
 }
 
 const rendering::render_pass::RenderPassTypeDef& rendering::render_pass::RenderPassTypeDef::GetTypeDef()
 {
-	if (!m_renderPass.m_object)
+	if (!m_clearScreenRP.m_object)
 	{
-		m_renderPass.m_object = new rendering::render_pass::RenderPassTypeDef();
+		m_clearScreenRP.m_object = new rendering::render_pass::RenderPassTypeDef();
 	}
 
-	return *m_renderPass.m_object;
+	return *m_clearScreenRP.m_object;
 }
 
 rendering::render_pass::RenderPassTypeDef::RenderPassTypeDef() :
