@@ -4,6 +4,7 @@
 #include "RenderingEntryTypeDef.h"
 #include "DXShader.h"
 #include "DXDevice.h"
+#include "DXSwapChain.h"
 
 void rendering::core::Boot()
 {
@@ -15,4 +16,5 @@ void rendering::core::Boot()
 	DXPixelShaderTypeDef::GetTypeDef();
 
 	DXDeviceTypeDef::GetTypeDef();
+	DXSwapChainTypeDef::GetTypeDef();
 }

@@ -14,6 +14,10 @@ add_library (RenderingCore
 	"private/DXShader.cpp"
 	"public/DXDevice.h"
 	"private/DXDevice.cpp"
+	"public/DXSwapChain.h"
+	"private/DXSwapChain.cpp"
+	"public/CoreUtils.h"
+	"private/CoreUtils.cpp"
 )
 
 target_include_directories(RenderingCore INTERFACE PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/public")
