@@ -72,7 +72,8 @@ void rendering::RendererAppEntryObj::Boot()
 		void Do() override
 		{
 			renderer::RendererObj* renderer = m_ctx.m_self->m_renderer.GetValue<renderer::RendererObj*>();
-			renderer->RenderFrame(new RenderFrame(m_ctx));
+			renderer->RenderFrame();
+			jobs::RunAsync(new RenderFrame(m_ctx));
 		}
 	};
 

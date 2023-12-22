@@ -38,7 +38,7 @@ namespace rendering::renderer
 
 		void Load(jobs::Job* done);
 
-		void RenderFrame(jobs::Job* done);
+		void RenderFrame();
 	};
 
 	void Boot();

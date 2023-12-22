@@ -205,7 +205,7 @@ void rendering::renderer::RendererObj::Load(jobs::Job* done)
 	jobs::RunSync(new LoadCommandQueue(*ctx));
 }
 
-void rendering::renderer::RendererObj::RenderFrame(jobs::Job* done)
+void rendering::renderer::RendererObj::RenderFrame()
 {
 	ValueList* passes = m_renderPasses.GetValue<ValueList*>();
 
@@ -230,9 +230,8 @@ void rendering::renderer::RendererObj::RenderFrame(jobs::Job* done)
 	commandQueue->GetCommandQueue()->Signal(fence->GetFence(), curFrame);
 
 	waitFence.Wait(curFrame);
-	m_swapChain.GetValue<DXSwapChain*>()->Present();
 
-	jobs::RunSync(done);
+	m_swapChain.GetValue<DXSwapChain*>()->Present();
 }
 
 void rendering::renderer::Boot()
