@@ -163,7 +163,6 @@ UINT rendering::DXSwapChain::GetCurrentSwapChainIndex()
 rendering::DXSwapChain::DXSwapChain(const ReferenceTypeDef& typeDef) :
     ObjectValue(typeDef)
 {
-    Create();
 }
 
 rendering::DXSwapChain::~DXSwapChain()

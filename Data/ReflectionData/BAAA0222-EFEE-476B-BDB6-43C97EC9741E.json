@@ -1,0 +1,12 @@
+{
+  "properties": {},
+  "parent": {
+    "id": "361D902F-526F-452D-B925-7B59B0F5AB09"
+  },
+  "name": "Swap Chain",
+  "isGenerated": 0,
+  "id": {
+    "id": "BAAA0222-EFEE-476B-BDB6-43C97EC9741E"
+  },
+  "category": "Rendering"
+}
