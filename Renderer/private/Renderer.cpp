@@ -6,6 +6,14 @@
 
 #include "RendererAppEntry.h"
 
+#include "ValueList.h"
+
+#include "ObjectValueContainer.h"
+
+#include "Jobs.h"
+
+#include "CoreUtils.h"
+
 namespace
 {
 	BasicObjectContainer<rendering::renderer::RendererTypeDef> m_renderer;
@@ -61,7 +69,110 @@ rendering::renderer::RendererObj::RendererObj(const ReferenceTypeDef& typeDef) :
 
 void rendering::renderer::RendererObj::Load(jobs::Job* done)
 {
-	throw "Not implemented!";
+	struct Context
+	{
+		int m_loading = 0;
+		RendererObj* m_self = nullptr;
+		jobs::Job* m_done;
+	};
+
+	Context* ctx = new Context{ 0, this, done };
+
+	class RPLoaded : public jobs::Job
+	{
+	private:
+		Context& m_ctx;
+	public:
+		RPLoaded(Context& ctx) :
+			m_ctx(ctx)
+		{
+		}
+
+		void Do() override
+		{
+			--m_ctx.m_loading;
+
+			if (m_ctx.m_loading > 0)
+			{
+				return;
+			}
+
+			jobs::RunSync(m_ctx.m_done);
+			delete &m_ctx;
+		}
+	};
+
+	class LoadRPs : public jobs::Job
+	{
+	private:
+		Context& m_ctx;
+	public:
+		LoadRPs(Context& ctx) :
+			m_ctx(ctx)
+		{
+		}
+
+		void Do() override
+		{
+			ValueList* prDefs = m_ctx.m_self->m_renderPassesDefs.GetValue<ValueList*>();
+			ValueList* prs = m_ctx.m_self->m_renderPasses.GetValue<ValueList*>();
+
+			m_ctx.m_loading = 0;
+			for (auto it = prDefs->GetIterator(); it; ++it)
+			{
+				const render_pass::RenderPassTypeDef* curRPDef = (*it).GetType<const render_pass::RenderPassTypeDef*>();
+				std::list<ObjectValue*> tmp;
+				ObjectValueContainer& container = ObjectValueContainer::GetContainer();
+				container.GetObjectsOfType(*curRPDef, tmp);
+
+				render_pass::RenderPass* rp = static_cast<render_pass::RenderPass*>(tmp.front());
+				Value& val = prs->EmplaceBack();
+				val.AssignObject(rp);
+				++m_ctx.m_loading;
+
+				rp->Load(new RPLoaded(m_ctx));
+			}
+		}
+	};
+
+	class LoadSwapChain : public jobs::Job
+	{
+	private:
+		Context& m_ctx;
+	public:
+		LoadSwapChain(Context& ctx) :
+			m_ctx(ctx)
+		{
+		}
+
+		void Do() override
+		{
+			DXSwapChain* swapChain = core::utils::GetSwapChain();
+			swapChain->Load(new LoadRPs(m_ctx));
+		}
+	};
+
+	class LoadCommandQueue : public jobs::Job
+	{
+	private:
+		Context& m_ctx;
+	public:
+		LoadCommandQueue(Context& ctx) :
+			m_ctx(ctx)
+		{
+		}
+
+		void Do() override
+		{
+			WindowObj* window = core::utils::GetWindow();
+			window->Start();
+
+			DXCommandQueue* commandQueue = core::utils::GetCommandQueue();
+			commandQueue->Load(new LoadSwapChain(m_ctx));
+		}
+	};
+
+	jobs::RunSync(new LoadCommandQueue(*ctx));
 }
 
 void rendering::renderer::Boot()

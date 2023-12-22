@@ -2,6 +2,11 @@
 
 #include "AppEntryTypeDef.h"
 
+#include "Jobs.h"
+#include "ObjectValueContainer.h"
+#include "Renderer.h"
+
+
 namespace
 {
 	BasicObjectContainer<rendering::RendererAppEntryTypeDef> m_rendererAppEntry;
@@ -45,4 +50,28 @@ rendering::RendererAppEntryObj::~RendererAppEntryObj()
 
 void rendering::RendererAppEntryObj::Boot()
 {
+	class RendererLoaded : public jobs::Job
+	{
+	public:
+		void Do() override
+		{
+		}
+	};
+
+	class LoadRenderer : public jobs::Job
+	{
+	public:
+		void Do() override
+		{
+			std::list<ObjectValue*> tmp;
+			ObjectValueContainer& container = ObjectValueContainer::GetContainer();
+			container.GetObjectsOfType(renderer::RendererTypeDef::GetTypeDef(), tmp);
+
+			renderer::RendererObj* renderer = static_cast<renderer::RendererObj*>(tmp.front());
+			renderer->Load(new RendererLoaded());
+		}
+	};
+
+	jobs::RunSync(new LoadRenderer());
+
 }
