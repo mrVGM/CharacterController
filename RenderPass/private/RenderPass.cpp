@@ -1,18 +1,20 @@
 #include "RenderPass.h"
 
+#include "ClearScreenRP.h"
+
 namespace
 {
-	BasicObjectContainer<rendering::render_pass::RenderPassTypeDef> m_clearScreenRP;
+	BasicObjectContainer<rendering::render_pass::RenderPassTypeDef> m_renderPassTypeDef;
 }
 
 const rendering::render_pass::RenderPassTypeDef& rendering::render_pass::RenderPassTypeDef::GetTypeDef()
 {
-	if (!m_clearScreenRP.m_object)
+	if (!m_renderPassTypeDef.m_object)
 	{
-		m_clearScreenRP.m_object = new rendering::render_pass::RenderPassTypeDef();
+		m_renderPassTypeDef.m_object = new rendering::render_pass::RenderPassTypeDef();
 	}
 
-	return *m_clearScreenRP.m_object;
+	return *m_renderPassTypeDef.m_object;
 }
 
 rendering::render_pass::RenderPassTypeDef::RenderPassTypeDef() :
@@ -43,4 +45,5 @@ rendering::render_pass::RenderPass::~RenderPass()
 void rendering::render_pass::Boot()
 {
 	RenderPassTypeDef::GetTypeDef();
+	ClearScreenRPTypeDef::GetTypeDef();
 }

@@ -1,0 +1,12 @@
+{
+  "properties": {},
+  "parent": {
+    "id": "F451A96F-F3AB-4C7C-B510-499716FB4617"
+  },
+  "name": "Clear Screen RP",
+  "isGenerated": 0,
+  "id": {
+    "id": "A997F784-402E-459E-8190-370732FA2870"
+  },
+  "category": "Render Pass"
+}
