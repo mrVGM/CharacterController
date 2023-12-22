@@ -9,6 +9,10 @@ rendering::core::RenderingEntryObj::RenderingEntryObj(const ReferenceTypeDef& ty
 {
 }
 
+rendering::core::RenderingEntryObj::~RenderingEntryObj()
+{
+}
+
 void rendering::core::RenderingEntryObj::Boot()
 {
 	ObjectValueContainer& container = ObjectValueContainer::GetContainer();

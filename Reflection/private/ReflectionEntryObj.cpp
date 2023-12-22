@@ -5,6 +5,10 @@ reflection::ReflectionEntryObj::ReflectionEntryObj(const ReflectionEntryTypeDef&
 {
 }
 
+reflection::ReflectionEntryObj::~ReflectionEntryObj()
+{
+}
+
 void reflection::ReflectionEntryObj::Boot()
 {
 	TypeDef::SaveReflectionData();

@@ -46,6 +46,10 @@ geo::GeometryAppEntryObj::GeometryAppEntryObj(const ReferenceTypeDef& typeDef) :
 {
 }
 
+geo::GeometryAppEntryObj::~GeometryAppEntryObj()
+{
+}
+
 void geo::GeometryAppEntryObj::Boot()
 {
 	class LoadDone : public jobs::Job

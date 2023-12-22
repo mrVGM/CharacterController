@@ -21,6 +21,8 @@ namespace rendering
 	{
 	public:
 		RendererAppEntryObj(const ReferenceTypeDef& typeDef);
+		virtual ~RendererAppEntryObj();
+
 		virtual void Boot() override;
 	};
 }

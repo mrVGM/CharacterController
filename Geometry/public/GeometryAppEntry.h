@@ -20,6 +20,8 @@ namespace geo
 	{
 	public:
 		GeometryAppEntryObj(const ReferenceTypeDef& typeDef);
+		virtual ~GeometryAppEntryObj();
+
 		virtual void Boot() override;
 	};
 }

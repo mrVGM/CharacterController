@@ -39,6 +39,10 @@ rendering::RendererAppEntryObj::RendererAppEntryObj(const ReferenceTypeDef& type
 {
 }
 
+rendering::RendererAppEntryObj::~RendererAppEntryObj()
+{
+}
+
 void rendering::RendererAppEntryObj::Boot()
 {
 }

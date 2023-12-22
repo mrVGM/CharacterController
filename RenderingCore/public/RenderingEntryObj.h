@@ -10,6 +10,8 @@ namespace rendering::core
 	{
 	public:
 		RenderingEntryObj(const ReferenceTypeDef& typeDef);
+		~RenderingEntryObj();
+
 		virtual void Boot() override;
 	};
 }

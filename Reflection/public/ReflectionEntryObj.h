@@ -10,6 +10,8 @@ namespace reflection
 	{
 	public:
 		ReflectionEntryObj(const ReflectionEntryTypeDef& reflectionEntryTypeDef);
+		~ReflectionEntryObj();
+
 		virtual void Boot() override;
 	};
 }
