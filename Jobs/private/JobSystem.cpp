@@ -5,7 +5,7 @@
 #include "Job.h"
 #include "Thread.h"
 
-jobs::JobSystem::JobSystem(const JobSystemDef& def) :
+jobs::JobSystem::JobSystem(const ReferenceTypeDef& def) :
 	ObjectValue(def),
 	m_numThreads(IntTypeDef::GetTypeDef(), this)
 {

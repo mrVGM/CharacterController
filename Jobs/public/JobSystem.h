@@ -28,7 +28,7 @@ namespace jobs
 	public:
 		Value m_numThreads;
 
-		JobSystem(const JobSystemDef& def);
+		JobSystem(const ReferenceTypeDef& def);
 		virtual ~JobSystem();
 
 		void Start();

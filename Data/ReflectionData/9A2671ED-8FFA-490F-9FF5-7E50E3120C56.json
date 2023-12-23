@@ -1,0 +1,12 @@
+{
+  "properties": {},
+  "parent": {
+    "id": "B5E6EB43-2F57-4CAE-97B1-AAB34F7A0100"
+  },
+  "name": "Resident Heap Fence",
+  "isGenerated": 0,
+  "id": {
+    "id": "9A2671ED-8FFA-490F-9FF5-7E50E3120C56"
+  },
+  "category": "Rendering"
+}
