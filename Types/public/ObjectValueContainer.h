@@ -24,6 +24,7 @@ private:
 
 public:
 	static ObjectValueContainer& GetContainer();
+	static ObjectValue* GetObjectOfType(const TypeDef& typeDef);
 
 	void Register(ObjectValue* value);
 	void Unregister(ObjectValue* value);

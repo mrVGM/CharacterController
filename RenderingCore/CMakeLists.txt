@@ -30,6 +30,8 @@ add_library (RenderingCore
 	"private/ResidentHeapFence.cpp"
 	"private/ResidentHeapJobSystem.h"
 	"private/ResidentHeapJobSystem.cpp"
+	"private/RenderFence.h"
+	"private/RenderFence.cpp"
 )
 
 target_include_directories(RenderingCore INTERFACE PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/public")

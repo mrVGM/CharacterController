@@ -24,6 +24,19 @@ ObjectValueContainer& ObjectValueContainer::GetContainer()
 	return m_container;
 }
 
+ObjectValue* ObjectValueContainer::GetObjectOfType(const TypeDef& typeDef)
+{
+	ObjectValueContainer& container = ObjectValueContainer::GetContainer();
+	std::list<ObjectValue*> tmp;
+	container.GetObjectsOfType(typeDef, tmp);
+	if (tmp.empty())
+	{
+		return nullptr;
+	}
+
+	return tmp.front();
+}
+
 void ObjectValueContainer::Register(ObjectValue* value)
 {
 	CheckAccess();

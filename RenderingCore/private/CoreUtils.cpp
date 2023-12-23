@@ -1,5 +1,8 @@
 #include "CoreUtils.h"
 
+#include "RenderFence.h"
+#include "ResidentHeapFence.h"
+
 #include "ObjectValueContainer.h"
 
 rendering::WindowObj* rendering::core::utils::GetWindow()
@@ -40,4 +43,18 @@ rendering::DXSwapChain* rendering::core::utils::GetSwapChain()
 	container.GetObjectsOfType(DXSwapChainTypeDef::GetTypeDef(), tmp);
 	DXSwapChain* swapChain = static_cast<DXSwapChain*>(tmp.front());
 	return swapChain;
+}
+
+rendering::DXFence* rendering::core::utils::GetRenderFence()
+{
+	ObjectValue* obj = ObjectValueContainer::GetObjectOfType(RenderFenceTypeDef::GetTypeDef());
+	DXFence* fence = static_cast<DXFence*>(obj);
+	return fence;
+}
+
+rendering::DXFence* rendering::core::utils::GetResidentHeapFence()
+{
+	ObjectValue* obj = ObjectValueContainer::GetObjectOfType(ResidentHeapFenceTypeDef::GetTypeDef());
+	DXFence* fence = static_cast<DXFence*>(obj);
+	return fence;
 }
