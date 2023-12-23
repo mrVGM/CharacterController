@@ -120,11 +120,14 @@ void rendering::renderer::RendererObj::Load(jobs::Job* done)
 
 		void Do() override
 		{
+			DXCommandQueue* commandQueue = core::utils::GetCommandQueue();
+			m_ctx.m_self->m_commandQueue.AssignObject(commandQueue);
+
+			DXSwapChain* swapChain = core::utils::GetSwapChain();
+			m_ctx.m_self->m_swapChain.AssignObject(swapChain);
+
 			DXFence* fence = core::utils::GetRenderFence();
 			m_ctx.m_self->m_renderFence.AssignObject(fence);
-
-			m_ctx.m_loading = 0;
-			fence->Load(new RPLoaded(m_ctx));
 
 			ValueList* prDefs = m_ctx.m_self->m_renderPassesDefs.GetValue<ValueList*>();
 			ValueList* prs = m_ctx.m_self->m_renderPasses.GetValue<ValueList*>();
@@ -132,6 +135,7 @@ void rendering::renderer::RendererObj::Load(jobs::Job* done)
 			std::list<ObjectValue*> tmp;
 			ObjectValueContainer& container = ObjectValueContainer::GetContainer();
 
+			m_ctx.m_loading = 0;
 			for (auto it = prDefs->GetIterator(); it; ++it)
 			{
 				const render_pass::RenderPassTypeDef* curRPDef = (*it).GetType<const render_pass::RenderPassTypeDef*>();

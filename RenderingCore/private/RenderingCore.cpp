@@ -110,9 +110,11 @@ void rendering::core::LoadCoreObjects(jobs::Job* done)
 
 			m_ctx.m_loading = 3;
 
-			commandQueue->Load(new LoadSwapChain(m_ctx));
-			renderFence->Load(new LoadSwapChain(m_ctx));
-			residentHeapFence->Load(new LoadSwapChain(m_ctx));
+			commandQueue->Load(new InitialItemLoaded(m_ctx));
+			renderFence->Load(new InitialItemLoaded(m_ctx));
+			residentHeapFence->Load(new InitialItemLoaded(m_ctx));
 		}
 	};
+
+	jobs::RunSync(new LoadInitialObjects(*ctx));
 }

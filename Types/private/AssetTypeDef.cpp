@@ -79,7 +79,23 @@ void AssetTypeDef::Construct(Value& container) const
 void AssetTypeDef::DeserializeFromJSON(Value& value, json_parser::JSONValue& json) const
 {
 	const ReferenceTypeDef* parent = static_cast<const ReferenceTypeDef*>(GetParent());
-	parent->DeserializeFromJSON(value, json);
+	while (parent)
+	{
+		parent->DeserializeFromJSON(value, json);
+
+		const TypeDef* tmp = parent->GetParent();
+		if (!tmp)
+		{
+			break;
+		}
+
+		if (!TypeDef::IsA(*tmp, ReferenceTypeDef::GetTypeDef()))
+		{
+			break;
+		}
+
+		parent = static_cast<const ReferenceTypeDef*>(tmp);
+	}
 }
 
 const json_parser::JSONValue& AssetTypeDef::GetJSONData() const
