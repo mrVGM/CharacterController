@@ -66,3 +66,10 @@ jobs::JobSystem* rendering::core::utils::GetResidentHeapJobSystem()
 	jobs::JobSystem* js = static_cast<jobs::JobSystem*>(obj);
 	return js;
 }
+
+rendering::DXCopyCommandQueue* rendering::core::utils::GetCopyCommandQueue()
+{
+	ObjectValue* obj = ObjectValueContainer::GetObjectOfType(ResidentHeapJobSystemTypeDef::GetTypeDef());
+	rendering::DXCopyCommandQueue* copyCommandQueue = static_cast<rendering::DXCopyCommandQueue*>(obj);
+	return copyCommandQueue;
+}

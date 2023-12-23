@@ -9,6 +9,7 @@
 #include "DXFence.h"
 #include "DXHeap.h"
 #include "DXBuffer.h"
+#include "DXCopyCommandQueue.h"
 
 #include "ResidentHeapFence.h"
 #include "ResidentHeapJobSystem.h"
@@ -33,6 +34,7 @@ void rendering::core::Boot()
 	DXFenceTypeDef::GetTypeDef();
 	DXHeapTypeDef::GetTypeDef();
 	DXBufferTypeDef::GetTypeDef();
+	DXCopyCommandQueueTypeDef::GetTypeDef();
 
 	RenderFenceTypeDef::GetTypeDef();
 	ResidentHeapFenceTypeDef::GetTypeDef();
