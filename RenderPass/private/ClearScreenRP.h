@@ -22,7 +22,10 @@ namespace rendering::render_pass
 	{
 	private:
 		Microsoft::WRL::ComPtr<ID3D12CommandAllocator> m_commandAllocator;
-		Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> m_commandList;
+		Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> m_commandList0;
+		Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> m_commandList1;
+
+		bool m_commnadListsRecorded[2] = {};
 
 		Value m_swapChain;
 		Value m_commandQueue;

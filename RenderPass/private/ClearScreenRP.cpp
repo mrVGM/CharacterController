@@ -62,11 +62,19 @@ void rendering::render_pass::ClearScreenRP::Create()
 		"Can't create Command Allocator!")
 
 	THROW_ERROR(
-		device->GetDevice().CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, m_commandAllocator.Get(), nullptr, IID_PPV_ARGS(&m_commandList)),
+		device->GetDevice().CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, m_commandAllocator.Get(), nullptr, IID_PPV_ARGS(&m_commandList0)),
 		"Can't create Command List!")
 
 	THROW_ERROR(
-		m_commandList->Close(),
+		m_commandList0->Close(),
+		"Can't close command List!")
+
+	THROW_ERROR(
+		device->GetDevice().CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, m_commandAllocator.Get(), nullptr, IID_PPV_ARGS(&m_commandList1)),
+		"Can't create Command List!")
+
+	THROW_ERROR(
+		m_commandList1->Close(),
 		"Can't close command List!")
 }
 
@@ -84,30 +92,35 @@ rendering::render_pass::ClearScreenRP::~ClearScreenRP()
 void rendering::render_pass::ClearScreenRP::Prepare()
 {
 	DXSwapChain* swapChain = m_swapChain.GetValue<DXSwapChain*>();
+	int frameIndex = swapChain->GetCurrentSwapChainIndex();
+
+	if (m_commnadListsRecorded[frameIndex])
+	{
+		return;
+	}
+	m_commnadListsRecorded[frameIndex] = true;
+
+	ID3D12GraphicsCommandList* commandList = frameIndex == 0 ? m_commandList0.Get() : m_commandList1.Get();
 
 	THROW_ERROR(
-		m_commandAllocator->Reset(),
-		"Can't reset Command Allocator!")
-
-	THROW_ERROR(
-		m_commandList->Reset(m_commandAllocator.Get(), nullptr),
+		commandList->Reset(m_commandAllocator.Get(), nullptr),
 		"Can't reset Command List!")
 
 	{
 		CD3DX12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::CD3DX12_RESOURCE_BARRIER::Transition(swapChain->GetCurrentRenderTarget(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
-		m_commandList->ResourceBarrier(1, &barrier);
+		commandList->ResourceBarrier(1, &barrier);
 	}
 
 	const float clearColor[] = { 0.0f, 0.2f, 0.4f, 1.0f };
-	m_commandList->ClearRenderTargetView(swapChain->GetCurrentRTVDescriptor(), clearColor, 0, nullptr);
+	commandList->ClearRenderTargetView(swapChain->GetCurrentRTVDescriptor(), clearColor, 0, nullptr);
 
 	{
 		CD3DX12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::CD3DX12_RESOURCE_BARRIER::Transition(swapChain->GetCurrentRenderTarget(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
-		m_commandList->ResourceBarrier(1, &barrier);
+		commandList->ResourceBarrier(1, &barrier);
 	}
 
 	THROW_ERROR(
-		m_commandList->Close(),
+		commandList->Close(),
 		"Can't close Command List!")
 }
 
@@ -115,7 +128,10 @@ void rendering::render_pass::ClearScreenRP::Execute()
 {
 	DXCommandQueue* commandQueue = m_commandQueue.GetValue<DXCommandQueue*>();
 
-	ID3D12CommandList* ppCommandLists[] = { m_commandList.Get() };
+	DXSwapChain* swapChain = m_swapChain.GetValue<DXSwapChain*>();
+	int frameIndex = swapChain->GetCurrentSwapChainIndex();
+
+	ID3D12CommandList* ppCommandLists[] = { frameIndex == 0 ? m_commandList0.Get() : m_commandList1.Get() };
 	commandQueue->GetCommandQueue()->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
 }
 
