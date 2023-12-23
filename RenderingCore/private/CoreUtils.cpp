@@ -2,6 +2,7 @@
 
 #include "RenderFence.h"
 #include "ResidentHeapFence.h"
+#include "ResidentHeapJobSystem.h"
 
 #include "ObjectValueContainer.h"
 
@@ -57,4 +58,11 @@ rendering::DXFence* rendering::core::utils::GetResidentHeapFence()
 	ObjectValue* obj = ObjectValueContainer::GetObjectOfType(ResidentHeapFenceTypeDef::GetTypeDef());
 	DXFence* fence = static_cast<DXFence*>(obj);
 	return fence;
+}
+
+jobs::JobSystem* rendering::core::utils::GetResidentHeapJobSystem()
+{
+	ObjectValue* obj = ObjectValueContainer::GetObjectOfType(ResidentHeapJobSystemTypeDef::GetTypeDef());
+	jobs::JobSystem* js = static_cast<jobs::JobSystem*>(obj);
+	return js;
 }

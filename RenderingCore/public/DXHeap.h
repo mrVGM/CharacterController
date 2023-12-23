@@ -28,12 +28,12 @@ namespace rendering
 
 		Microsoft::WRL::ComPtr<ID3D12Heap> m_heap;
 		void Evict();
-	public:
+		void Create();
 
+	public:
 		DXHeap(const ReferenceTypeDef& typeDef);
 		virtual ~DXHeap();
 
-		void Create();
 		void MakeResident(jobs::Job* done);
 		ID3D12Heap* GetHeap() const;
 		void SetHeapSize(UINT64 size);

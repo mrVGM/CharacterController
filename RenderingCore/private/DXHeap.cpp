@@ -1,10 +1,16 @@
 #include "DXHeap.h"
 
+#include "JobSystem.h"
+#include "Jobs.h"
+
+#include "WaitFence.h"
+
 #include "CoreUtils.h"
 
 namespace
 {
 	BasicObjectContainer<rendering::DXHeapTypeDef> m_heap;
+	int m_fenceProgress = 1;
 }
 
 const rendering::DXHeapTypeDef& rendering::DXHeapTypeDef::GetTypeDef()
@@ -51,78 +57,100 @@ rendering::DXHeap::~DXHeap()
 
 void rendering::DXHeap::MakeResident(jobs::Job* done)
 {
-#if false
-
 	if (m_resident) {
 		throw "The heap is already Resident!";
 	}
 
-	struct JobContext
+	struct Context
 	{
-		DXHeap* m_heap = nullptr;
-		jobs::Job* m_done = nullptr;
+		jobs::JobSystem* m_residentHeapJS = nullptr;
+		DXFence* m_residentHeapFence = nullptr;
+		DXDevice* m_device = nullptr;
 		int m_signal = 0;
+
+		DXHeap* m_self = nullptr;
+		jobs::Job* m_done = nullptr;
 	};
+
+	Context ctx;
+	ctx.m_self = this;
+	ctx.m_done = done;
+
 
 	class WaitJob : public jobs::Job
 	{
 	private:
-		JobContext m_jobContext;
+		Context m_ctx;
 	public:
-		WaitJob(const JobContext& jobContext) :
-			m_jobContext(jobContext)
+		WaitJob(const Context& ctx) :
+			m_ctx(ctx)
 		{
 		}
 
 		void Do() override
 		{
-			WaitFence waitFence(*m_residentHeapFence);
-			waitFence.Wait(m_jobContext.m_signal);
-			m_jobContext.m_heap->m_resident = true;
+			WaitFence waitFence(*m_ctx.m_residentHeapFence);
+			waitFence.Wait(m_ctx.m_signal);
+			m_ctx.m_self->m_resident = true;
 
-			core::utils::RunSync(m_jobContext.m_done);
+			jobs::RunSync(m_ctx.m_done);
 		}
 	};
 
 	class EnqueJob : public jobs::Job
 	{
 	private:
-		JobContext m_jobContext;
+		Context m_ctx;
 	public:
-		EnqueJob(const JobContext& jobContext) :
-			m_jobContext(jobContext)
+		EnqueJob(const Context& jobContext) :
+			m_ctx(jobContext)
 		{
 		}
 
 		void Do() override
 		{
 			ID3D12Device3* device3;
-			HRESULT hr = m_device->GetDevice().QueryInterface(IID_PPV_ARGS(&device3));
+			HRESULT hr = m_ctx.m_device->GetDevice().QueryInterface(IID_PPV_ARGS(&device3));
 			if (FAILED(hr))
 			{
 				throw "Can't Query ID3D12Device3!";
 			}
 			const UINT64 signal = m_fenceProgress++;
-			ID3D12Pageable* tmp = m_jobContext.m_heap->GetHeap();
-			hr = device3->EnqueueMakeResident(D3D12_RESIDENCY_FLAGS::D3D12_RESIDENCY_FLAG_DENY_OVERBUDGET, 1, &tmp, m_residentHeapFence->GetFence(), signal);
+			ID3D12Pageable* tmp = m_ctx.m_self->GetHeap();
+			hr = device3->EnqueueMakeResident(D3D12_RESIDENCY_FLAGS::D3D12_RESIDENCY_FLAG_DENY_OVERBUDGET, 1, &tmp, m_ctx.m_residentHeapFence->GetFence(), signal);
 			if (FAILED(hr))
 			{
 				throw "Can't make the heap resident!";
 			}
 
-			m_jobContext.m_signal = signal;
-			WaitJob* waitJob = new WaitJob(m_jobContext);
-			core::utils::RunAsync(waitJob);
+			m_ctx.m_signal = signal;
+			WaitJob* waitJob = new WaitJob(m_ctx);
+			jobs::RunAsync(waitJob);
+		}
+	};
+	
+	class CacheObjects : public jobs::Job
+	{
+	private:
+		Context m_ctx;
+	public:
+		CacheObjects(const Context& ctx) :
+			m_ctx(ctx)
+		{
+		}
+
+		void Do() override
+		{
+			m_ctx.m_device = core::utils::GetDevice();
+			m_ctx.m_residentHeapJS = core::utils::GetResidentHeapJobSystem();
+			m_ctx.m_residentHeapFence = core::utils::GetResidentHeapFence();
+
+			m_ctx.m_residentHeapJS->ScheduleJob(new EnqueJob(m_ctx));
 		}
 	};
 
-	JobContext jobContext;
-	jobContext.m_heap = this;
-	jobContext.m_done = done;
-
-	m_residentHeapJobSystem->ScheduleJob(new EnqueJob(jobContext));
-
-#endif
+	Create();
+	jobs::RunSync(new CacheObjects(ctx));
 }
 
 void rendering::DXHeap::Evict()
