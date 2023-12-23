@@ -12,7 +12,6 @@ namespace rendering::renderer
 		TYPE_DEF_BODY(RendererTypeDef)
 
 	public:
-		TypeProperty m_renderFence;
 		TypeProperty m_renderPasses;
 
 		RendererTypeDef();
@@ -31,7 +30,6 @@ namespace rendering::renderer
 		Value m_commandQueue;
 		Value m_renderFence;
 	public:
-		Value m_renderFenceDef;
 		Value m_renderPassesDefs;
 
 		RendererObj(const ReferenceTypeDef& typeDef);
