@@ -26,10 +26,18 @@ const rendering::DXHeapTypeDef& rendering::DXHeapTypeDef::GetTypeDef()
 rendering::DXHeapTypeDef::DXHeapTypeDef() :
 	ReferenceTypeDef(&ReferenceTypeDef::GetTypeDef(), "7475F45E-E538-4F8E-811B-9D16A7861D7E")
 {
+	m_name = "Heap";
+	m_category = "Rendering";
 }
 
 rendering::DXHeapTypeDef::~DXHeapTypeDef()
 {
+}
+
+void rendering::DXHeapTypeDef::Construct(Value& container) const
+{
+	DXHeap* heap = new DXHeap(*this);
+	container.AssignObject(heap);
 }
 
 rendering::DXHeap::DXHeap(const ReferenceTypeDef& typeDef) :

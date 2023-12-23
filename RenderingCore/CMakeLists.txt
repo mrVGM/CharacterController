@@ -32,6 +32,8 @@ add_library (RenderingCore
 	"private/ResidentHeapJobSystem.cpp"
 	"private/RenderFence.h"
 	"private/RenderFence.cpp"
+	"public/DXBuffer.h"
+	"private/DXBuffer.cpp"
 )
 
 target_include_directories(RenderingCore INTERFACE PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/public")

@@ -7,6 +7,8 @@
 #include "DXSwapChain.h"
 #include "DXCommandQueue.h"
 #include "DXFence.h"
+#include "DXHeap.h"
+#include "DXBuffer.h"
 
 #include "ResidentHeapFence.h"
 #include "ResidentHeapJobSystem.h"
@@ -29,6 +31,8 @@ void rendering::core::Boot()
 	DXSwapChainTypeDef::GetTypeDef();
 	DXCommandQueueTypeDef::GetTypeDef();
 	DXFenceTypeDef::GetTypeDef();
+	DXHeapTypeDef::GetTypeDef();
+	DXBufferTypeDef::GetTypeDef();
 
 	RenderFenceTypeDef::GetTypeDef();
 	ResidentHeapFenceTypeDef::GetTypeDef();

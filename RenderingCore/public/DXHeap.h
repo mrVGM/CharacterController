@@ -18,7 +18,7 @@ namespace rendering
 		DXHeapTypeDef();
         virtual ~DXHeapTypeDef();
 
-        void Construct(Value& value) const override;
+        void Construct(Value& container) const override;
     };
 
 	class DXHeap : public ObjectValue
