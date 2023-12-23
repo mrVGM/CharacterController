@@ -36,6 +36,8 @@ add_library (RenderingCore
 	"private/DXBuffer.cpp"
 	"public/DXCopyCommandQueue.h"
 	"private/DXCopyCommandQueue.cpp"
+	"public/DXCopyBuffers.h"
+	"private/DXCopyBuffers.cpp"
 )
 
 target_include_directories(RenderingCore INTERFACE PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/public")

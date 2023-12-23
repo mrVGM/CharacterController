@@ -243,7 +243,7 @@ const TypeTypeDef& TypeTypeDef::GetTypeDef(const TypeDef& templateType)
 
 	if (it != defsMap.end())
 	{
-		return static_cast<TypeTypeDef>(*it->second);
+		return *static_cast<const TypeTypeDef*>(it->second);
 	}
 
 	TypeTypeDef* newDef = new TypeTypeDef(templateType);

@@ -73,3 +73,10 @@ rendering::DXCopyCommandQueue* rendering::core::utils::GetCopyCommandQueue()
 	rendering::DXCopyCommandQueue* copyCommandQueue = static_cast<rendering::DXCopyCommandQueue*>(obj);
 	return copyCommandQueue;
 }
+
+rendering::DXCopyBuffers* rendering::core::utils::GetCopyBuffers()
+{
+	ObjectValue* obj = ObjectValueContainer::GetObjectOfType(ResidentHeapJobSystemTypeDef::GetTypeDef());
+	rendering::DXCopyBuffers* copyBuffers = static_cast<rendering::DXCopyBuffers*>(obj);
+	return copyBuffers;
+}

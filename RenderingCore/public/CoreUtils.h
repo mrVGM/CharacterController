@@ -7,6 +7,7 @@
 #include "DXCopyCommandQueue.h"
 #include "DXFence.h"
 #include "JobSystem.h"
+#include "DXCopyBuffers.h"
 
 namespace rendering::core::utils
 {
@@ -18,4 +19,5 @@ namespace rendering::core::utils
 	DXFence* GetRenderFence();
 	DXFence* GetResidentHeapFence();
 	jobs::JobSystem* GetResidentHeapJobSystem();
+	DXCopyBuffers* GetCopyBuffers();
 }
