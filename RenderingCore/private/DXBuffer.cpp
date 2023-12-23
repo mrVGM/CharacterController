@@ -2,6 +2,8 @@
 
 #include "DXHeap.h"
 
+#include "Jobs.h"
+
 #include "CoreUtils.h"
 
 namespace
@@ -126,9 +128,34 @@ void rendering::DXBuffer::CopyBuffer(
 	rendering::DXBuffer& destination,
 	jobs::Job* done) const
 {
-#if false
-	m_copyBuffers->Execute(destination, *this, done);
-#endif
+	struct Context
+	{
+		const DXBuffer* m_self = nullptr;
+		DXBuffer* m_dst = nullptr;
+		jobs::Job* m_done = nullptr;
+	};
+
+	Context ctx{ this, &destination, done };
+
+	class CopyJob : public jobs::Job
+	{
+	private:
+		Context m_ctx;
+
+	public:
+		CopyJob(const Context& ctx) :
+			m_ctx(ctx)
+		{
+		}
+
+		void Do() override
+		{
+			DXCopyBuffers* copyBuffers = core::utils::GetCopyBuffers();
+			copyBuffers->Execute(*m_ctx.m_dst, *m_ctx.m_self, m_ctx.m_done);
+		}
+	};
+
+	jobs::RunSync(new CopyJob(ctx));
 }
 
 void* rendering::DXBuffer::Map()
