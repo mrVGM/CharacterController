@@ -45,7 +45,7 @@ namespace
         void Execute(
             rendering::DXBuffer& dst,
             const rendering::DXBuffer& src,
-            rendering::DXCopyCommandQueue* commandQueue,
+            rendering::DXCommandQueue* commandQueue,
             ID3D12Fence* fence,
             UINT64 signal)
         {
@@ -67,9 +67,9 @@ namespace
 
 
             ID3D12CommandList* copyCommandList[] = { m_commandList.Get() };
-            commandQueue->GetCommandQueue()->ExecuteCommandLists(_countof(copyCommandList), copyCommandList);
+            commandQueue->GetCopyCommandQueue()->ExecuteCommandLists(_countof(copyCommandList), copyCommandList);
 
-            commandQueue->GetCommandQueue()->Signal(fence, signal);
+            commandQueue->GetCopyCommandQueue()->Signal(fence, signal);
         }
     };
 }
@@ -134,7 +134,7 @@ void rendering::DXCopyBuffersTypeDef::Construct(Value& container) const
 rendering::DXCopyBuffers::DXCopyBuffers(const ReferenceTypeDef& typeDef) :
     ObjectValue(typeDef),
     m_device(DXDeviceTypeDef::GetTypeDef(), this),
-    m_copyCommandQueue(DXCopyCommandQueueTypeDef::GetTypeDef(), this),
+    m_commandQueue(DXCommandQueueTypeDef::GetTypeDef(), this),
     m_copyFence(DXFenceTypeDef::GetTypeDef(), this),
     m_copyJobSytem(jobs::JobSystemDef::GetTypeDef(), this),
 
@@ -197,7 +197,7 @@ void rendering::DXCopyBuffers::Execute(
         void Do() override
         {
             DXFence* fence = m_jobContext.m_dxCopyBuffers->m_copyFence.GetValue<DXFence*>();
-            DXCopyCommandQueue* commandQueue = m_jobContext.m_dxCopyBuffers->m_copyCommandQueue.GetValue<DXCopyCommandQueue*>();
+            DXCommandQueue* commandQueue = m_jobContext.m_dxCopyBuffers->m_commandQueue.GetValue<DXCommandQueue*>();
             UINT64 signal = m_jobContext.m_dxCopyBuffers->m_copyCounter++;
             m_jobContext.m_signal = signal;
 
@@ -254,14 +254,14 @@ void rendering::DXCopyBuffers::Execute(ID3D12CommandList* const* lists, UINT64 n
         void Do() override
         {
             DXFence* fence = m_jobContext.m_dxCopyBuffers->m_copyFence.GetValue<DXFence*>();
-            DXCopyCommandQueue* commandQueue = m_jobContext.m_dxCopyBuffers->m_copyCommandQueue.GetValue<DXCopyCommandQueue*>();
+            DXCommandQueue* commandQueue = m_jobContext.m_dxCopyBuffers->m_commandQueue.GetValue<DXCommandQueue*>();
             UINT64 signal = m_jobContext.m_dxCopyBuffers->m_copyCounter++;
 
             m_jobContext.m_signal = signal;
             jobs::RunAsync(new WaitJob(m_jobContext));
 
-            commandQueue->GetCommandQueue()->ExecuteCommandLists(m_jobContext.m_numLists, m_jobContext.m_lists);
-            commandQueue->GetCommandQueue()->Signal(fence->GetFence(), signal);
+            commandQueue->GetCopyCommandQueue()->ExecuteCommandLists(m_jobContext.m_numLists, m_jobContext.m_lists);
+            commandQueue->GetCopyCommandQueue()->Signal(fence->GetFence(), signal);
         }
     };
 
@@ -271,8 +271,11 @@ void rendering::DXCopyBuffers::Execute(ID3D12CommandList* const* lists, UINT64 n
 
 void rendering::DXCopyBuffers::Load(jobs::Job* done)
 {
-    m_device.AssignObject(core::utils::GetDevice());
-    m_copyCommandQueue.AssignObject(core::utils::GetCopyCommandQueue());
+    DXDevice* device = core::utils::GetDevice();
+    m_device.AssignObject(device);
+
+    DXCommandQueue* commandQueue = core::utils::GetCommandQueue();
+    m_commandQueue.AssignObject(commandQueue);
     
     jobs::JobSystem* copyJS =
         static_cast<jobs::JobSystem*>(ObjectValueContainer::GetObjectOfType(*m_copyJobSystemDef.GetType<const TypeDef*>()));

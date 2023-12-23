@@ -85,7 +85,7 @@ void rendering::DXSwapChain::Create()
     IDXGIFactory4* factory = device->GetFactory();
     ComPtr<IDXGISwapChain1> swapChain;
     THROW_ERROR(factory->CreateSwapChainForHwnd(
-        commandQueue->GetCommandQueue(),        // Swap chain needs the queue so that it can force a flush on it.
+        commandQueue->GetGraphicsCommandQueue(),        // Swap chain needs the queue so that it can force a flush on it.
         window->m_hwnd,
         &swapChainDesc,
         nullptr,

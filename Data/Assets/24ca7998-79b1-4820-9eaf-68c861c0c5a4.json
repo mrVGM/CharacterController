@@ -1,1 +1,1 @@
-{"id":{"id":"24ca7998-79b1-4820-9eaf-68c861c0c5a4"},"parent":{"id":"B7F9EC5F-C26F-4DE9-9A04-0B3E0570812E"},"name":"Graphics Command Queue","category":"Rendering","isGenerated":1,"defaults":{}}
+{"id":{"id":"24ca7998-79b1-4820-9eaf-68c861c0c5a4"},"parent":{"id":"B7F9EC5F-C26F-4DE9-9A04-0B3E0570812E"},"name":"Command Queue","category":"Rendering","isGenerated":1,"defaults":{}}

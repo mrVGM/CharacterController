@@ -9,7 +9,6 @@
 #include "DXFence.h"
 #include "DXHeap.h"
 #include "DXBuffer.h"
-#include "DXCopyCommandQueue.h"
 
 #include "ResidentHeapFence.h"
 #include "ResidentHeapJobSystem.h"
@@ -75,14 +74,12 @@ namespace
 				residentHeapJobSystem->Start();
 
 				DXCommandQueue* commandQueue = core::utils::GetCommandQueue();
-				DXCopyCommandQueue* copyCommandQueue = core::utils::GetCopyCommandQueue();
 				DXFence* renderFence = core::utils::GetRenderFence();
 				DXFence* residentHeapFence = core::utils::GetResidentHeapFence();
 
-				m_ctx.m_loading = 4;
+				m_ctx.m_loading = 3;
 
 				commandQueue->Load(new ItemLoaded(m_ctx));
-				copyCommandQueue->Load(new ItemLoaded(m_ctx));
 				renderFence->Load(new ItemLoaded(m_ctx));
 				residentHeapFence->Load(new ItemLoaded(m_ctx));
 			}
@@ -166,7 +163,6 @@ void rendering::core::Boot()
 	DXFenceTypeDef::GetTypeDef();
 	DXHeapTypeDef::GetTypeDef();
 	DXBufferTypeDef::GetTypeDef();
-	DXCopyCommandQueueTypeDef::GetTypeDef();
 	DXCopyBuffersTypeDef::GetTypeDef();
 
 	RenderFenceTypeDef::GetTypeDef();

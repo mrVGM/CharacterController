@@ -177,7 +177,7 @@ void rendering::renderer::RendererObj::RenderFrame()
 	WaitFence waitFence(*fence);
 
 	DXCommandQueue* commandQueue = m_commandQueue.GetValue<DXCommandQueue*>();
-	commandQueue->GetCommandQueue()->Signal(fence->GetFence(), curFrame);
+	commandQueue->GetGraphicsCommandQueue()->Signal(fence->GetFence(), curFrame);
 
 	waitFence.Wait(curFrame);
 

@@ -67,16 +67,9 @@ jobs::JobSystem* rendering::core::utils::GetResidentHeapJobSystem()
 	return js;
 }
 
-rendering::DXCopyCommandQueue* rendering::core::utils::GetCopyCommandQueue()
-{
-	ObjectValue* obj = ObjectValueContainer::GetObjectOfType(ResidentHeapJobSystemTypeDef::GetTypeDef());
-	rendering::DXCopyCommandQueue* copyCommandQueue = static_cast<rendering::DXCopyCommandQueue*>(obj);
-	return copyCommandQueue;
-}
-
 rendering::DXCopyBuffers* rendering::core::utils::GetCopyBuffers()
 {
-	ObjectValue* obj = ObjectValueContainer::GetObjectOfType(ResidentHeapJobSystemTypeDef::GetTypeDef());
+	ObjectValue* obj = ObjectValueContainer::GetObjectOfType(DXCopyBuffersTypeDef::GetTypeDef());
 	rendering::DXCopyBuffers* copyBuffers = static_cast<rendering::DXCopyBuffers*>(obj);
 	return copyBuffers;
 }

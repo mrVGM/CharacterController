@@ -29,7 +29,7 @@ namespace rendering
 	class DXCopyBuffers : public ObjectValue
 	{
 		Value m_device;
-		Value m_copyCommandQueue;
+		Value m_commandQueue;
 		Value m_copyJobSytem;
 		Value m_copyFence;
 

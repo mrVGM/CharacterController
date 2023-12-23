@@ -34,8 +34,8 @@ add_library (RenderingCore
 	"private/RenderFence.cpp"
 	"public/DXBuffer.h"
 	"private/DXBuffer.cpp"
-	"public/DXCopyCommandQueue.h"
-	"private/DXCopyCommandQueue.cpp"
+	
+	
 	"public/DXCopyBuffers.h"
 	"private/DXCopyBuffers.cpp"
 )

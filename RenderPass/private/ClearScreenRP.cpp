@@ -132,7 +132,7 @@ void rendering::render_pass::ClearScreenRP::Execute()
 	int frameIndex = swapChain->GetCurrentSwapChainIndex();
 
 	ID3D12CommandList* ppCommandLists[] = { frameIndex == 0 ? m_commandList0.Get() : m_commandList1.Get() };
-	commandQueue->GetCommandQueue()->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
+	commandQueue->GetGraphicsCommandQueue()->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
 }
 
 void rendering::render_pass::ClearScreenRP::Load(jobs::Job* done)

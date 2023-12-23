@@ -24,7 +24,8 @@ namespace rendering
 
 	class DXCommandQueue : public ObjectValue
 	{
-		Microsoft::WRL::ComPtr<ID3D12CommandQueue> m_commandQueue;
+		Microsoft::WRL::ComPtr<ID3D12CommandQueue> m_graphicsCommandQueue;
+		Microsoft::WRL::ComPtr<ID3D12CommandQueue> m_copyCommandQueue;
 		void Create();
 	public:
 		DXCommandQueue(const ReferenceTypeDef& typeDef);
@@ -32,6 +33,7 @@ namespace rendering
 
 		void Load(jobs::Job* done);
 
-		ID3D12CommandQueue* GetCommandQueue();
+		ID3D12CommandQueue* GetGraphicsCommandQueue();
+		ID3D12CommandQueue* GetCopyCommandQueue();
 	};
 }
