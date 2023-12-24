@@ -168,6 +168,8 @@ void rendering::DXShader::Load(jobs::Job* done)
 		return;
 	}
 
+	m_loaded = true;
+
 	jobs::Job* compileJob = jobs::Job::CreateByLambda([=]() {
 		std::string shaderFile = files::GetDataDir() + "Shaders\\src\\" + m_name.Get<std::string>();
 		std::wstring shaderFileW(shaderFile.begin(), shaderFile.end());
@@ -175,8 +177,8 @@ void rendering::DXShader::Load(jobs::Job* done)
 		const char* entryPointVS = "VSMain";
 		const char* entryPointPS = "PSMain";
 
-		const char* profileVS = "VSMain";
-		const char* profilePS = "PSMain";
+		const char* profileVS = "vs_5_0";
+		const char* profilePS = "ps_5_0";
 
 		THROW_ERROR(CompileShader(
 			shaderFileW.c_str(),
@@ -189,6 +191,11 @@ void rendering::DXShader::Load(jobs::Job* done)
 	});
 
 	jobs::RunAsync(compileJob);
+}
+
+bool rendering::DXShader::IsLoaded()
+{
+	return m_loaded;
 }
 
 ID3DBlob* rendering::DXShader::GetCompiledShader() const

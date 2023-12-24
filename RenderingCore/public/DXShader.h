@@ -57,6 +57,7 @@ namespace rendering
 		virtual ~DXShader();
 
 		void Load(jobs::Job* done);
+		bool IsLoaded();
 
 		ID3DBlob* GetCompiledShader() const;
 	};

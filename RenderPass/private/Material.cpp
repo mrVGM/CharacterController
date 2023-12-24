@@ -1,6 +1,9 @@
 #include "Material.h"
 
 #include "PrimitiveTypes.h"
+#include "ObjectValueContainer.h"
+
+#include "Jobs.h"
 
 #include "DXShader.h"
 
@@ -129,7 +132,7 @@ void rendering::render_pass::Material::CreatePipelineStateAndRootSignatureForSta
         psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
         psoDesc.NumRenderTargets = 1;
 
-        psoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UINT;
+        psoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
 
         psoDesc.DSVFormat = DXGI_FORMAT_D32_FLOAT;
         psoDesc.SampleDesc.Count = 1;
@@ -160,7 +163,52 @@ void rendering::render_pass::Material::GenerateCommandList(const DXBuffer& verte
 
 void rendering::render_pass::Material::Load(jobs::Job* done)
 {
-    throw "Not Implemented!";
+    struct Context
+    {
+        int m_toLoad = 0;
+    };
+    Context* ctx = new Context{ 2 };
+
+    auto getVS = [=]() {
+        return m_vertexShader.GetValue<DXShader*>();
+    };
+
+    auto getPS = [=]() {
+        return m_pixelShader.GetValue<DXShader*>();
+    };
+
+    auto shaderLoaded = [=]() {
+        --ctx->m_toLoad;
+        if (ctx->m_toLoad > 0)
+        {
+            return;
+        }
+        delete ctx;
+
+        CreatePipelineStateAndRootSignatureForStaticMesh();
+
+        jobs::RunSync(done);
+    };
+
+    jobs::Job* init = jobs::Job::CreateByLambda([=]() {
+        m_device.AssignObject(ObjectValueContainer::GetObjectOfType(DXDeviceTypeDef::GetTypeDef()));
+        m_vertexShader.AssignObject(ObjectValueContainer::GetObjectOfType(*m_vertexShaderDef.GetType<const TypeDef*>()));
+        m_pixelShader.AssignObject(ObjectValueContainer::GetObjectOfType(*m_pixelShaderDef.GetType<const TypeDef*>()));
+
+        jobs::RunAsync(jobs::Job::CreateByLambda([=]() {
+            getVS()->Load(jobs::Job::CreateByLambda([=]() {
+                jobs::RunSync(jobs::Job::CreateByLambda(shaderLoaded));
+            }));
+        }));
+
+        jobs::RunAsync(jobs::Job::CreateByLambda([=]() {
+            getPS()->Load(jobs::Job::CreateByLambda([=]() {
+                jobs::RunSync(jobs::Job::CreateByLambda(shaderLoaded));
+            }));
+        }));
+    });
+
+    jobs::RunSync(init);
 }
 
 #undef THROW_ERROR

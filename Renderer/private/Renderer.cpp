@@ -16,6 +16,7 @@
 #include "RenderingCore.h"
 
 #include "SceneObject.h"
+#include "Material.h"
 
 #include "CoreUtils.h"
 
@@ -84,12 +85,28 @@ void rendering::renderer::RendererObj::Load(jobs::Job* done)
 
 	Context* ctx = new Context();
 
+	jobs::Job* loadMat = jobs::Job::CreateByLambda([=]() {
+
+		jobs::Job* getMat = jobs::Job::CreateByLambda([=]() {
+			ObjectValue* matObj = ObjectValueContainer::GetObjectOfType(render_pass::MaterialTypeDef::GetTypeDef());
+			render_pass::Material* mat = static_cast<render_pass::Material*>(matObj);
+
+			jobs::Job* loadMat = jobs::Job::CreateByLambda([=]() {
+				mat->Load(done);
+			});
+
+			jobs::RunAsync(loadMat);
+		});
+
+		jobs::RunSync(getMat);
+	});
+
 	jobs::Job* loadScene = jobs::Job::CreateByLambda([=]() {
 		scene::SceneObject* mainScene =
 			static_cast<scene::SceneObject*>(ObjectValueContainer::GetObjectOfType(scene::SceneObjectTypeDef::GetTypeDef()));
 
 		jobs::Job* loadJob = jobs::Job::CreateByLambda([=]() {
-			mainScene->Load(done);
+			mainScene->Load(loadMat);
 		});
 
 		jobs::RunAsync(loadJob);
