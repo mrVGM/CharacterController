@@ -32,6 +32,7 @@ namespace geo
 			int m_count = -1;
 		};
 
+		bool m_zUp = false;
 		Value m_colladaFile;
 
 		int m_numVertices = -1;

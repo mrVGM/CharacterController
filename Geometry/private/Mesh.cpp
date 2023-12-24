@@ -555,6 +555,11 @@ void geo::Mesh::Load(jobs::Job* done)
 	xml_reader::XMLTree tree;
 	xml_reader::ReadXML(contents, tree);
 
+	const Node* upAxis = tree.FindNode([](const Node* node) {
+		return node->m_tagName == "up_axis";
+	});
+
+	m_zUp = upAxis->m_data.front()->m_symbolData.m_string == "Z_UP";
 
 	const Node* libGeometries = tree.FindNode([](const Node* node) {
 		return node->m_tagName == "library_geometries";
@@ -588,6 +593,25 @@ void geo::Mesh::Load(jobs::Job* done)
 
 	m_numVertices = mr.m_verts.size();
 	m_vertices = new MeshVertex[m_numVertices];
+	{
+		int index = 0;
+		for (auto it = mr.m_verts.begin(); it != mr.m_verts.end(); ++it)
+		{
+			MeshVertex& cur = m_vertices[index++];
+			cur = *it;
+
+			if (m_zUp)
+			{
+				float tmp = cur.m_position.m_coefs[1];
+				cur.m_position.m_coefs[1] = cur.m_position.m_coefs[2];
+				cur.m_position.m_coefs[2] = tmp;
+
+				tmp = cur.m_normal.m_coefs[1];
+				cur.m_normal.m_coefs[1] = cur.m_normal.m_coefs[2];
+				cur.m_normal.m_coefs[2] = tmp;
+			}
+		}
+	}
 
 	m_indices = new int[m_numIndices];
 	{

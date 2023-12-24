@@ -5,9 +5,9 @@ add_library (Geometry
 	"private/Mesh.cpp"
 	"public/Geometry.h"
 	"private/Geometry.cpp"
-	
 	"public/GeometryAppEntry.h"
- "private/GeometryAppEntry.cpp")
+	"private/GeometryAppEntry.cpp"
+)
 
 target_include_directories(Geometry INTERFACE PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/public")
 target_include_directories(Geometry PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/private")
