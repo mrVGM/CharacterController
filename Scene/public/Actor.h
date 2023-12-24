@@ -1,0 +1,35 @@
+#pragma once
+
+#include "CompositeTypeDef.h"
+#include "CompositeValue.h"
+
+#include "Job.h"
+
+namespace scene
+{
+	class ActorTypeDef : public ReferenceTypeDef
+	{
+		TYPE_DEF_BODY(ActorTypeDef)
+
+	public:
+		TypeProperty m_mesh;
+
+		ActorTypeDef();
+		virtual ~ActorTypeDef();
+
+		void Construct(Value& container) const override;
+	};
+
+	class Actor : public ObjectValue
+	{
+		Value m_mesh;
+	public:
+
+		Actor(const ReferenceTypeDef& typeDef);
+		virtual ~Actor();
+
+		void SetMesh(const Value& mesh);
+
+		void Load(jobs::Job* done);
+	};
+}

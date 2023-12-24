@@ -3,7 +3,11 @@
 add_library (Scene
 	"public/Scene.h"
 	"private/Scene.cpp"
-  "public/SceneObject.h" "private/SceneObject.cpp")
+	"public/SceneObject.h"
+	"private/SceneObject.cpp"
+	"public/Actor.h"
+	"private/Actor.cpp"
+)
 
 target_include_directories(Scene INTERFACE PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/public")
 target_include_directories(Scene PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/private")
