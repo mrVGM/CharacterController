@@ -248,10 +248,7 @@ void gc::ObjectRecordManager::UpdateVitality(std::list<const ManagedObject*> obj
 		{
 			workStack.pop();
 			cur->Dispose();
-			continue;
 		}
-
-		cur->UpdateTask();
 	}
 
 	for (auto it = initialTasks.begin(); it != initialTasks.end(); ++it)
