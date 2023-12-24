@@ -46,7 +46,10 @@ namespace rendering
 
 	class DXShader : public ObjectValue
 	{
+	private:
+		bool m_loaded = false;
 		Microsoft::WRL::ComPtr<ID3DBlob> m_shader;
+
 	public:
 		Value m_name;
 

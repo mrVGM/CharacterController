@@ -4,6 +4,8 @@
 
 #include "Files.h"
 
+#include "Jobs.h"
+
 #include <d3dcompiler.h>
 
 #define THROW_ERROR(hRes, error) \
@@ -160,21 +162,33 @@ rendering::DXShader::~DXShader()
 
 void rendering::DXShader::Load(jobs::Job* done)
 {
-	std::string shaderFile = files::GetDataDir() + "Shaders\\src\\" + m_name.Get<std::string>();
-	std::wstring shaderFileW(shaderFile.begin(), shaderFile.end());
+	if (m_loaded)
+	{
+		jobs::RunSync(done);
+		return;
+	}
 
-	const char* entryPointVS = "VSMain";
-	const char* entryPointPS = "PSMain";
+	jobs::Job* compileJob = jobs::Job::CreateByLambda([=]() {
+		std::string shaderFile = files::GetDataDir() + "Shaders\\src\\" + m_name.Get<std::string>();
+		std::wstring shaderFileW(shaderFile.begin(), shaderFile.end());
 
-	const char* profileVS = "VSMain";
-	const char* profilePS = "PSMain";
+		const char* entryPointVS = "VSMain";
+		const char* entryPointPS = "PSMain";
 
-	THROW_ERROR(CompileShader(
-		shaderFileW.c_str(),
-		TypeDef::IsA(GetTypeDef(), DXVertexShaderTypeDef::GetTypeDef()) ? entryPointVS : entryPointPS,
-		TypeDef::IsA(GetTypeDef(), DXVertexShaderTypeDef::GetTypeDef()) ? profileVS : profilePS,
-		&m_shader),
-		"Can't compile shader!")
+		const char* profileVS = "VSMain";
+		const char* profilePS = "PSMain";
+
+		THROW_ERROR(CompileShader(
+			shaderFileW.c_str(),
+			TypeDef::IsA(GetTypeDef(), DXVertexShaderTypeDef::GetTypeDef()) ? entryPointVS : entryPointPS,
+			TypeDef::IsA(GetTypeDef(), DXVertexShaderTypeDef::GetTypeDef()) ? profileVS : profilePS,
+			&m_shader),
+			"Can't compile shader!")
+
+		jobs::RunSync(done);
+	});
+
+	jobs::RunAsync(compileJob);
 }
 
 ID3DBlob* rendering::DXShader::GetCompiledShader() const
