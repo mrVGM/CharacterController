@@ -19,6 +19,8 @@
 #include "Geometry.h"
 #include "RenderPass.h"
 
+#include "UnlitRP.h"
+
 #include "GCWorker.h"
 
 #include "Scene.h"
@@ -58,6 +60,7 @@ void app::Boot()
 	rendering::render_pass::Boot();
 	geo::Boot();
 	scene::Boot();
+	rendering::unlit_rp::Boot();
 
 #pragma endregion
 
