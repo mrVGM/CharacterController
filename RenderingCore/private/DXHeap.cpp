@@ -153,11 +153,11 @@ void rendering::DXHeap::MakeResident(jobs::Job* done)
 			m_ctx.m_residentHeapJS = core::utils::GetResidentHeapJobSystem();
 			m_ctx.m_residentHeapFence = core::utils::GetResidentHeapFence();
 
+			m_ctx.m_self->Create();
 			m_ctx.m_residentHeapJS->ScheduleJob(new EnqueJob(m_ctx));
 		}
 	};
 
-	Create();
 	jobs::RunSync(new CacheObjects(ctx));
 }
 
