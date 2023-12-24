@@ -1,6 +1,7 @@
 #include "RenderPass.h"
 
 #include "ClearScreenRP.h"
+#include "Material.h"
 
 namespace
 {
@@ -46,4 +47,5 @@ void rendering::render_pass::Boot()
 {
 	RenderPassTypeDef::GetTypeDef();
 	ClearScreenRPTypeDef::GetTypeDef();
+	MaterialTypeDef::GetTypeDef();
 }
