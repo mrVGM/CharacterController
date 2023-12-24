@@ -2,7 +2,7 @@
 
 #include "CompositeTypeDef.h"
 
-#include "AppEntryObj.h"
+#include "AppEntry.h"
 
 namespace rendering::core
 {

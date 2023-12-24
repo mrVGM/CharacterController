@@ -1,6 +1,6 @@
 #include "GeometryAppEntry.h"
 
-#include "AppEntryTypeDef.h"
+#include "AppEntry.h"
 
 #include "Jobs.h"
 #include "Job.h"

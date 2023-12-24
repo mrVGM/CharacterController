@@ -2,7 +2,7 @@
 
 #include "ReflectionEntryTypeDef.h"
 
-#include "AppEntryObj.h"
+#include "AppEntry.h"
 
 namespace reflection
 {

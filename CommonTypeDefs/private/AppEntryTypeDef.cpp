@@ -1,5 +1,4 @@
-#include "AppEntryTypeDef.h"
-#include "AppEntryObj.h"
+#include "AppEntry.h"
 
 namespace
 {
@@ -31,4 +30,19 @@ void app::AppEntryTypeDef::Construct(Value& container) const
 {
 	AppEntryObj* obj = new AppEntryObj(*this);
 	container.AssignObject(obj);
+}
+
+
+app::AppEntryObj::AppEntryObj(const ReferenceTypeDef& appEntryTypeDef) :
+	ObjectValue(appEntryTypeDef)
+{
+}
+
+app::AppEntryObj::~AppEntryObj()
+{
+}
+
+void app::AppEntryObj::Boot()
+{
+	TypeDef::SaveReflectionData();
 }

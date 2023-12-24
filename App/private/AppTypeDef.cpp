@@ -2,7 +2,7 @@
 
 #include "PrimitiveTypes.h"
 #include "AppObj.h"
-#include "AppEntryTypeDef.h"
+#include "AppEntry.h"
 
 namespace
 {

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "CompositeTypeDef.h"
-#include "AppEntryObj.h"
+#include "AppEntry.h"
 
 namespace geo
 {

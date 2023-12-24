@@ -1,10 +1,10 @@
 ﻿cmake_minimum_required (VERSION 3.8)
 
 add_library (CommonTypeDefs
-	"public/AppEntryTypeDef.h"
+	"public/AppEntry.h"
 	"private/AppEntryTypeDef.cpp"
-	"public/AppEntryObj.h"
-	"private/AppEntryObj.cpp"
+	
+	
 	"public/CommonTypeDefs.h"
 	"private/CommonTypeDefs.cpp"
 )

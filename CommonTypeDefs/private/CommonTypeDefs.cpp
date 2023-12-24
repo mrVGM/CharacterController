@@ -1,6 +1,6 @@
 #include "CommonTypeDefs.h"
 
-#include "AppEntryTypeDef.h"
+#include "AppEntry.h"
 
 void common_defs::Boot()
 {

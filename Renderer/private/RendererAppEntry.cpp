@@ -1,6 +1,6 @@
 #include "RendererAppEntry.h"
 
-#include "AppEntryTypeDef.h"
+#include "AppEntry.h"
 
 #include "Jobs.h"
 #include "ObjectValueContainer.h"

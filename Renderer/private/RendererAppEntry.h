@@ -1,6 +1,6 @@
 #pragma once
 
-#include "AppEntryObj.h"
+#include "AppEntry.h"
 
 #include "CompositeTypeDef.h"
 
