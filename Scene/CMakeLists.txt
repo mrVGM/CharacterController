@@ -3,7 +3,7 @@
 add_library (Scene
 	"public/Scene.h"
 	"private/Scene.cpp"
-)
+  "public/SceneObject.h" "private/SceneObject.cpp")
 
 target_include_directories(Scene INTERFACE PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/public")
 target_include_directories(Scene PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/private")
@@ -11,6 +11,7 @@ target_include_directories(Scene PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/private")
 target_link_libraries(Scene PUBLIC
 	RenderingCore
 	Geometry
+	Jobs
 )
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)

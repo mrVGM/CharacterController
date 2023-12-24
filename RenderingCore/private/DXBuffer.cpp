@@ -9,7 +9,6 @@
 namespace
 {
 	BasicObjectContainer<rendering::DXBufferTypeDef> m_buffer;
-	int m_fenceProgress = 1;
 }
 
 const rendering::DXBufferTypeDef& rendering::DXBufferTypeDef::GetTypeDef()
