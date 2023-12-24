@@ -12,6 +12,8 @@ namespace scene
         TYPE_DEF_BODY(SceneObjectTypeDef)
 
     public:
+		TypeProperty m_meshList;
+
 		SceneObjectTypeDef();
         virtual ~SceneObjectTypeDef();
 
@@ -20,7 +22,12 @@ namespace scene
 
 	class SceneObject : public ObjectValue
 	{
+	private:
+		Value m_meshList;
+
 	public:
+		Value m_meshDefList;
+
 		SceneObject(const ReferenceTypeDef& typeDef);
 		virtual ~SceneObject();
 
