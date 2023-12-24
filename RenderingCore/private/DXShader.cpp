@@ -2,11 +2,64 @@
 
 #include "PrimitiveTypes.h"
 
+#include "Files.h"
+
+#include <d3dcompiler.h>
+
+#define THROW_ERROR(hRes, error) \
+if (FAILED(hRes)) {\
+    throw error;\
+}
+
+
 namespace
 {
 	BasicObjectContainer<rendering::DXShaderTypeDef> m_shaderTypeDef;
 	BasicObjectContainer<rendering::DXVertexShaderTypeDef> m_vertexShaderTypeDef;
 	BasicObjectContainer<rendering::DXPixelShaderTypeDef> m_pixelShaderTypeDef;
+
+
+	HRESULT CompileShader(_In_ LPCWSTR srcFile, _In_ LPCSTR entryPoint, _In_ LPCSTR profile, _Outptr_ ID3DBlob** blob)
+	{
+		if (!srcFile || !entryPoint || !profile || !blob)
+			return E_INVALIDARG;
+
+		*blob = nullptr;
+
+		UINT flags = D3DCOMPILE_ENABLE_STRICTNESS;
+#if DEBUG
+		flags |= D3DCOMPILE_DEBUG;
+#endif
+
+		const D3D_SHADER_MACRO defines[] =
+		{
+			"EXAMPLE_DEFINE", "1",
+			NULL, NULL
+		};
+
+		ID3DBlob* shaderBlob = nullptr;
+		ID3DBlob* errorBlob = nullptr;
+		HRESULT hr = D3DCompileFromFile(srcFile, defines, D3D_COMPILE_STANDARD_FILE_INCLUDE,
+			entryPoint, profile,
+			flags, 0, &shaderBlob, &errorBlob);
+		if (FAILED(hr))
+		{
+			if (errorBlob)
+			{
+				OutputDebugStringA((char*)errorBlob->GetBufferPointer());
+				errorBlob->Release();
+			}
+
+			if (shaderBlob)
+				shaderBlob->Release();
+
+			return hr;
+		}
+
+		*blob = shaderBlob;
+
+		return hr;
+	}
 }
 
 rendering::DXShaderTypeDef::DXShaderTypeDef() :
@@ -44,6 +97,8 @@ const rendering::DXShaderTypeDef& rendering::DXShaderTypeDef::GetTypeDef()
 rendering::DXVertexShaderTypeDef::DXVertexShaderTypeDef() :
 	ReferenceTypeDef(&rendering::DXShaderTypeDef::GetTypeDef(), "F2A064DD-D5B3-44B4-94B5-AFC68840828D")
 {
+	m_name = "Vertex Shader";
+	m_category = "Rendering";
 }
 
 void rendering::DXVertexShaderTypeDef::Construct(Value& container) const
@@ -69,6 +124,8 @@ const rendering::DXVertexShaderTypeDef& rendering::DXVertexShaderTypeDef::GetTyp
 rendering::DXPixelShaderTypeDef::DXPixelShaderTypeDef() :
 	ReferenceTypeDef(&rendering::DXShaderTypeDef::GetTypeDef(), "3823F212-4D44-453B-9DB9-F270A15FD135")
 {
+	m_name = "Pixel Shader";
+	m_category = "Rendering";
 }
 
 rendering::DXPixelShaderTypeDef::~DXPixelShaderTypeDef()
@@ -101,7 +158,28 @@ rendering::DXShader::~DXShader()
 {
 }
 
+void rendering::DXShader::Load(jobs::Job* done)
+{
+	std::string shaderFile = files::GetDataDir() + "Shaders\\src\\" + m_name.Get<std::string>();
+	std::wstring shaderFileW(shaderFile.begin(), shaderFile.end());
+
+	const char* entryPointVS = "VSMain";
+	const char* entryPointPS = "PSMain";
+
+	const char* profileVS = "VSMain";
+	const char* profilePS = "PSMain";
+
+	THROW_ERROR(CompileShader(
+		shaderFileW.c_str(),
+		TypeDef::IsA(GetTypeDef(), DXVertexShaderTypeDef::GetTypeDef()) ? entryPointVS : entryPointPS,
+		TypeDef::IsA(GetTypeDef(), DXVertexShaderTypeDef::GetTypeDef()) ? profileVS : profilePS,
+		&m_shader),
+		"Can't compile shader!")
+}
+
 ID3DBlob* rendering::DXShader::GetCompiledShader() const
 {
 	return m_shader.Get();
 }
+
+#undef THROW_ERROR

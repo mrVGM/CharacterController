@@ -3,6 +3,8 @@
 #include "CompositeTypeDef.h"
 #include "CompositeValue.h"
 
+#include "Job.h"
+
 #include "d3dx12.h"
 #include <d3d12.h>
 #include <wrl.h>
@@ -50,6 +52,8 @@ namespace rendering
 
 		DXShader(const ReferenceTypeDef& type);
 		virtual ~DXShader();
+
+		void Load(jobs::Job* done);
 
 		ID3DBlob* GetCompiledShader() const;
 	};
