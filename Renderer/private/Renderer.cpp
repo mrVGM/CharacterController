@@ -78,81 +78,58 @@ void rendering::renderer::RendererObj::Load(jobs::Job* done)
 	struct Context
 	{
 		int m_loading = 0;
-		RendererObj* m_self = nullptr;
-		jobs::Job* m_done;
 	};
 
-	Context* ctx = new Context{ 0, this, done };
+	Context* ctx = new Context();
 
-	class RPLoaded : public jobs::Job
-	{
-	private:
-		Context& m_ctx;
-	public:
-		RPLoaded(Context& ctx) :
-			m_ctx(ctx)
+	auto rpLoaded = [=]() {
+		--ctx->m_loading;
+		if (ctx->m_loading > 0)
 		{
+			return;
 		}
 
-		void Do() override
-		{
-			--m_ctx.m_loading;
+		delete ctx;
 
-			if (m_ctx.m_loading > 0)
-			{
-				return;
-			}
-
-			jobs::RunSync(m_ctx.m_done);
-			delete &m_ctx;
-		}
+		jobs::RunSync(done);
 	};
 
-	class LoadRPs : public jobs::Job
-	{
-	private:
-		Context& m_ctx;
-	public:
-		LoadRPs(Context& ctx) :
-			m_ctx(ctx)
-		{
-		}
-
-		void Do() override
-		{
-			DXCommandQueue* commandQueue = core::utils::GetCommandQueue();
-			m_ctx.m_self->m_commandQueue.AssignObject(commandQueue);
-
-			DXSwapChain* swapChain = core::utils::GetSwapChain();
-			m_ctx.m_self->m_swapChain.AssignObject(swapChain);
-
-			DXFence* fence = core::utils::GetRenderFence();
-			m_ctx.m_self->m_renderFence.AssignObject(fence);
-
-			ValueList* prDefs = m_ctx.m_self->m_renderPassesDefs.GetValue<ValueList*>();
-			ValueList* prs = m_ctx.m_self->m_renderPasses.GetValue<ValueList*>();
-
-			std::list<ObjectValue*> tmp;
-			ObjectValueContainer& container = ObjectValueContainer::GetContainer();
-
-			m_ctx.m_loading = 0;
-			for (auto it = prDefs->GetIterator(); it; ++it)
-			{
-				const render_pass::RenderPassTypeDef* curRPDef = (*it).GetType<const render_pass::RenderPassTypeDef*>();
-				tmp.clear();
-				container.GetObjectsOfType(*curRPDef, tmp);
-
-				render_pass::RenderPass* rp = static_cast<render_pass::RenderPass*>(tmp.front());
-				Value& val = prs->EmplaceBack();
-				val.AssignObject(rp);
-				++m_ctx.m_loading;
-
-				rp->Load(new RPLoaded(m_ctx));
-			}
-		}
+	auto loadRP = [=](render_pass::RenderPass* rp) {
+		return jobs::Job::CreateByLambda([=]() {
+			rp->Load(jobs::Job::CreateByLambda(rpLoaded));
+		});
 	};
 
-	rendering::core::LoadCoreObjects(new LoadRPs(*ctx));
+	jobs::Job* init = jobs::Job::CreateByLambda([=]() {
+		DXCommandQueue* commandQueue = core::utils::GetCommandQueue();
+		m_commandQueue.AssignObject(commandQueue);
+
+		DXSwapChain* swapChain = core::utils::GetSwapChain();
+		m_swapChain.AssignObject(swapChain);
+
+		DXFence* fence = core::utils::GetRenderFence();
+		m_renderFence.AssignObject(fence);
+
+
+		ValueList* prDefs = m_renderPassesDefs.GetValue<ValueList*>();
+		ValueList* prs = m_renderPasses.GetValue<ValueList*>();
+
+		for (auto it = prDefs->GetIterator(); it; ++it)
+		{
+			const render_pass::RenderPassTypeDef* curRPDef = (*it).GetType<const render_pass::RenderPassTypeDef*>();
+			render_pass::RenderPass* rp = static_cast<render_pass::RenderPass*>(ObjectValueContainer::GetObjectOfType(*curRPDef));
+
+			Value& val = prs->EmplaceBack();
+			val.AssignObject(rp);
+			++ctx->m_loading;
+
+			jobs::RunAsync(loadRP(rp));
+		}
+	});
+
+	jobs::RunAsync(jobs::Job::CreateByLambda([=]() {
+		core::LoadCoreObjects(init);
+	}));
 }
 
 void rendering::renderer::RendererObj::RenderFrame()
