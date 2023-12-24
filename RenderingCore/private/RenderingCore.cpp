@@ -22,9 +22,6 @@
 
 namespace
 {
-	// ^^^^ JUST A TEST
-	Value mutBuffer(rendering::DXMutableBufferTypeDef::GetTypeDef(), nullptr);
-
 	void LoadStage0(jobs::Job* done)
 	{
 		struct Context
@@ -145,14 +142,6 @@ namespace
 
 				swapChain->Load(new ItemLoaded(m_ctx));
 				copyBuffers->Load(new ItemLoaded(m_ctx));
-
-				// ^^^^ JUST A TEST
-				DXMutableBufferTypeDef::GetTypeDef().Construct(mutBuffer);
-				DXMutableBuffer* mb = mutBuffer.GetValue<rendering::DXMutableBuffer*>();
-				mb->SetSizeAndStride(256, 256);
-				mb->Load(jobs::Job::CreateByLambda([]() {
-					bool t = true;
-				}));
 			}
 		};
 
