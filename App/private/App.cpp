@@ -22,6 +22,8 @@
 
 #include "GCWorker.h"
 
+#include "Scene.h"
+
 namespace
 {
 	void Run()
@@ -56,6 +58,7 @@ void app::Boot()
 	rendering::renderer::Boot();
 	rendering::render_pass::Boot();
 	geo::Boot();
+	scene::Boot();
 
 #pragma endregion
 
