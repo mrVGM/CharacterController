@@ -12,6 +12,7 @@ target_link_libraries(Renderer PUBLIC
 	RenderingCore
 	App
 	Types
+	Scene
 )
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)

@@ -15,6 +15,8 @@
 
 #include "RenderingCore.h"
 
+#include "SceneObject.h"
+
 #include "CoreUtils.h"
 
 namespace
@@ -82,6 +84,17 @@ void rendering::renderer::RendererObj::Load(jobs::Job* done)
 
 	Context* ctx = new Context();
 
+	jobs::Job* loadScene = jobs::Job::CreateByLambda([=]() {
+		scene::SceneObject* mainScene =
+			static_cast<scene::SceneObject*>(ObjectValueContainer::GetObjectOfType(scene::SceneObjectTypeDef::GetTypeDef()));
+
+		jobs::Job* loadJob = jobs::Job::CreateByLambda([=]() {
+			mainScene->Load(done);
+		});
+
+		jobs::RunAsync(loadJob);
+	});
+
 	auto rpLoaded = [=]() {
 		--ctx->m_loading;
 		if (ctx->m_loading > 0)
@@ -91,7 +104,7 @@ void rendering::renderer::RendererObj::Load(jobs::Job* done)
 
 		delete ctx;
 
-		jobs::RunSync(done);
+		jobs::RunSync(loadScene);
 	};
 
 	auto loadRP = [=](render_pass::RenderPass* rp) {

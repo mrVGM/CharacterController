@@ -90,19 +90,13 @@ void rendering::DXMutableBuffer::Load(jobs::Job* done)
 	};
 	Context* ctx = new Context();
 
-	DXHeapTypeDef::GetTypeDef().Construct(ctx->m_heapVal);
-	DXHeapTypeDef::GetTypeDef().Construct(ctx->m_uploadHeapVal);
+	auto getHeap = [=]() {
+		return ctx->m_heapVal.GetValue<DXHeap*>();
+	};
 
-	DXHeap* heap = ctx->m_heapVal.GetValue<DXHeap*>();
-	DXHeap* uploadHeap = ctx->m_uploadHeapVal.GetValue<DXHeap*>();
-
-	heap->SetHeapSize(m_size);
-	heap->SetHeapType(D3D12_HEAP_TYPE_DEFAULT);
-	heap->SetHeapFlags(D3D12_HEAP_FLAG_ALLOW_ONLY_BUFFERS);
-
-	uploadHeap->SetHeapSize(m_size);
-	uploadHeap->SetHeapType(D3D12_HEAP_TYPE_UPLOAD);
-	uploadHeap->SetHeapFlags(D3D12_HEAP_FLAG_ALLOW_ONLY_BUFFERS);
+	auto getUploadHeap = [=]() {
+		return ctx->m_uploadHeapVal.GetValue<DXHeap*>();
+	};
 
 	auto heapLoaded = [=]() {
 		--ctx->m_toLoad;
@@ -114,6 +108,9 @@ void rendering::DXMutableBuffer::Load(jobs::Job* done)
 		DXBuffer* buffer = m_buffer.GetValue<DXBuffer*>();
 		DXBuffer* uploadBuffer = m_uploadBuffer.GetValue<DXBuffer*>();
 
+		DXHeap* heap = getHeap();
+		DXHeap* uploadHeap = getUploadHeap();
+
 		buffer->Place(heap, 0);
 		uploadBuffer->Place(uploadHeap, 0);
 
@@ -122,13 +119,32 @@ void rendering::DXMutableBuffer::Load(jobs::Job* done)
 		jobs::RunSync(done);
 	};
 
-	jobs::RunAsync(jobs::Job::CreateByLambda([=]() {
-		heap->MakeResident(jobs::Job::CreateByLambda(heapLoaded));
-	}));
 
-	jobs::RunAsync(jobs::Job::CreateByLambda([=]() {
-		uploadHeap->MakeResident(jobs::Job::CreateByLambda(heapLoaded));
-	}));
+	jobs::Job* init = jobs::Job::CreateByLambda([=]() {
+		DXHeapTypeDef::GetTypeDef().Construct(ctx->m_heapVal);
+		DXHeapTypeDef::GetTypeDef().Construct(ctx->m_uploadHeapVal);
+
+		DXHeap* heap = getHeap();
+		DXHeap* uploadHeap = getUploadHeap();
+
+		heap->SetHeapSize(m_size);
+		heap->SetHeapType(D3D12_HEAP_TYPE_DEFAULT);
+		heap->SetHeapFlags(D3D12_HEAP_FLAG_ALLOW_ONLY_BUFFERS);
+
+		uploadHeap->SetHeapSize(m_size);
+		uploadHeap->SetHeapType(D3D12_HEAP_TYPE_UPLOAD);
+		uploadHeap->SetHeapFlags(D3D12_HEAP_FLAG_ALLOW_ONLY_BUFFERS);
+
+		jobs::RunAsync(jobs::Job::CreateByLambda([=]() {
+			heap->MakeResident(jobs::Job::CreateByLambda(heapLoaded));
+		}));
+
+		jobs::RunAsync(jobs::Job::CreateByLambda([=]() {
+			uploadHeap->MakeResident(jobs::Job::CreateByLambda(heapLoaded));
+		}));
+	});
+
+	jobs::RunSync(init);
 }
 
 void rendering::DXMutableBuffer::Upload(jobs::Job* done)
