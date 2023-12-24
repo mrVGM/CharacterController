@@ -3,6 +3,8 @@
 #include "CompositeTypeDef.h"
 #include "CompositeValue.h"
 
+#include "Mesh.h"
+
 #include "Job.h"
 
 namespace scene
@@ -28,7 +30,7 @@ namespace scene
 		Actor(const ReferenceTypeDef& typeDef);
 		virtual ~Actor();
 
-		void SetMesh(const Value& mesh);
+		void SetMesh(geo::Mesh* mesh);
 
 		void Load(jobs::Job* done);
 	};

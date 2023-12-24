@@ -3,6 +3,9 @@
 #include "PrimitiveTypes.h"
 
 #include "Mesh.h"
+#include "MeshBuffers.h"
+
+#include "Jobs.h"
 
 namespace
 {
@@ -47,12 +50,30 @@ scene::Actor::~Actor()
 {
 }
 
-void scene::Actor::SetMesh(const Value& mesh)
+void scene::Actor::SetMesh(geo::Mesh* mesh)
 {
-	m_mesh = mesh;
+	m_mesh.AssignObject(mesh);
 }
 
 void scene::Actor::Load(jobs::Job* done)
 {
-	throw "Not Implemented!";
+	geo::Mesh* mesh = m_mesh.GetValue<geo::Mesh*>();
+	MeshBuffers* meshBuffers = mesh->m_buffers.GetValue<MeshBuffers*>();
+
+	if (meshBuffers)
+	{
+		jobs::RunSync(done);
+		return;
+	}
+
+	jobs::Job* initMeshBuffers = jobs::Job::CreateByLambda([=]() {
+		MeshBuffersTypeDef::GetTypeDef().Construct(mesh->m_buffers);
+		MeshBuffers* meshBuffers = mesh->m_buffers.GetValue<MeshBuffers*>();
+
+		jobs::RunAsync(jobs::Job::CreateByLambda([=]() {
+			meshBuffers->Load(*mesh, done);
+		}));
+	});
+
+	jobs::RunSync(initMeshBuffers);
 }

@@ -32,8 +32,10 @@ namespace geo
 			int m_count = -1;
 		};
 
-		bool m_zUp = false;
 		Value m_colladaFile;
+		Value m_buffers;
+
+		bool m_zUp = false;
 
 		int m_numVertices = -1;
 		MeshVertex* m_vertices = nullptr;

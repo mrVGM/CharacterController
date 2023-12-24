@@ -524,7 +524,8 @@ const geo::MeshTypeDef& geo::MeshTypeDef::GetTypeDef()
 
 geo::Mesh::Mesh(const ReferenceTypeDef& type) :
 	ObjectValue(type),
-	m_colladaFile(MeshTypeDef::GetTypeDef().m_colladaFile.GetType(), this)
+	m_colladaFile(MeshTypeDef::GetTypeDef().m_colladaFile.GetType(), this),
+	m_buffers(ReferenceTypeDef::GetTypeDef(), this)
 {
 }
 
@@ -545,6 +546,12 @@ geo::Mesh::~Mesh()
 
 void geo::Mesh::Load(jobs::Job* done)
 {
+	if (m_numVertices >= 0)
+	{
+		jobs::RunSync(done);
+		return;
+	}
+
 	using namespace xml_reader;
 
 	std::string colladaFile = "Geometry\\" + m_colladaFile.Get<std::string>();

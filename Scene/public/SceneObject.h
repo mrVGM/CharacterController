@@ -23,7 +23,7 @@ namespace scene
 	class SceneObject : public ObjectValue
 	{
 	private:
-		Value m_meshList;
+		Value m_actors;
 
 	public:
 		Value m_meshDefList;

@@ -7,6 +7,8 @@ add_library (Scene
 	"private/SceneObject.cpp"
 	"public/Actor.h"
 	"private/Actor.cpp"
+	"public/MeshBuffers.h"
+	"private/MeshBuffers.cpp"
 )
 
 target_include_directories(Scene INTERFACE PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/public")

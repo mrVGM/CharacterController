@@ -2,8 +2,14 @@
 
 #include "ListDef.h"
 #include "PrimitiveTypes.h"
+#include "ValueList.h"
+
+#include "ObjectValueContainer.h"
 
 #include "Mesh.h"
+#include "Actor.h"
+
+#include "Jobs.h"
 
 #include "CoreUtils.h"
 
@@ -56,7 +62,7 @@ void scene::SceneObjectTypeDef::Construct(Value& container) const
 
 scene::SceneObject::SceneObject(const ReferenceTypeDef& typeDef) :
 	ObjectValue(typeDef),
-	m_meshList(ListDef::GetTypeDef(geo::MeshTypeDef::GetTypeDef()), this),
+	m_actors(ListDef::GetTypeDef(ActorTypeDef::GetTypeDef()), this),
 	m_meshDefList(SceneObjectTypeDef::GetTypeDef().m_meshList.GetType(), this)
 {
 }
@@ -67,5 +73,51 @@ scene::SceneObject::~SceneObject()
 
 void scene::SceneObject::Load(jobs::Job* done)
 {
-	throw "Not Implemented!";
+	ValueList* meshDefs = m_meshDefList.GetValue<ValueList*>();
+	ValueList* actorList = m_actors.GetValue<ValueList*>();
+
+	struct Context
+	{
+		int m_toLoad = 0;
+	};
+	Context* ctx = new Context();
+
+	auto actorLoaded = [=]() {
+		--ctx->m_toLoad;
+		if (ctx->m_toLoad > 0)
+		{
+			return;
+		}
+
+		delete ctx;
+
+		jobs::RunSync(done);
+	};
+
+	auto loadActor = [=](Actor* actor) {
+		return jobs::Job::CreateByLambda([=]() {
+			actor->Load(jobs::Job::CreateByLambda(actorLoaded));
+		});
+	};
+
+	jobs::Job* initActors = jobs::Job::CreateByLambda([=]() {
+
+		for (auto it = meshDefs->GetIterator(); it; ++it)
+		{
+			const Value& cur = *it;
+			geo::Mesh* curMesh = static_cast<geo::Mesh*>(ObjectValueContainer::GetObjectOfType(*cur.GetType<const TypeDef*>()));
+
+			Value& actorVal = actorList->EmplaceBack();
+			ActorTypeDef::GetTypeDef().Construct(actorVal);
+
+			Actor* actor = actorVal.GetValue<Actor*>();
+
+			actor->SetMesh(curMesh);
+
+			++ctx->m_toLoad;
+			jobs::RunAsync(loadActor(actor));
+		}
+	});
+
+	jobs::RunSync(initActors);
 }
