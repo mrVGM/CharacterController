@@ -12,6 +12,7 @@ target_include_directories(UnlitRP PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/private"
 
 target_link_libraries(UnlitRP PUBLIC
 	RenderPass
+	Scene
 )
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)

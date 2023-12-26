@@ -121,3 +121,9 @@ void scene::SceneObject::Load(jobs::Job* done)
 
 	jobs::RunSync(initActors);
 }
+
+
+Value& scene::SceneObject::GetActors()
+{
+	return m_actors;
+}

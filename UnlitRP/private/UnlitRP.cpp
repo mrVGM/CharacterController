@@ -7,6 +7,12 @@
 #include "ObjectValueContainer.h"
 #include "UnlitMaterial.h"
 
+#include "SceneObject.h"
+#include "MeshBuffers.h"
+#include "Actor.h"
+
+#include "ValueList.h"
+
 #include "CoreUtils.h"
 
 #define THROW_ERROR(hRes, error) \
@@ -53,7 +59,8 @@ rendering::unlit_rp::UnlitRP::UnlitRP(const ReferenceTypeDef& typeDef) :
 	m_device(DXDeviceTypeDef::GetTypeDef(), this),
 	m_swapChain(DXSwapChainTypeDef::GetTypeDef(), this),
 	m_commandQueue(DXCommandQueueTypeDef::GetTypeDef(), this),
-	m_unlitMaterial(UnlitMaterialTypeDef::GetTypeDef(), this)
+	m_unlitMaterial(UnlitMaterialTypeDef::GetTypeDef(), this),
+	m_scene(scene::SceneObjectTypeDef::GetTypeDef(), this)
 {
 }
 
@@ -96,6 +103,8 @@ void rendering::unlit_rp::UnlitRP::Create()
 
 void rendering::unlit_rp::UnlitRP::Prepare()
 {
+	m_commandLists.clear();
+
 	DXSwapChain* swapChain = m_swapChain.GetValue<DXSwapChain*>();
 	int frameIndex = swapChain->GetCurrentSwapChainIndex();
 
@@ -128,7 +137,7 @@ void rendering::unlit_rp::UnlitRP::Prepare()
 		{
 			CD3DX12_RESOURCE_BARRIER::CD3DX12_RESOURCE_BARRIER::Transition(swapChain->GetCurrentRenderTarget(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT)
 		};
-		m_beginCommandList->ResourceBarrier(_countof(barrier), barrier);
+		m_endCommandList->ResourceBarrier(_countof(barrier), barrier);
 	}
 
 	THROW_ERROR(
@@ -143,6 +152,51 @@ void rendering::unlit_rp::UnlitRP::Execute()
 	{
 		ID3D12CommandList* commandLists[] = { m_beginCommandList.Get() };
 		commandQueue->GetGraphicsCommandQueue()->ExecuteCommandLists(_countof(commandLists), commandLists);
+	}
+
+	DXDevice* device = m_device.GetValue<DXDevice*>();
+	unlit_rp::UnlitMaterial* mat = m_unlitMaterial.GetValue<unlit_rp::UnlitMaterial*>();
+
+	scene::SceneObject* scene = m_scene.GetValue<scene::SceneObject*>();
+	Value& actors = scene->GetActors();
+	ValueList* actorList = actors.GetValue<ValueList*>();
+	for (auto it = actorList->GetIterator(); it; ++it)
+	{
+		scene::Actor* cur = (*it).GetValue<scene::Actor*>();
+		geo::Mesh* mesh = cur->m_mesh.GetValue<geo::Mesh*>();
+
+		scene::MeshBuffers* meshBuffers = mesh->m_buffers.GetValue<scene::MeshBuffers*>();
+
+		DXBuffer* vertexBuffer = meshBuffers->m_vertexBuffer.GetValue<DXBuffer*>();
+		DXBuffer* indexBuffer = meshBuffers->m_indexBuffer.GetValue<DXBuffer*>();
+
+		for (auto it = mesh->m_materials.begin(); it != mesh->m_materials.end(); ++it)
+		{
+			geo::Mesh::MaterialRange& matRange = *it;
+
+			Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList>& cmdList = m_commandLists.emplace_back();
+			
+			THROW_ERROR(
+				device->GetDevice().CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, m_commandAllocator.Get(), nullptr, IID_PPV_ARGS(&cmdList)),
+				"Can't create Command List!")
+
+			THROW_ERROR(
+				cmdList->Close(),
+				"Can't close Command List!")
+
+			mat->GenerateCommandList(
+				*vertexBuffer,
+				*indexBuffer,
+				*vertexBuffer,
+				matRange.m_start,
+				matRange.m_count,
+				m_commandAllocator.Get(),
+				cmdList.Get());
+
+
+			ID3D12CommandList* cmdLists[] = { cmdList.Get() };
+			m_commandQueue.GetValue<DXCommandQueue*>()->GetGraphicsCommandQueue()->ExecuteCommandLists(_countof(cmdLists), cmdLists);
+		}
 	}
 
 	{
@@ -167,6 +221,7 @@ void rendering::unlit_rp::UnlitRP::Load(jobs::Job* done)
 		m_swapChain.AssignObject(core::utils::GetSwapChain());
 		m_commandQueue.AssignObject(core::utils::GetCommandQueue());
 
+		m_scene.AssignObject(ObjectValueContainer::GetObjectOfType(scene::SceneObjectTypeDef::GetTypeDef()));
 		m_unlitMaterial.AssignObject(ObjectValueContainer::GetObjectOfType(UnlitMaterialTypeDef::GetTypeDef()));
 
 		Create();

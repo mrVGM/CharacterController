@@ -22,9 +22,9 @@ namespace scene
 
 	class MeshBuffers : public ObjectValue
 	{
+	public:
 		Value m_vertexBuffer;
 		Value m_indexBuffer;
-	public:
 
 		MeshBuffers(const ReferenceTypeDef& typeDef);
 		virtual ~MeshBuffers();

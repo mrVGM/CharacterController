@@ -24,8 +24,8 @@ namespace scene
 
 	class Actor : public ObjectValue
 	{
-		Value m_mesh;
 	public:
+		Value m_mesh;
 
 		Actor(const ReferenceTypeDef& typeDef);
 		virtual ~Actor();

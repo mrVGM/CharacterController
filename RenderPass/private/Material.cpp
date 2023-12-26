@@ -127,7 +127,14 @@ void rendering::render_pass::Material::CreatePipelineStateAndRootSignatureForSta
         psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
 
         psoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
+        
+#if false
         psoDesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
+#else
+        psoDesc.DepthStencilState.DepthEnable = false;
+        psoDesc.DepthStencilState.StencilEnable = false;
+#endif
+
         psoDesc.SampleMask = UINT_MAX;
         psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
         psoDesc.NumRenderTargets = 1;
@@ -164,6 +171,7 @@ void rendering::render_pass::Material::GenerateCommandList(
     const DXBuffer& instanceBuffer,
     UINT startIndex,
     UINT indexCount,
+    ID3D12CommandAllocator* commandAllocator,
     ID3D12GraphicsCommandList* commandList)
 {
 }

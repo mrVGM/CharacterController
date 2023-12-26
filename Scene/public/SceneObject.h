@@ -32,5 +32,6 @@ namespace scene
 		virtual ~SceneObject();
 
 		void Load(jobs::Job* done);
+		Value& GetActors();
 	};
 }

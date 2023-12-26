@@ -53,6 +53,7 @@ namespace rendering::render_pass
 			const DXBuffer& instanceBuffer,
 			UINT startIndex,
 			UINT indexCount,
+			ID3D12CommandAllocator* commandAllocator,
 			ID3D12GraphicsCommandList* commandList);
 
 		virtual void Load(jobs::Job* done);

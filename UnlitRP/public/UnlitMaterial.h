@@ -29,6 +29,7 @@ namespace rendering::unlit_rp
 			const DXBuffer& instanceBuffer,
 			UINT startIndex,
 			UINT indexCount,
+			ID3D12CommandAllocator* commandAllocator,
 			ID3D12GraphicsCommandList* commandList) override;
 
 		void Load(jobs::Job* done) override;

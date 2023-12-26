@@ -34,6 +34,7 @@ namespace rendering::unlit_rp
 		Value m_swapChain;
 		Value m_commandQueue;
 
+		Value m_scene;
 		Value m_unlitMaterial;
 
 		void Create();

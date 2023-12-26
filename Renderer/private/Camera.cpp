@@ -124,6 +124,7 @@ void rendering::renderer::Camera::Tick(double dt, jobs::Job* done)
 	};
 
 	Matrix camProjection = project * view * translate;
+
 	
 
 	DXMutableBuffer* camBuff = m_cameraBuffer.GetValue<DXMutableBuffer*>();

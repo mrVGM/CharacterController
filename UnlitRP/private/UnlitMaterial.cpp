@@ -67,8 +67,13 @@ void rendering::unlit_rp::UnlitMaterial::GenerateCommandList(
     const DXBuffer& instanceBuffer,
     UINT startIndex,
     UINT indexCount,
+    ID3D12CommandAllocator* commandAllocator,
     ID3D12GraphicsCommandList* commandList)
 {
+    THROW_ERROR(
+        commandList->Reset(commandAllocator, m_pipelineState.Get()),
+        "Can't reset Command List!")
+
     DXSwapChain* swapChain = m_swapChain.GetValue<DXSwapChain*>();
 
     ID3D12Resource* curRT = m_swapChain.GetValue<DXSwapChain*>()->GetCurrentRenderTarget();
@@ -108,6 +113,10 @@ void rendering::unlit_rp::UnlitMaterial::GenerateCommandList(
         0,
         0
     );
+
+    THROW_ERROR(
+        commandList->Close(),
+        "Can't close Command List!")
 }
 
 void rendering::unlit_rp::UnlitMaterial::Load(jobs::Job* done)
