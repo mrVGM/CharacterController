@@ -3,6 +3,8 @@
 add_library (UnlitRP
 	"public/UnlitRP.h"
 	"private/UnlitRP.cpp"
+	"public/UnlitMaterial.h"
+	"private/UnlitMaterial.cpp"
 )
 
 target_include_directories(UnlitRP INTERFACE PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/public")

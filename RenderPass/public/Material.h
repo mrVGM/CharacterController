@@ -29,12 +29,12 @@ namespace rendering::render_pass
 
 	class Material : public ObjectValue
 	{
-	private:
+	protected:
 		Microsoft::WRL::ComPtr<ID3D12PipelineState> m_pipelineState;
 		Microsoft::WRL::ComPtr<ID3D12RootSignature> m_rootSignature;
 
 		Value m_device;
-
+		Value m_swapChain;
 		Value m_vertexShader;
 		Value m_pixelShader;
 
@@ -53,9 +53,9 @@ namespace rendering::render_pass
 			const DXBuffer& instanceBuffer,
 			UINT startIndex,
 			UINT indexCount,
-			ID3D12CommandList* commandList);
+			ID3D12GraphicsCommandList* commandList);
 
-		void Load(jobs::Job* done);
+		virtual void Load(jobs::Job* done);
 	};
 
 }

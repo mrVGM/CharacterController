@@ -2,6 +2,11 @@
 
 #include "Jobs.h"
 
+#include "UnlitMaterial.h"
+
+#include "ObjectValueContainer.h"
+#include "UnlitMaterial.h"
+
 #include "CoreUtils.h"
 
 #define THROW_ERROR(hRes, error) \
@@ -47,7 +52,8 @@ rendering::unlit_rp::UnlitRP::UnlitRP(const ReferenceTypeDef& typeDef) :
 	render_pass::RenderPass(typeDef),
 	m_device(DXDeviceTypeDef::GetTypeDef(), this),
 	m_swapChain(DXSwapChainTypeDef::GetTypeDef(), this),
-	m_commandQueue(DXCommandQueueTypeDef::GetTypeDef(), this)
+	m_commandQueue(DXCommandQueueTypeDef::GetTypeDef(), this),
+	m_unlitMaterial(UnlitMaterialTypeDef::GetTypeDef(), this)
 {
 }
 
@@ -147,13 +153,24 @@ void rendering::unlit_rp::UnlitRP::Execute()
 
 void rendering::unlit_rp::UnlitRP::Load(jobs::Job* done)
 {
+	auto getUnlitMaterial = [=]() {
+		return m_unlitMaterial.GetValue<UnlitMaterial*>();
+	};
+
+	jobs::Job* loadUnlitMat = jobs::Job::CreateByLambda([=]() {
+		UnlitMaterial* mat = getUnlitMaterial();
+		mat->Load(done);
+	});
+
 	jobs::Job* init = jobs::Job::CreateByLambda([=]() {
 		m_device.AssignObject(core::utils::GetDevice());
 		m_swapChain.AssignObject(core::utils::GetSwapChain());
 		m_commandQueue.AssignObject(core::utils::GetCommandQueue());
 
+		m_unlitMaterial.AssignObject(ObjectValueContainer::GetObjectOfType(UnlitMaterialTypeDef::GetTypeDef()));
+
 		Create();
-		jobs::RunSync(done);
+		jobs::RunAsync(loadUnlitMat);
 	});
 
 	jobs::RunSync(init);
@@ -163,6 +180,7 @@ void rendering::unlit_rp::UnlitRP::Load(jobs::Job* done)
 void rendering::unlit_rp::Boot()
 {
 	unlit_rp::UnlitRPTypeDef::GetTypeDef();
+	unlit_rp::UnlitMaterialTypeDef::GetTypeDef();
 }
 
 

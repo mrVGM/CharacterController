@@ -147,6 +147,7 @@ rendering::render_pass::Material::Material(const ReferenceTypeDef& typeDef) :
 	m_vertexShader(DXVertexShaderTypeDef::GetTypeDef(), this),
 	m_pixelShader(DXPixelShaderTypeDef::GetTypeDef(), this),
 	m_device(DXDeviceTypeDef::GetTypeDef(), this),
+    m_swapChain(DXSwapChainTypeDef::GetTypeDef(), this),
 	
 	m_vertexShaderDef(MaterialTypeDef::GetTypeDef().m_vertexShader.GetType(), this),
 	m_pixelShaderDef(MaterialTypeDef::GetTypeDef().m_pixelShader.GetType(), this)
@@ -157,7 +158,13 @@ rendering::render_pass::Material::~Material()
 {
 }
 
-void rendering::render_pass::Material::GenerateCommandList(const DXBuffer& vertexBuffer, const DXBuffer& indexBuffer, const DXBuffer& instanceBuffer, UINT startIndex, UINT indexCount, ID3D12CommandList* commandList)
+void rendering::render_pass::Material::GenerateCommandList(
+    const DXBuffer& vertexBuffer,
+    const DXBuffer& indexBuffer,
+    const DXBuffer& instanceBuffer,
+    UINT startIndex,
+    UINT indexCount,
+    ID3D12GraphicsCommandList* commandList)
 {
 }
 
@@ -191,7 +198,8 @@ void rendering::render_pass::Material::Load(jobs::Job* done)
     };
 
     jobs::Job* init = jobs::Job::CreateByLambda([=]() {
-        m_device.AssignObject(ObjectValueContainer::GetObjectOfType(DXDeviceTypeDef::GetTypeDef()));
+        m_device.AssignObject(core::utils::GetDevice());
+        m_swapChain.AssignObject(core::utils::GetSwapChain());
         m_vertexShader.AssignObject(ObjectValueContainer::GetObjectOfType(*m_vertexShaderDef.GetType<const TypeDef*>()));
         m_pixelShader.AssignObject(ObjectValueContainer::GetObjectOfType(*m_pixelShaderDef.GetType<const TypeDef*>()));
 
