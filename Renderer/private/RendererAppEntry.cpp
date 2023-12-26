@@ -6,6 +6,11 @@
 #include "ObjectValueContainer.h"
 #include "Renderer.h"
 
+#include "DXMutableBuffer.h"
+
+#include "CoreUtils.h"
+
+#include <vector>
 
 namespace
 {
@@ -39,15 +44,112 @@ void rendering::RendererAppEntryTypeDef::Construct(Value& container) const
 	container.AssignObject(entry);
 }
 
+void rendering::RendererAppEntryObj::Tick()
+{
+	renderer::RendererObj* rend = m_renderer.GetValue<renderer::RendererObj*>();
+
+
+	jobs::RunAsync(jobs::Job::CreateByLambda([=]() {
+		rend->RenderFrame();
+
+		UpdateMutableBuffers(jobs::Job::CreateByLambda([=]() {
+			jobs::Job* nextTick = jobs::Job::CreateByLambda([=]() {
+				Tick();
+			});
+			jobs::RunAsync(nextTick);
+		}));
+	}));
+}
+
+void rendering::RendererAppEntryObj::UpdateMutableBuffers(jobs::Job* done)
+{
+	jobs::Job* getBuffers = jobs::Job::CreateByLambda([=]() {
+		std::list<ObjectValue*> mutableBuffers;
+		ObjectValueContainer& container = ObjectValueContainer::GetContainer();
+		container.GetObjectsOfType(DXMutableBufferTypeDef::GetTypeDef(), mutableBuffers);
+
+		if (m_copyListsSize < mutableBuffers.size())
+		{
+			m_copyListsSize = mutableBuffers.size();
+			if (m_copyCommandLists)
+			{
+				delete[] m_copyCommandLists;
+			}
+
+			m_copyCommandLists = new ID3D12CommandList * [m_copyListsSize];
+		}
+
+		bool anyBuffer = false;
+		int index = 0;
+		for (auto it = mutableBuffers.begin(); it != mutableBuffers.end(); ++it)
+		{
+			DXMutableBuffer* cur = static_cast<DXMutableBuffer*>(*it);
+			if (!cur->IsDirty())
+			{
+				continue;
+			}
+
+			anyBuffer = true;
+			m_copyCommandLists[index++] = cur->GetCopyCommandList();
+		}
+
+		if (!anyBuffer)
+		{
+			jobs::RunSync(done);
+			return;
+		}
+
+		jobs::RunAsync(jobs::Job::CreateByLambda([=]() {
+			m_copyBuffers.GetValue<DXCopyBuffers*>()->Execute(m_copyCommandLists, m_copyListsSize, done);
+		}));
+	});
+
+	jobs::RunSync(getBuffers);
+}
+
 rendering::RendererAppEntryObj::RendererAppEntryObj(const ReferenceTypeDef& typeDef) :
 	AppEntryObj(typeDef),
-	m_renderer(renderer::RendererTypeDef::GetTypeDef(), this)
+	m_renderer(renderer::RendererTypeDef::GetTypeDef(), this),
+	m_copyBuffers(DXCopyBuffersTypeDef::GetTypeDef(), this)
 {
 }
 
 rendering::RendererAppEntryObj::~RendererAppEntryObj()
 {
+	if (m_copyCommandLists)
+	{
+		delete[] m_copyCommandLists;
+	}
+
+	m_copyCommandLists = nullptr;
 }
+
+void rendering::RendererAppEntryObj::Boot()
+{
+	auto getRend = [=]() {
+		return m_renderer.GetValue<renderer::RendererObj*>();
+	};
+
+	jobs::Job* load = jobs::Job::CreateByLambda([=]() {
+		getRend()->Load(jobs::Job::CreateByLambda([=]() {
+			Tick();
+		}));
+	});
+
+	jobs::Job* init = jobs::Job::CreateByLambda([=]() {
+		ObjectValue* rend = ObjectValueContainer::GetObjectOfType(renderer::RendererTypeDef::GetTypeDef());
+		m_renderer.AssignObject(rend);
+
+		ObjectValue* copyBuffers = ObjectValueContainer::GetObjectOfType(DXCopyBuffersTypeDef::GetTypeDef());
+		m_copyBuffers.AssignObject(copyBuffers);
+
+		jobs::RunAsync(load);
+ 	});
+
+	jobs::RunSync(init);
+}
+
+#if false
 
 void rendering::RendererAppEntryObj::Boot()
 {
@@ -122,3 +224,5 @@ void rendering::RendererAppEntryObj::Boot()
 	jobs::RunSync(new LoadRenderer(ctx));
 
 }
+
+#endif

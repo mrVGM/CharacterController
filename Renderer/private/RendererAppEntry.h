@@ -2,7 +2,11 @@
 
 #include "AppEntry.h"
 
+#include "Job.h"
+
 #include "CompositeTypeDef.h"
+
+#include "d3dx12.h"
 
 namespace rendering
 {
@@ -21,6 +25,13 @@ namespace rendering
 	{
 	private:
 		Value m_renderer;
+		Value m_copyBuffers;
+
+		int m_copyListsSize = 0;
+		ID3D12CommandList** m_copyCommandLists = nullptr;
+
+		void Tick();
+		void UpdateMutableBuffers(jobs::Job* done);
 
 	public:
 		RendererAppEntryObj(const ReferenceTypeDef& typeDef);

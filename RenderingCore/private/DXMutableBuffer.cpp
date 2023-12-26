@@ -116,6 +116,8 @@ void rendering::DXMutableBuffer::Load(jobs::Job* done)
 
 		delete ctx;
 
+		CreateCommandList();
+
 		jobs::RunSync(done);
 	};
 
