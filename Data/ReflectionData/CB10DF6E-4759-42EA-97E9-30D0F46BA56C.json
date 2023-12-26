@@ -1,0 +1,12 @@
+{
+  "properties": {},
+  "parent": {
+    "id": "4EA9B059-93A0-4110-95DC-772ABAF531E4"
+  },
+  "name": "Camera Buffer",
+  "isGenerated": 0,
+  "id": {
+    "id": "CB10DF6E-4759-42EA-97E9-30D0F46BA56C"
+  },
+  "category": "Render Pass"
+}

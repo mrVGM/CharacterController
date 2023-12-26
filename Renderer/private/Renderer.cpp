@@ -20,6 +20,8 @@
 
 #include "TickUpdater.h"
 
+#include "Camera.h"
+
 #include "CoreUtils.h"
 
 namespace
@@ -118,6 +120,15 @@ void rendering::renderer::RendererObj::Load(jobs::Job* done)
 		jobs::RunAsync(loadJob);
 	});
 
+	jobs::Job* loadCamera = jobs::Job::CreateByLambda([=]() {
+		ObjectValue* camObj = ObjectValueContainer::GetObjectOfType(CameraTypeDef::GetTypeDef());
+		Camera* cam = static_cast<Camera*>(camObj);
+
+		jobs::RunAsync(jobs::Job::CreateByLambda([=]() {
+			cam->Load(loadScene);
+		}));
+	});
+
 	auto rpLoaded = [=]() {
 		--ctx->m_loading;
 		if (ctx->m_loading > 0)
@@ -127,7 +138,7 @@ void rendering::renderer::RendererObj::Load(jobs::Job* done)
 
 		delete ctx;
 
-		jobs::RunSync(loadScene);
+		jobs::RunSync(loadCamera);
 	};
 
 	auto loadRP = [=](render_pass::RenderPass* rp) {
@@ -202,4 +213,6 @@ void rendering::renderer::Boot()
 	RendererAppEntryTypeDef::GetTypeDef();
 	RendererTypeDef::GetTypeDef();
 	TickUpdaterTypeDef::GetTypeDef();
+
+	CameraTypeDef::GetTypeDef();
 }

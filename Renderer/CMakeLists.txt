@@ -7,6 +7,8 @@ add_library (Renderer
 	"private/RendererAppEntry.cpp"
 	"public/TickUpdater.h"
 	"private/TickUpdater.cpp"
+	"public/Camera.h"
+	"private/Camera.cpp"
 )
 
 target_include_directories(Renderer INTERFACE PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/public")

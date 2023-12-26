@@ -7,6 +7,8 @@ add_library (RenderPass
 	"private/ClearScreenRP.cpp"
 	"public/Material.h"
 	"private/Material.cpp"
+	"public/CameraBuffer.h"
+	"private/CameraBuffer.cpp"
 )
 
 target_include_directories(RenderPass INTERFACE PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/public")

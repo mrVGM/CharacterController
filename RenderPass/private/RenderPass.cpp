@@ -2,6 +2,7 @@
 
 #include "ClearScreenRP.h"
 #include "Material.h"
+#include "CameraBuffer.h"
 
 namespace
 {
@@ -48,4 +49,5 @@ void rendering::render_pass::Boot()
 	RenderPassTypeDef::GetTypeDef();
 	ClearScreenRPTypeDef::GetTypeDef();
 	MaterialTypeDef::GetTypeDef();
+	CameraBufferTypeDef::GetTypeDef();
 }
