@@ -16,4 +16,14 @@ namespace math
 	{
 		float m_coefs[3];
 	};
+
+	struct Matrix
+	{
+		float m_coefs[16];
+
+		static const Matrix& GetIdentityMatrix();
+		float& GetCoef(int row, int col);
+	};
+
+	Matrix operator*(const Matrix& m1, const Matrix& m2);
 }

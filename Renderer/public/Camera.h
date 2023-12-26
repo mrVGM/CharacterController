@@ -3,6 +3,8 @@
 #include "CompositeTypeDef.h"
 #include "CompositeValue.h"
 
+#include "MathUtils.h"
+
 #include "TickUpdater.h"
 
 namespace rendering::renderer

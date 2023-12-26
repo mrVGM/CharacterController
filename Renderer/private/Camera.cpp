@@ -11,6 +11,9 @@
 
 #include "CoreUtils.h"
 
+#include <corecrt_math_defines.h>
+
+
 namespace
 {
 	BasicObjectContainer<rendering::renderer::CameraTypeDef> m_camera;
@@ -84,6 +87,53 @@ bool rendering::renderer::Camera::IsTicking()
 
 void rendering::renderer::Camera::Tick(double dt, jobs::Job* done)
 {
+	using namespace math;
+
+	const float fov = 60;
+	const float aspect = 800.0 / 600.0;
+	const float farPlane = 100;
+	const float nearPlane = 0.1;
+
+	float fovRad = M_PI * fov / 180;
+
+	float h = tan(fovRad / 2);
+	float w = aspect * h;
+
+	Matrix translate = Matrix::GetIdentityMatrix();
+
+	translate.GetCoef(0, 3) = 0;
+	translate.GetCoef(1, 3) = 0;
+	translate.GetCoef(2, 3) = 5;
+
+	Matrix view = {
+		{
+			1,0,0,0,
+			0,1,0,0,
+			0,0,1,0,
+			0,0,0,1
+		}
+	};
+
+	Matrix project = {
+		{
+			1 / w, 0, 0, 0,
+			0, 1 / h, 0, 0,
+			0, 0, farPlane / (farPlane - nearPlane), -farPlane * nearPlane / (farPlane - nearPlane),
+			0, 0, 1, 0
+		}
+	};
+
+	Matrix camProjection = project * view * translate;
+	
+
+	DXMutableBuffer* camBuff = m_cameraBuffer.GetValue<DXMutableBuffer*>();
+	DXBuffer* uploadBuff = camBuff->m_uploadBuffer.GetValue<DXBuffer*>();
+	Matrix* data = static_cast<Matrix*>(uploadBuff->Map());
+	*data = camProjection;
+	uploadBuff->Unmap();
+
+	camBuff->SetDirty();
+
 	jobs::RunSync(done);
 }
 
