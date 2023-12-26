@@ -5,6 +5,8 @@
 
 #include "Job.h"
 
+#include "d3dx12.h"
+
 namespace rendering::renderer
 {
 	class RendererTypeDef : public ReferenceTypeDef
@@ -23,7 +25,7 @@ namespace rendering::renderer
 	class RendererObj : public ObjectValue
 	{
 	private:
-		int m_frameIndex = 1;
+		UINT64 m_frameIndex = 1;
 		Value m_renderPasses;
 
 		Value m_swapChain;
@@ -33,6 +35,7 @@ namespace rendering::renderer
 		Value m_renderPassesDefs;
 
 		RendererObj(const ReferenceTypeDef& typeDef);
+		virtual ~RendererObj();
 
 		void Load(jobs::Job* done);
 

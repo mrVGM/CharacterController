@@ -3,7 +3,11 @@
 add_library (Renderer
 	"public/Renderer.h"
 	"private/Renderer.cpp"
- "private/RendererAppEntry.h" "private/RendererAppEntry.cpp")
+	"private/RendererAppEntry.h"
+	"private/RendererAppEntry.cpp"
+	"public/TickUpdater.h"
+	"private/TickUpdater.cpp"
+)
 
 target_include_directories(Renderer INTERFACE PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/public")
 target_include_directories(Renderer PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/private")

@@ -18,6 +18,8 @@
 #include "SceneObject.h"
 #include "Material.h"
 
+#include "TickUpdater.h"
+
 #include "CoreUtils.h"
 
 namespace
@@ -73,6 +75,10 @@ rendering::renderer::RendererObj::RendererObj(const ReferenceTypeDef& typeDef) :
 	m_renderFence(DXFenceTypeDef::GetTypeDef(), this),
 	m_swapChain(DXSwapChainTypeDef::GetTypeDef(), this),
 	m_commandQueue(DXCommandQueueTypeDef::GetTypeDef(), this)
+{
+}
+
+rendering::renderer::RendererObj::~RendererObj()
 {
 }
 
@@ -179,7 +185,7 @@ void rendering::renderer::RendererObj::RenderFrame()
 	}
 
 	DXFence* fence = m_renderFence.GetValue<DXFence*>();
-	int curFrame = m_frameIndex++;
+	UINT64 curFrame = m_frameIndex++;
 
 	WaitFence waitFence(*fence);
 
@@ -195,4 +201,5 @@ void rendering::renderer::Boot()
 {
 	RendererAppEntryTypeDef::GetTypeDef();
 	RendererTypeDef::GetTypeDef();
+	TickUpdaterTypeDef::GetTypeDef();
 }

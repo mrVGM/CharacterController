@@ -8,9 +8,9 @@
 
 #include "DXMutableBuffer.h"
 
-#include "CoreUtils.h"
+#include "TickUpdater.h"
 
-#include <vector>
+#include "CoreUtils.h"
 
 namespace
 {
@@ -78,7 +78,7 @@ void rendering::RendererAppEntryObj::Tick()
 
 	jobs::RunAsync(jobs::Job::CreateByLambda([=]() {
 		double dt = TimeStamp();
-		RunUpdaters(dt, jobs::Job::CreateByLambda(jobDone));
+		RunTickUpdaters(dt, jobs::Job::CreateByLambda(jobDone));
 	}));
 }
 
@@ -128,9 +128,58 @@ void rendering::RendererAppEntryObj::UpdateMutableBuffers(jobs::Job* done)
 	jobs::RunSync(getBuffers);
 }
 
-void rendering::RendererAppEntryObj::RunUpdaters(double dt, jobs::Job* done)
+void rendering::RendererAppEntryObj::RunTickUpdaters(double dt, jobs::Job* done)
 {
-	jobs::RunSync(done);
+	using namespace renderer;
+
+	static std::list<ObjectValue*> updaters;
+	static int updatersRunning;
+
+	updaters.clear();
+	updatersRunning = 0;
+
+	auto updaterDone = [=]() {
+		--updatersRunning;
+		if (updatersRunning > 0)
+		{
+			return;
+		}
+
+		jobs::RunSync(done);
+	};
+
+	auto startUpdater = [=](TickUpdater* updater) {
+		return jobs::Job::CreateByLambda([=]() {
+			updater->Tick(dt, jobs::Job::CreateByLambda(updaterDone));
+		});
+	};
+
+	jobs::Job* getUpdaters = jobs::Job::CreateByLambda([=]() {
+		ObjectValueContainer& container = ObjectValueContainer::GetContainer();
+
+		container.GetObjectsOfType(TickUpdaterTypeDef::GetTypeDef(), updaters);
+
+		bool anyUpdater = false;
+		for (auto it = updaters.begin(); it != updaters.end(); ++it)
+		{
+			TickUpdater* cur = static_cast<TickUpdater*>(*it);
+			if (!cur->IsTicking())
+			{
+				continue;
+			}
+			anyUpdater = true;
+
+			++updatersRunning;
+			jobs::RunAsync(startUpdater(cur));
+		}
+
+		if (!anyUpdater)
+		{
+			jobs::RunSync(done);
+		}
+	});
+
+	jobs::RunSync(getUpdaters);
 }
 
 rendering::RendererAppEntryObj::RendererAppEntryObj(const ReferenceTypeDef& typeDef) :
