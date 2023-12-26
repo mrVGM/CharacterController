@@ -46,18 +46,39 @@ void rendering::RendererAppEntryTypeDef::Construct(Value& container) const
 
 void rendering::RendererAppEntryObj::Tick()
 {
+	static int m_running;;
+	m_running = 2;
+
+
+	auto jobDone = [=]() {
+		--m_running;
+		if (m_running > 0)
+		{
+			return;
+		}
+
+		jobs::Job* updateMutable = jobs::Job::CreateByLambda([=]() {
+			UpdateMutableBuffers(jobs::Job::CreateByLambda([=]() {
+				jobs::Job* nextTick = jobs::Job::CreateByLambda([=]() {
+					m_startedTicking = true;
+					Tick();
+				});
+				jobs::RunAsync(nextTick);
+			}));
+		});
+
+		jobs::RunAsync(updateMutable);
+	};
+
 	renderer::RendererObj* rend = m_renderer.GetValue<renderer::RendererObj*>();
-
-
 	jobs::RunAsync(jobs::Job::CreateByLambda([=]() {
 		rend->RenderFrame();
+		jobs::RunSync(jobs::Job::CreateByLambda(jobDone));
+	}));
 
-		UpdateMutableBuffers(jobs::Job::CreateByLambda([=]() {
-			jobs::Job* nextTick = jobs::Job::CreateByLambda([=]() {
-				Tick();
-			});
-			jobs::RunAsync(nextTick);
-		}));
+	jobs::RunAsync(jobs::Job::CreateByLambda([=]() {
+		double dt = TimeStamp();
+		RunUpdaters(dt, jobs::Job::CreateByLambda(jobDone));
 	}));
 }
 
@@ -107,6 +128,11 @@ void rendering::RendererAppEntryObj::UpdateMutableBuffers(jobs::Job* done)
 	jobs::RunSync(getBuffers);
 }
 
+void rendering::RendererAppEntryObj::RunUpdaters(double dt, jobs::Job* done)
+{
+	jobs::RunSync(done);
+}
+
 rendering::RendererAppEntryObj::RendererAppEntryObj(const ReferenceTypeDef& typeDef) :
 	AppEntryObj(typeDef),
 	m_renderer(renderer::RendererTypeDef::GetTypeDef(), this),
@@ -147,6 +173,25 @@ void rendering::RendererAppEntryObj::Boot()
  	});
 
 	jobs::RunSync(init);
+}
+
+double rendering::RendererAppEntryObj::TimeStamp()
+{
+	std::chrono::system_clock::time_point now = std::chrono::system_clock::now();
+	std::chrono::system_clock::time_point lastTickCache = m_lastTick;
+	m_lastTick = now;
+
+	if (!m_startedTicking)
+	{
+		return 0;
+	}
+
+	auto nowNN = std::chrono::time_point_cast<std::chrono::nanoseconds>(now);
+	auto lastTickNN = std::chrono::time_point_cast<std::chrono::nanoseconds>(lastTickCache);
+	long long deltaNN = nowNN.time_since_epoch().count() - lastTickNN.time_since_epoch().count();
+	double dt = deltaNN / 1000000000.0;
+
+	return dt;
 }
 
 #if false

@@ -8,6 +8,8 @@
 
 #include "d3dx12.h"
 
+#include <chrono>
+
 namespace rendering
 {
 	class RendererAppEntryTypeDef : public ReferenceTypeDef
@@ -30,9 +32,14 @@ namespace rendering
 		int m_copyListsSize = 0;
 		ID3D12CommandList** m_copyCommandLists = nullptr;
 
+		bool m_startedTicking = false;
+		std::chrono::system_clock::time_point m_lastTick;
+
 		void Tick();
 		void UpdateMutableBuffers(jobs::Job* done);
+		void RunUpdaters(double dt, jobs::Job* done);
 
+		double TimeStamp();
 	public:
 		RendererAppEntryObj(const ReferenceTypeDef& typeDef);
 		virtual ~RendererAppEntryObj();
