@@ -38,7 +38,11 @@ add_library (RenderingCore
 	"private/DXCopyBuffers.cpp"
 	"public/DXMutableBuffer.h"
 	"private/DXMutableBuffer.cpp"
- )
+	"public/DXTexture.h"
+	"private/DXTexture.cpp"
+	"public/DXDepthStencilTexture.h"
+	"private/DXDepthStencilTexture.cpp"
+)
 
 target_include_directories(RenderingCore INTERFACE PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/public")
 target_include_directories(RenderingCore PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/private")

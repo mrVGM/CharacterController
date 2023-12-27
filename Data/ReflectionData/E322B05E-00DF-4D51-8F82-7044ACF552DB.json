@@ -1,0 +1,12 @@
+{
+  "properties": {},
+  "parent": {
+    "id": "A1693B2C-8BE1-4AF8-AAC5-00206DA6FDE6"
+  },
+  "name": "Depth Stencil Texture",
+  "isGenerated": 0,
+  "id": {
+    "id": "E322B05E-00DF-4D51-8F82-7044ACF552DB"
+  },
+  "category": "Rendering"
+}

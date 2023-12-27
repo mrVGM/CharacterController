@@ -7,6 +7,7 @@
 #include "DXFence.h"
 #include "JobSystem.h"
 #include "DXCopyBuffers.h"
+#include "DXTexture.h"
 
 namespace rendering::core::utils
 {
@@ -21,4 +22,5 @@ namespace rendering::core::utils
 	DXFence* GetResidentHeapFence();
 	jobs::JobSystem* GetResidentHeapJobSystem();
 	DXCopyBuffers* GetCopyBuffers();
+	DXTexture* GetDepthStencilTexture();
 }

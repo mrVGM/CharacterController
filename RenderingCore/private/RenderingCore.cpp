@@ -9,6 +9,8 @@
 #include "DXFence.h"
 #include "DXHeap.h"
 #include "DXBuffer.h"
+#include "DXTexture.h"
+#include "DXDepthStencilTexture.h"
 
 #include "ResidentHeapFence.h"
 #include "ResidentHeapJobSystem.h"
@@ -166,6 +168,8 @@ void rendering::core::Boot()
 	DXBufferTypeDef::GetTypeDef();
 	DXCopyBuffersTypeDef::GetTypeDef();
 	DXMutableBufferTypeDef::GetTypeDef();
+	DXTextureTypeDef::GetTypeDef();
+	DXDepthStencilTextureTypeDef::GetTypeDef();
 
 	RenderFenceTypeDef::GetTypeDef();
 	ResidentHeapFenceTypeDef::GetTypeDef();

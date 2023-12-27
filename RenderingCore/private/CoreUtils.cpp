@@ -4,6 +4,8 @@
 #include "ResidentHeapFence.h"
 #include "ResidentHeapJobSystem.h"
 
+#include "DXDepthStencilTexture.h"
+
 #include "ObjectValueContainer.h"
 
 namespace
@@ -112,4 +114,11 @@ rendering::DXCopyBuffers* rendering::core::utils::GetCopyBuffers()
 	ObjectValue* obj = ObjectValueContainer::GetObjectOfType(DXCopyBuffersTypeDef::GetTypeDef());
 	rendering::DXCopyBuffers* copyBuffers = static_cast<rendering::DXCopyBuffers*>(obj);
 	return copyBuffers;
+}
+
+rendering::DXTexture* rendering::core::utils::GetDepthStencilTexture()
+{
+	ObjectValue* obj = ObjectValueContainer::GetObjectOfType(DXDepthStencilTextureTypeDef::GetTypeDef());
+	rendering::DXTexture* tex = static_cast<rendering::DXTexture*>(obj);
+	return tex;
 }
