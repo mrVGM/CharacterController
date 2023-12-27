@@ -1,5 +1,7 @@
 #include "DXDepthStencilTexture.h"
 
+#include "Jobs.h"
+
 #include "CoreUtils.h"
 
 namespace
@@ -30,10 +32,26 @@ rendering::DXDepthStencilTextureTypeDef::~DXDepthStencilTextureTypeDef()
 
 void rendering::DXDepthStencilTextureTypeDef::Construct(Value& container) const
 {
-	WindowObj* wnd = core::utils::GetWindow();
-	UINT w = wnd->m_width.Get<int>();
-	UINT h = wnd->m_height.Get<int>();
-
-	DXTexture* tex = DXTexture::CreateDepthStencilTexture(DXDepthStencilTextureTypeDef::GetTypeDef(), w, h);
+	DXDepthStencilTexture* tex = new DXDepthStencilTexture(DXDepthStencilTextureTypeDef::GetTypeDef());
 	container.AssignObject(tex);
+}
+
+void rendering::DXDepthStencilTexture::LoadData(jobs::Job* done)
+{
+	jobs::Job* init = jobs::Job::CreateByLambda([=]() {
+		WindowObj* wnd = core::utils::GetWindow();
+		UINT w = wnd->m_width.Get<int>();
+		UINT h = wnd->m_height.Get<int>();
+
+		SetDescription(DXTexture::CreateDepthStencilTextureDescription(w, h));
+
+		DXTexture::LoadData(done);
+	});
+
+	jobs::RunSync(init);
+}
+
+rendering::DXDepthStencilTexture::DXDepthStencilTexture(const ReferenceTypeDef& typeDef) :
+	DXTexture(typeDef)
+{
 }

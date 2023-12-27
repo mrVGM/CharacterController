@@ -19,6 +19,8 @@ namespace rendering::unlit_rp
 	{
 	private:
 		Value m_camBuffer;
+		Value m_dsTex;
+
 	public:
 		UnlitMaterial(const ReferenceTypeDef& typeDef);
 		virtual ~UnlitMaterial();

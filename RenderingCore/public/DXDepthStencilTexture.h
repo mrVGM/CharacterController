@@ -14,4 +14,13 @@ namespace rendering
 
         void Construct(Value& container) const override;
     };
+
+    class DXDepthStencilTexture : public DXTexture
+    {
+    protected:
+        virtual void LoadData(jobs::Job* done);
+
+    public:
+        DXDepthStencilTexture(const ReferenceTypeDef& typeDef);
+    };
 }

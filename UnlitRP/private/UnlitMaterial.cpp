@@ -53,6 +53,7 @@ void rendering::unlit_rp::UnlitMaterialTypeDef::Construct(Value& container) cons
 
 rendering::unlit_rp::UnlitMaterial::UnlitMaterial(const ReferenceTypeDef& typeDef) :
 	render_pass::Material(typeDef),
+	m_dsTex(DXTextureTypeDef::GetTypeDef(), this),
     m_camBuffer(render_pass::CameraBufferTypeDef::GetTypeDef(), this)
 {
 }
@@ -125,8 +126,12 @@ void rendering::unlit_rp::UnlitMaterial::Load(jobs::Job* done)
         ObjectValue* camBuff = ObjectValueContainer::GetObjectOfType(render_pass::CameraBufferTypeDef::GetTypeDef());
         m_camBuffer.AssignObject(camBuff);
 
-        jobs::RunSync(done);
+        DXTexture* dsTex = core::utils::GetDepthStencilTexture();
+        m_dsTex.AssignObject(dsTex);
+
+        dsTex->Load(done);
     });
+
 
     jobs::Job* loadParent = jobs::Job::CreateByLambda([=]() {
         render_pass::Material::Load(parentLoaded);

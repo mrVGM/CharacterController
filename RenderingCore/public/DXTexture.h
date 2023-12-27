@@ -38,19 +38,21 @@ namespace rendering
 		void Place(DXHeap& heap, UINT64 heapOffset);
 
 	protected:
-		void LoadData(jobs::Job* done) override;
+		virtual void LoadData(jobs::Job* done) override;
 
 	public:
-		DXTexture(const ReferenceTypeDef& typeDef, const D3D12_RESOURCE_DESC& description);
+		DXTexture(const ReferenceTypeDef& typeDef);
+
 		virtual ~DXTexture();
 
+		void SetDescription(const D3D12_RESOURCE_DESC& description);
 		void Load(jobs::Job* done);
 
 		const D3D12_RESOURCE_DESC& GetTextureDescription() const;
 		D3D12_RESOURCE_ALLOCATION_INFO GetTextureAllocationInfo() const;
 		ID3D12Resource* GetTexture() const;
 
-		static DXTexture* CreateDepthStencilTexture(const ReferenceTypeDef& typeDef, UINT width, UINT height);
-		static DXTexture* CreateRenderTargetTexture(const ReferenceTypeDef& typeDef, UINT width, UINT height);
+		static D3D12_RESOURCE_DESC CreateDepthStencilTextureDescription(UINT width, UINT height);
+		static D3D12_RESOURCE_DESC CreateRenderTargetTextureDescription(UINT width, UINT height);
 	};
 }

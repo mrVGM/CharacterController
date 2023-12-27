@@ -43,9 +43,8 @@ void rendering::DXTextureTypeDef::Construct(Value& container) const
 }
 
 
-rendering::DXTexture::DXTexture(const ReferenceTypeDef& typeDef, const D3D12_RESOURCE_DESC& description) :
+rendering::DXTexture::DXTexture(const ReferenceTypeDef& typeDef) :
 	ObjectValue(typeDef),
-	m_description(description),
 	m_loader(*this),
 	m_device(DXDeviceTypeDef::GetTypeDef(), this),
 	m_heap(DXHeapTypeDef::GetTypeDef(), this)
@@ -59,6 +58,11 @@ rendering::DXTexture::~DXTexture()
 const D3D12_RESOURCE_DESC& rendering::DXTexture::GetTextureDescription() const
 {
 	return m_description;
+}
+
+void rendering::DXTexture::SetDescription(const D3D12_RESOURCE_DESC& description)
+{
+	m_description = description;
 }
 
 D3D12_RESOURCE_ALLOCATION_INFO rendering::DXTexture::GetTextureAllocationInfo() const
@@ -133,7 +137,7 @@ void rendering::DXTexture::Place(DXHeap& heap, UINT64 heapOffset)
 		"Can't place texture in the heap!")
 }
 
-rendering::DXTexture* rendering::DXTexture::CreateDepthStencilTexture(const ReferenceTypeDef& typeDef, UINT width, UINT height)
+D3D12_RESOURCE_DESC rendering::DXTexture::CreateDepthStencilTextureDescription(UINT width, UINT height)
 {
 	D3D12_RESOURCE_FLAGS flags = D3D12_RESOURCE_FLAGS::D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL;
 	DXGI_FORMAT format = DXGI_FORMAT_D32_FLOAT;
@@ -149,12 +153,11 @@ rendering::DXTexture* rendering::DXTexture::CreateDepthStencilTexture(const Refe
 		0,
 		flags);
 
-	DXTexture* res = new DXTexture(typeDef, textureDesc);
-	return res;
+	return textureDesc;
 }
 
 
-rendering::DXTexture* rendering::DXTexture::CreateRenderTargetTexture(const ReferenceTypeDef& typeDef, UINT width, UINT height)
+D3D12_RESOURCE_DESC rendering::DXTexture::CreateRenderTargetTextureDescription(UINT width, UINT height)
 {
 	D3D12_RESOURCE_FLAGS flags = D3D12_RESOURCE_FLAGS::D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
 	DXGI_FORMAT format = DXGI_FORMAT_R32G32B32A32_FLOAT;
@@ -170,8 +173,7 @@ rendering::DXTexture* rendering::DXTexture::CreateRenderTargetTexture(const Refe
 		0,
 		flags);
 
-	DXTexture* res = new DXTexture(typeDef, textureDesc);
-	return res;
+	return textureDesc;
 }
 
 #undef THROW_ERROR
