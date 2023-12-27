@@ -14,6 +14,10 @@ namespace rendering::renderer
 		TYPE_DEF_BODY(CameraTypeDef)
 
 	public:
+		TypeProperty m_fov;
+		TypeProperty m_nearPlane;
+		TypeProperty m_farPlane;
+
 		CameraTypeDef();
 		virtual ~CameraTypeDef();
 
@@ -42,6 +46,11 @@ namespace rendering::renderer
 		void HandleInput(double dt);
 
 	public:
+
+		Value m_fov;
+		Value m_nearPlane;
+		Value m_farPlane;
+
 		Camera(const ReferenceTypeDef& typeDef);
 		virtual ~Camera();
 

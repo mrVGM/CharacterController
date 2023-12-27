@@ -30,8 +30,41 @@ const rendering::renderer::CameraTypeDef& rendering::renderer::CameraTypeDef::Ge
 }
 
 rendering::renderer::CameraTypeDef::CameraTypeDef() :
-	ReferenceTypeDef(&TickUpdaterTypeDef::GetTypeDef(), "D026E773-A2D4-4D09-A174-A79B00E919DE")
+	ReferenceTypeDef(&TickUpdaterTypeDef::GetTypeDef(), "D026E773-A2D4-4D09-A174-A79B00E919DE"),
+	m_fov("693B0DAC-75B2-42B0-AABF-1A447547B720", FloatTypeDef::GetTypeDef()),
+	m_nearPlane("E42C1E0C-C69B-4F86-8EB2-4B5D3550249C", FloatTypeDef::GetTypeDef()),
+	m_farPlane("90F3E332-D507-4BCB-BCBE-E74E89F235F6", FloatTypeDef::GetTypeDef())
 {
+	{
+		m_fov.m_name = "FOV";
+		m_fov.m_category = "Setup";
+		m_fov.m_getValue = [](CompositeValue* obj) -> Value& {
+			Camera* cam = static_cast<Camera*>(obj);
+			return cam->m_fov;
+		};
+		m_properties[m_fov.GetId()] = &m_fov;
+	}
+
+	{
+		m_nearPlane.m_name = "Near Plane";
+		m_nearPlane.m_category = "Setup";
+		m_nearPlane.m_getValue = [](CompositeValue* obj) -> Value& {
+			Camera* cam = static_cast<Camera*>(obj);
+			return cam->m_nearPlane;
+		};
+		m_properties[m_nearPlane.GetId()] = &m_nearPlane;
+	}
+
+	{
+		m_farPlane.m_name = "Far Plane";
+		m_farPlane.m_category = "Setup";
+		m_farPlane.m_getValue = [](CompositeValue* obj) -> Value& {
+			Camera* cam = static_cast<Camera*>(obj);
+			return cam->m_farPlane;
+		};
+		m_properties[m_farPlane.GetId()] = &m_farPlane;
+	}
+
 	m_name = "Camera";
 	m_category = "Renderer";
 }
@@ -184,7 +217,11 @@ void rendering::renderer::Camera::HandleInput(double dt)
 rendering::renderer::Camera::Camera(const ReferenceTypeDef& typeDef) :
 	TickUpdater(typeDef),
 	m_cameraBuffer(DXMutableBufferTypeDef::GetTypeDef(), this),
-	m_window(WindowTypeDef::GetTypeDef(), this)
+	m_window(WindowTypeDef::GetTypeDef(), this),
+
+	m_fov(CameraTypeDef::GetTypeDef().m_fov.GetType(), this),
+	m_nearPlane(CameraTypeDef::GetTypeDef().m_nearPlane.GetType(), this),
+	m_farPlane(CameraTypeDef::GetTypeDef().m_farPlane.GetType(), this)
 {
 }
 
@@ -227,14 +264,16 @@ void rendering::renderer::Camera::Tick(double dt, jobs::Job* done)
 {
 	using namespace math;
 
+	WindowObj* wnd = m_window.GetValue<WindowObj*>();
+
 	HandleInput(dt);
 	Vector3 right, fwd, up;
 	GetCoordinateVectors(right, fwd, up);
 
-	const float fov = 60;
-	const float aspect = 800.0 / 600.0;
-	const float farPlane = 100;
-	const float nearPlane = 0.1;
+	const float fov = m_fov.Get<float>();
+	const float aspect = static_cast<float>(wnd->m_width.Get<int>()) / static_cast<float>(wnd->m_height.Get<int>());
+	const float farPlane = m_farPlane.Get<float>();
+	const float nearPlane = m_nearPlane.Get<float>();
 
 	float fovRad = M_PI * fov / 180;
 
