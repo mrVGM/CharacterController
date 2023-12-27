@@ -101,7 +101,7 @@ void rendering::RendererAppEntryObj::UpdateMutableBuffers(jobs::Job* done)
 		}
 
 		bool anyBuffer = false;
-		int index = 0;
+		int numLists = 0;
 		for (auto it = mutableBuffers.begin(); it != mutableBuffers.end(); ++it)
 		{
 			DXMutableBuffer* cur = static_cast<DXMutableBuffer*>(*it);
@@ -113,7 +113,7 @@ void rendering::RendererAppEntryObj::UpdateMutableBuffers(jobs::Job* done)
 			anyBuffer = true;
 			cur->SetDirty(false);
 
-			m_copyCommandLists[index++] = cur->GetCopyCommandList();
+			m_copyCommandLists[numLists++] = cur->GetCopyCommandList();
 		}
 
 		if (!anyBuffer)
@@ -123,7 +123,7 @@ void rendering::RendererAppEntryObj::UpdateMutableBuffers(jobs::Job* done)
 		}
 
 		jobs::RunAsync(jobs::Job::CreateByLambda([=]() {
-			m_copyBuffers.GetValue<DXCopyBuffers*>()->Execute(m_copyCommandLists, m_copyListsSize, done);
+			m_copyBuffers.GetValue<DXCopyBuffers*>()->Execute(m_copyCommandLists, numLists, done);
 		}));
 	});
 
