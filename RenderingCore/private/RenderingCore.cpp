@@ -173,6 +173,8 @@ void rendering::core::Boot()
 	DXDepthStencilTextureTypeDef::GetTypeDef();
 	DXDescriptorHeapTypeDef::GetTypeDef();
 	DepthStencilDescriptorHeapTypeDef::GetTypeDef();
+	RenderTargetDescriptorHeapTypeDef::GetTypeDef();
+	ShaderResourceDescriptorHeapTypeDef::GetTypeDef();
 
 	RenderFenceTypeDef::GetTypeDef();
 	ResidentHeapFenceTypeDef::GetTypeDef();

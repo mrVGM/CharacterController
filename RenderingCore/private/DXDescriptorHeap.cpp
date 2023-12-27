@@ -19,6 +19,8 @@ namespace
 {
 	BasicObjectContainer<rendering::DXDescriptorHeapTypeDef> m_heap;
 	BasicObjectContainer<rendering::DepthStencilDescriptorHeapTypeDef> m_dsHeap;
+	BasicObjectContainer<rendering::RenderTargetDescriptorHeapTypeDef> m_rtHeap;
+	BasicObjectContainer<rendering::ShaderResourceDescriptorHeapTypeDef> m_srvHeap;
 }
 
 const rendering::DXDescriptorHeapTypeDef& rendering::DXDescriptorHeapTypeDef::GetTypeDef()
@@ -39,6 +41,26 @@ const rendering::DepthStencilDescriptorHeapTypeDef& rendering::DepthStencilDescr
 	}
 
 	return *m_dsHeap.m_object;
+}
+
+const rendering::RenderTargetDescriptorHeapTypeDef& rendering::RenderTargetDescriptorHeapTypeDef::GetTypeDef()
+{
+	if (!m_rtHeap.m_object)
+	{
+		m_rtHeap.m_object = new RenderTargetDescriptorHeapTypeDef();
+	}
+
+	return *m_rtHeap.m_object;
+}
+
+const rendering::ShaderResourceDescriptorHeapTypeDef& rendering::ShaderResourceDescriptorHeapTypeDef::GetTypeDef()
+{
+	if (!m_srvHeap.m_object)
+	{
+		m_srvHeap.m_object = new ShaderResourceDescriptorHeapTypeDef();
+	}
+
+	return *m_srvHeap.m_object;
 }
 
 rendering::DXDescriptorHeapTypeDef::DXDescriptorHeapTypeDef() :
@@ -213,6 +235,123 @@ rendering::DepthStencilDescriptorHeap::DepthStencilDescriptorHeap(const Referenc
 }
 
 rendering::DepthStencilDescriptorHeap::~DepthStencilDescriptorHeap()
+{
+}
+
+rendering::RenderTargetDescriptorHeapTypeDef::RenderTargetDescriptorHeapTypeDef() :
+	ReferenceTypeDef(&DXDescriptorHeapTypeDef::GetTypeDef(), "45F79619-08F2-49A0-83D8-EC32471E6278")
+{
+	m_name = "Render Target Descriptor Heap";
+	m_category = "Rendering";
+}
+
+rendering::RenderTargetDescriptorHeapTypeDef::~RenderTargetDescriptorHeapTypeDef()
+{
+}
+
+void rendering::RenderTargetDescriptorHeapTypeDef::Construct(Value& container) const
+{
+	RenderTargetDescriptorHeap* heap = new RenderTargetDescriptorHeap(*this);
+	container.AssignObject(heap);
+}
+
+
+void rendering::RenderTargetDescriptorHeap::Init()
+{
+	DXDevice* device = m_device.GetValue<DXDevice*>();
+	ValueList* textures = m_textures.GetValue<ValueList*>();
+	{
+		D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc = {};
+		rtvHeapDesc.NumDescriptors = m_size;
+		rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
+		rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+		THROW_ERROR(
+			device->GetDevice().CreateDescriptorHeap(&rtvHeapDesc, IID_PPV_ARGS(&m_descriptorHeap)),
+			"Can't create a descriptor heap!")
+
+		m_descriptorSize = device->GetDevice().GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+	}
+
+	{
+		CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(m_descriptorHeap->GetCPUDescriptorHandleForHeapStart());
+
+		for (auto it = textures->GetIterator(); it; ++it)
+		{
+			device->GetDevice().CreateRenderTargetView((*it).GetValue<DXTexture*>()->GetTexture(), nullptr, rtvHandle);
+			rtvHandle.Offset(1, m_descriptorSize);
+		}
+	}
+}
+
+rendering::RenderTargetDescriptorHeap::RenderTargetDescriptorHeap(const ReferenceTypeDef& typeDef) :
+	DXDescriptorHeap(typeDef)
+{
+}
+
+rendering::RenderTargetDescriptorHeap::~RenderTargetDescriptorHeap()
+{
+}
+
+rendering::ShaderResourceDescriptorHeapTypeDef::ShaderResourceDescriptorHeapTypeDef() :
+	ReferenceTypeDef(&DXDescriptorHeapTypeDef::GetTypeDef(), "01A09818-C771-4548-B69F-F5098788FD5F")
+{
+	m_name = "Shader Resource Descriptor Heap";
+	m_category = "Rendering";
+}
+
+rendering::ShaderResourceDescriptorHeapTypeDef::~ShaderResourceDescriptorHeapTypeDef()
+{
+}
+
+void rendering::ShaderResourceDescriptorHeapTypeDef::Construct(Value& container) const
+{
+	ShaderResourceDescriptorHeap* heap = new ShaderResourceDescriptorHeap(*this);
+	container.AssignObject(heap);
+}
+
+
+void rendering::ShaderResourceDescriptorHeap::Init()
+{
+	DXDevice* device = m_device.GetValue<DXDevice*>();
+	ValueList* textures = m_textures.GetValue<ValueList*>();
+
+	{
+		D3D12_DESCRIPTOR_HEAP_DESC srvHeapDesc = {};
+		srvHeapDesc.NumDescriptors = m_size;
+		srvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+		srvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+		THROW_ERROR(
+			device->GetDevice().CreateDescriptorHeap(&srvHeapDesc, IID_PPV_ARGS(&m_descriptorHeap)),
+			"Can't create a descriptor heap!")
+
+		m_descriptorSize = device->GetDevice().GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	}
+
+	{
+		CD3DX12_CPU_DESCRIPTOR_HANDLE srvHandle(m_descriptorHeap->GetCPUDescriptorHandleForHeapStart());
+
+		for (auto it = textures->GetIterator(); it; ++it)
+		{
+			DXTexture* tex = (*it).GetValue<DXTexture*>();
+			D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+			srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+			srvDesc.Format = tex->GetTextureDescription().Format;
+			srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+			srvDesc.Texture3D.MipLevels = 1;
+			srvDesc.Texture2D.MipLevels = 1;
+
+			device->GetDevice().CreateShaderResourceView(tex->GetTexture(), &srvDesc, srvHandle);
+			srvHandle.Offset(1, m_descriptorSize);
+		}
+	}
+}
+
+rendering::ShaderResourceDescriptorHeap::ShaderResourceDescriptorHeap(const ReferenceTypeDef& typeDef) :
+	DXDescriptorHeap(typeDef)
+{
+}
+
+rendering::ShaderResourceDescriptorHeap::~ShaderResourceDescriptorHeap()
 {
 }
 

@@ -39,6 +39,30 @@ namespace rendering
 		void Construct(Value& container) const override;
 	};
 
+	class RenderTargetDescriptorHeapTypeDef : public ReferenceTypeDef
+	{
+		TYPE_DEF_BODY(RenderTargetDescriptorHeapTypeDef)
+
+	public:
+
+		RenderTargetDescriptorHeapTypeDef();
+		virtual ~RenderTargetDescriptorHeapTypeDef();
+
+		void Construct(Value& container) const override;
+	};
+
+	class ShaderResourceDescriptorHeapTypeDef : public ReferenceTypeDef
+	{
+		TYPE_DEF_BODY(ShaderResourceDescriptorHeapTypeDef)
+
+	public:
+
+		ShaderResourceDescriptorHeapTypeDef();
+		virtual ~ShaderResourceDescriptorHeapTypeDef();
+
+		void Construct(Value& container) const override;
+	};
+
 	class DXDescriptorHeap : public ObjectValue, public jobs::LoadingClass
 	{
 	private:
@@ -76,5 +100,25 @@ namespace rendering
 	public:
 		DepthStencilDescriptorHeap(const ReferenceTypeDef& typeDef);
 		virtual ~DepthStencilDescriptorHeap();
+	};
+
+	class RenderTargetDescriptorHeap : public DXDescriptorHeap
+	{
+	protected:
+		void Init() override;
+
+	public:
+		RenderTargetDescriptorHeap(const ReferenceTypeDef& typeDef);
+		virtual ~RenderTargetDescriptorHeap();
+	};
+
+	class ShaderResourceDescriptorHeap : public DXDescriptorHeap
+	{
+	protected:
+		void Init() override;
+
+	public:
+		ShaderResourceDescriptorHeap(const ReferenceTypeDef& typeDef);
+		virtual ~ShaderResourceDescriptorHeap();
 	};
 }
