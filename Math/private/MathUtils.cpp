@@ -41,3 +41,19 @@ math::Matrix math::operator*(const Matrix& m1, const Matrix& m2)
 
 	return res;
 }
+
+math::Matrix math::Matrix::Transpose() const
+{
+	Matrix* self = const_cast<Matrix*>(this);
+
+	Matrix res;
+	for (int r = 0; r < 4; ++r)
+	{
+		for (int c = 0; c < 4; ++c)
+		{
+			res.GetCoef(c, r) = self->GetCoef(r, c);
+		}
+	}
+
+	return res;
+}

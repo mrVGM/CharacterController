@@ -124,8 +124,7 @@ void rendering::renderer::Camera::Tick(double dt, jobs::Job* done)
 	};
 
 	Matrix camProjection = project * view * translate;
-
-	
+	camProjection = camProjection.Transpose();
 
 	DXMutableBuffer* camBuff = m_cameraBuffer.GetValue<DXMutableBuffer*>();
 	DXBuffer* uploadBuff = camBuff->m_uploadBuffer.GetValue<DXBuffer*>();
@@ -133,7 +132,7 @@ void rendering::renderer::Camera::Tick(double dt, jobs::Job* done)
 	*data = camProjection;
 	uploadBuff->Unmap();
 
-	camBuff->SetDirty();
+	camBuff->SetDirty(true);
 
 	jobs::RunSync(done);
 }

@@ -20,8 +20,7 @@ PSInput VSMain(VertexInput3D vertexInput)
     float3 worldPos = vertexInput.position;
     float3 worldNormal = vertexInput.normal;
 
-    result.position = float4(0.3 * worldPos.xy, 0, 1);
-    //result.position = mul(m_camBuff.m_matrix, float4(worldPos, 1));
+    result.position = mul(m_camBuff.m_matrix, float4(worldPos, 1));
 
     result.world_position = float4(worldPos, 1);
     result.normal = float4(worldNormal, 1);

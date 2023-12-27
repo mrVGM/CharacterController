@@ -43,7 +43,7 @@ namespace rendering
 
 		void SetSizeAndStride(UINT64 size, UINT64 stride);
 
-		void SetDirty();
+		void SetDirty(bool dirty);
 		bool IsDirty();
 
 		void Load(jobs::Job* done);

@@ -111,6 +111,8 @@ void rendering::RendererAppEntryObj::UpdateMutableBuffers(jobs::Job* done)
 			}
 
 			anyBuffer = true;
+			cur->SetDirty(false);
+
 			m_copyCommandLists[index++] = cur->GetCopyCommandList();
 		}
 

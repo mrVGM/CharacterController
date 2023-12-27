@@ -118,6 +118,7 @@ void rendering::DXMutableBuffer::Load(jobs::Job* done)
 
 		CreateCommandList();
 
+		m_isLoaded = true;
 		jobs::RunSync(done);
 	};
 
@@ -159,11 +160,11 @@ ID3D12CommandList* rendering::DXMutableBuffer::GetCopyCommandList()
 	return m_commandList.Get();
 }
 
-void rendering::DXMutableBuffer::SetDirty()
+void rendering::DXMutableBuffer::SetDirty(bool dirty)
 {
 	if (m_isLoaded)
 	{
-		m_isDirty = true;
+		m_isDirty = dirty;
 	}
 }
 

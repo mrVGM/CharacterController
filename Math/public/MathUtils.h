@@ -23,6 +23,8 @@ namespace math
 
 		static const Matrix& GetIdentityMatrix();
 		float& GetCoef(int row, int col);
+
+		Matrix Transpose() const;
 	};
 
 	Matrix operator*(const Matrix& m1, const Matrix& m2);
