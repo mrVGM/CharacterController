@@ -11,7 +11,7 @@
 #include "MeshBuffers.h"
 #include "Actor.h"
 
-#include "UnlitRenderTextureTexture.h"
+#include "UnlitRenderTexture.h"
 
 #include "ValueList.h"
 
