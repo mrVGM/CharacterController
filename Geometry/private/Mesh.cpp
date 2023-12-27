@@ -631,6 +631,16 @@ void geo::Mesh::Load(jobs::Job* done)
 				m_indices[index++] = *curIt;
 			}
 		}
+
+		if (m_zUp)
+		{
+			for (int i = 0; i < m_numIndices; i += 3)
+			{
+				int tmp = m_indices[i + 1];
+				m_indices[i + 1] = m_indices[i + 2];
+				m_indices[i + 2] = tmp;
+			}
+		}
 	}
 
 	jobs::RunSync(done);

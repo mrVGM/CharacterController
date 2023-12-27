@@ -119,7 +119,7 @@ void scene::MeshBuffers::Load(geo::Mesh& mesh, jobs::Job* done)
 			iBuff->Load(jobs::Job::CreateByLambda([=]() {
 				DXBuffer* upload = iBuff->m_uploadBuffer.GetValue<DXBuffer*>();
 				void* data = upload->Map();
-				memcpy(data, meshPtr->m_vertices, upload->GetBufferSize());
+				memcpy(data, meshPtr->m_indices, upload->GetBufferSize());
 				upload->Unmap();
 
 				iBuff->Upload(jobs::Job::CreateByLambda(buffLoaded));
