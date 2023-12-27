@@ -122,3 +122,10 @@ rendering::DXTexture* rendering::core::utils::GetDepthStencilTexture()
 	rendering::DXTexture* tex = static_cast<rendering::DXTexture*>(obj);
 	return tex;
 }
+
+rendering::DXDescriptorHeap* rendering::core::utils::GetDepthStencilDescriptorHeap()
+{
+	ObjectValue* obj = ObjectValueContainer::GetObjectOfType(DepthStencilDescriptorHeapTypeDef::GetTypeDef());
+	rendering::DXDescriptorHeap* descriptorHeap = static_cast<rendering::DXDescriptorHeap*>(obj);
+	return descriptorHeap;
+}

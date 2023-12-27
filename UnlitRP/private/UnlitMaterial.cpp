@@ -53,7 +53,7 @@ void rendering::unlit_rp::UnlitMaterialTypeDef::Construct(Value& container) cons
 
 rendering::unlit_rp::UnlitMaterial::UnlitMaterial(const ReferenceTypeDef& typeDef) :
 	render_pass::Material(typeDef),
-	m_dsTex(DXTextureTypeDef::GetTypeDef(), this),
+	m_dsDescriptorHeap(DXDescriptorHeapTypeDef::GetTypeDef(), this),
     m_camBuffer(render_pass::CameraBufferTypeDef::GetTypeDef(), this)
 {
 }
@@ -85,11 +85,10 @@ void rendering::unlit_rp::UnlitMaterial::GenerateCommandList(
     commandList->RSSetViewports(1, &swapChain->GetViewport());
     commandList->RSSetScissorRects(1, &swapChain->GetScissorRect());
 
-    //D3D12_CPU_DESCRIPTOR_HANDLE dsHandle = m_depthStencilDescriptorHeap->GetDescriptorHeap()->GetCPUDescriptorHandleForHeapStart();
+    D3D12_CPU_DESCRIPTOR_HANDLE dsHandle = m_dsDescriptorHeap.GetValue<DXDescriptorHeap*>()->GetDescriptorHeap()->GetCPUDescriptorHandleForHeapStart();
     D3D12_CPU_DESCRIPTOR_HANDLE handles[] = { swapChain->GetCurrentRTVDescriptor() };
-    //commandList->OMSetRenderTargets(_countof(handles), handles, FALSE, &dsHandle);
-    commandList->OMSetRenderTargets(_countof(handles), handles, FALSE, nullptr);
-
+    commandList->OMSetRenderTargets(_countof(handles), handles, FALSE, &dsHandle);
+    
     D3D12_VERTEX_BUFFER_VIEW vertexBufferViews[1];
     D3D12_VERTEX_BUFFER_VIEW& realVertexBufferView = vertexBufferViews[0];
     realVertexBufferView.BufferLocation = vertexBuffer.GetBuffer()->GetGPUVirtualAddress();
@@ -126,10 +125,10 @@ void rendering::unlit_rp::UnlitMaterial::Load(jobs::Job* done)
         ObjectValue* camBuff = ObjectValueContainer::GetObjectOfType(render_pass::CameraBufferTypeDef::GetTypeDef());
         m_camBuffer.AssignObject(camBuff);
 
-        DXTexture* dsTex = core::utils::GetDepthStencilTexture();
-        m_dsTex.AssignObject(dsTex);
+        DXDescriptorHeap* dsDescriptorHeap = core::utils::GetDepthStencilDescriptorHeap();
+        m_dsDescriptorHeap.AssignObject(dsDescriptorHeap);
 
-        dsTex->Load(done);
+        dsDescriptorHeap->Load(done);
     });
 
 

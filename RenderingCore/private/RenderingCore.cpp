@@ -11,6 +11,7 @@
 #include "DXBuffer.h"
 #include "DXTexture.h"
 #include "DXDepthStencilTexture.h"
+#include "DXDescriptorHeap.h"
 
 #include "ResidentHeapFence.h"
 #include "ResidentHeapJobSystem.h"
@@ -170,6 +171,8 @@ void rendering::core::Boot()
 	DXMutableBufferTypeDef::GetTypeDef();
 	DXTextureTypeDef::GetTypeDef();
 	DXDepthStencilTextureTypeDef::GetTypeDef();
+	DXDescriptorHeapTypeDef::GetTypeDef();
+	DepthStencilDescriptorHeapTypeDef::GetTypeDef();
 
 	RenderFenceTypeDef::GetTypeDef();
 	ResidentHeapFenceTypeDef::GetTypeDef();

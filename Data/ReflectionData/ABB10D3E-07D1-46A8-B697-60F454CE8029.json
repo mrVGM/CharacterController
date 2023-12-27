@@ -1,0 +1,12 @@
+{
+  "properties": {},
+  "parent": {
+    "id": "C997C11B-480D-4E43-A964-B213B30C4268"
+  },
+  "name": "Depth Stencil Descriptor Heap",
+  "isGenerated": 0,
+  "id": {
+    "id": "ABB10D3E-07D1-46A8-B697-60F454CE8029"
+  },
+  "category": "Rendering"
+}

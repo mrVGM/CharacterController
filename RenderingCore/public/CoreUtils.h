@@ -8,6 +8,7 @@
 #include "JobSystem.h"
 #include "DXCopyBuffers.h"
 #include "DXTexture.h"
+#include "DXDescriptorHeap.h"
 
 namespace rendering::core::utils
 {
@@ -23,4 +24,5 @@ namespace rendering::core::utils
 	jobs::JobSystem* GetResidentHeapJobSystem();
 	DXCopyBuffers* GetCopyBuffers();
 	DXTexture* GetDepthStencilTexture();
+	DXDescriptorHeap* GetDepthStencilDescriptorHeap();
 }

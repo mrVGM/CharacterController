@@ -27,17 +27,32 @@ namespace rendering
         void Construct(Value& container) const override;
     };
 
+	class DepthStencilDescriptorHeapTypeDef : public ReferenceTypeDef
+	{
+		TYPE_DEF_BODY(DepthStencilDescriptorHeapTypeDef)
+
+	public:
+
+		DepthStencilDescriptorHeapTypeDef();
+		virtual ~DepthStencilDescriptorHeapTypeDef();
+
+		void Construct(Value& container) const override;
+	};
+
 	class DXDescriptorHeap : public ObjectValue, public jobs::LoadingClass
 	{
 	private:
+		jobs::MultiLoader m_loader;
+
+	protected:
 		Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> m_descriptorHeap;
 		UINT m_descriptorSize = 0;
 
-		jobs::MultiLoader m_loader;
 
 		Value m_textures;
+		Value m_device;
+		int m_size = 0;
 
-	protected:
 		virtual void LoadData(jobs::Job* done) override;
 		virtual void Init() = 0;
 
@@ -51,5 +66,15 @@ namespace rendering
 
 		ID3D12DescriptorHeap* GetDescriptorHeap();
 		D3D12_CPU_DESCRIPTOR_HANDLE GetDescriptorHandle(UINT index);
+	};
+
+	class DepthStencilDescriptorHeap : public DXDescriptorHeap
+	{
+	protected:
+		void Init() override;
+
+	public:
+		DepthStencilDescriptorHeap(const ReferenceTypeDef& typeDef);
+		virtual ~DepthStencilDescriptorHeap();
 	};
 }

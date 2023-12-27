@@ -1,0 +1,27 @@
+{
+  "properties": {
+    "8BB3F252-3766-4EDD-8116-B168533B0C09": {
+      "type": {
+        "template": {
+          "template": {
+            "id": "A1693B2C-8BE1-4AF8-AAC5-00206DA6FDE6"
+          },
+          "id": "1D4363E5-BC6F-4B49-80F3-FAC358F5B296"
+        },
+        "id": "B5883DED-257C-4E35-846C-DB5BB7E11289"
+      },
+      "name": "Textures",
+      "id": "8BB3F252-3766-4EDD-8116-B168533B0C09",
+      "category": "Setup"
+    }
+  },
+  "parent": {
+    "id": "361D902F-526F-452D-B925-7B59B0F5AB09"
+  },
+  "name": "Descriptor Heap",
+  "isGenerated": 0,
+  "id": {
+    "id": "C997C11B-480D-4E43-A964-B213B30C4268"
+  },
+  "category": "Rendering"
+}

@@ -128,7 +128,7 @@ void rendering::render_pass::Material::CreatePipelineStateAndRootSignatureForSta
 
         psoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
         
-#if false
+#if true
         psoDesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
 #else
         psoDesc.DepthStencilState.DepthEnable = false;

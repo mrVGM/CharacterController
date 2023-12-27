@@ -19,7 +19,7 @@ namespace rendering::unlit_rp
 	{
 	private:
 		Value m_camBuffer;
-		Value m_dsTex;
+		Value m_dsDescriptorHeap;
 
 	public:
 		UnlitMaterial(const ReferenceTypeDef& typeDef);
