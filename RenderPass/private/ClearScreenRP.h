@@ -28,6 +28,7 @@ namespace rendering::render_pass
 		bool m_commnadListsRecorded[2] = {};
 
 		Value m_swapChain;
+		Value m_dsDescriptorHeap;
 		Value m_commandQueue;
 
 		void Create();

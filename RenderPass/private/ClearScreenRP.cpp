@@ -54,8 +54,11 @@ void rendering::render_pass::ClearScreenRP::Create()
 	DXSwapChain* swapChain = rendering::core::utils::GetSwapChain();
 	DXCommandQueue* commandQueue = rendering::core::utils::GetCommandQueue();
 
+	DXDescriptorHeap* dsDescriptorHeap = core::utils::GetDepthStencilDescriptorHeap();
+
 	m_swapChain.AssignObject(swapChain);
 	m_commandQueue.AssignObject(commandQueue);
+	m_dsDescriptorHeap.AssignObject(dsDescriptorHeap);
 
 	THROW_ERROR(
 		device->GetDevice().CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&m_commandAllocator)),
@@ -81,6 +84,7 @@ void rendering::render_pass::ClearScreenRP::Create()
 rendering::render_pass::ClearScreenRP::ClearScreenRP(const ReferenceTypeDef& typeDef) :
 	RenderPass(typeDef),
 	m_swapChain(DXSwapChainTypeDef::GetTypeDef(), this),
+	m_dsDescriptorHeap(DXDescriptorHeapTypeDef::GetTypeDef(), this),
 	m_commandQueue(DXCommandQueueTypeDef::GetTypeDef(), this)
 {
 }
@@ -113,6 +117,9 @@ void rendering::render_pass::ClearScreenRP::Prepare()
 
 	const float clearColor[] = { 0.0f, 0.2f, 0.4f, 1.0f };
 	commandList->ClearRenderTargetView(swapChain->GetCurrentRTVDescriptor(), clearColor, 0, nullptr);
+
+	D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle = m_dsDescriptorHeap.GetValue<DXDescriptorHeap*>()->GetDescriptorHeap()->GetCPUDescriptorHandleForHeapStart();
+	commandList->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 
 	{
 		CD3DX12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::CD3DX12_RESOURCE_BARRIER::Transition(swapChain->GetCurrentRenderTarget(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
