@@ -3,6 +3,7 @@
 #include "CompositeTypeDef.h"
 #include "CompositeValue.h"
 
+#include "MultiLoader.h"
 #include "Job.h"
 
 #include "d3dx12.h"
@@ -27,18 +28,18 @@ namespace rendering::render_pass
 		void Construct(Value& container) const override;
 	};
 
-	class Material : public ObjectValue
+	class Material : public ObjectValue, public jobs::LoadingClass
 	{
-	protected:
-		Microsoft::WRL::ComPtr<ID3D12PipelineState> m_pipelineState;
-		Microsoft::WRL::ComPtr<ID3D12RootSignature> m_rootSignature;
+	private:
+		jobs::MultiLoader m_loader;
 
+	protected:
 		Value m_device;
 		Value m_swapChain;
 		Value m_vertexShader;
 		Value m_pixelShader;
 
-		virtual void CreatePipelineStateAndRootSignatureForStaticMesh();
+		virtual void LoadData(jobs::Job* done) override;
 
 	public:
 		Value m_vertexShaderDef;

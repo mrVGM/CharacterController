@@ -18,8 +18,16 @@ namespace rendering::unlit_rp
 	class UnlitMaterial : public render_pass::Material
 	{
 	private:
+		Microsoft::WRL::ComPtr<ID3D12PipelineState> m_pipelineState;
+		Microsoft::WRL::ComPtr<ID3D12RootSignature> m_rootSignature;
+
 		Value m_camBuffer;
 		Value m_dsDescriptorHeap;
+
+		virtual void CreatePipelineStateAndRootSignatureForStaticMesh();
+
+	protected:
+		void LoadData(jobs::Job* done) override;
 
 	public:
 		UnlitMaterial(const ReferenceTypeDef& typeDef);
@@ -33,8 +41,6 @@ namespace rendering::unlit_rp
 			UINT indexCount,
 			ID3D12CommandAllocator* commandAllocator,
 			ID3D12GraphicsCommandList* commandList) override;
-
-		void Load(jobs::Job* done) override;
 	};
 
 }
