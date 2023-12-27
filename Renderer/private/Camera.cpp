@@ -46,9 +46,145 @@ void rendering::renderer::CameraTypeDef::Construct(Value& container) const
 	container.AssignObject(cam);
 }
 
+void rendering::renderer::Camera::GetCoordinateVectors(math::Vector3& right, math::Vector3& fwd, math::Vector3& up)
+{
+	using namespace math;
+	fwd = m_target + -1 * m_position;
+
+	up = Vector3{ 0, 1, 0 };
+	right = up ^ fwd;
+	up = fwd ^ right;
+
+	fwd = fwd.Normalize();
+	right = right.Normalize();
+	up = up.Normalize();
+}
+
+void rendering::renderer::Camera::HandleInput(double dt)
+{
+	using namespace math;
+
+	WindowObj* wnd = m_window.GetValue<WindowObj*>();
+	InputInfo inputInfo = wnd->GetInputInfo();
+
+	float right = 0;
+	float forward = 0;
+	float aimRight = 0;
+	float aimUp = 0;
+
+	for (std::set<WPARAM>::const_iterator it = inputInfo.m_keysDown.begin(); it != inputInfo.m_keysDown.end(); ++it) {
+		WPARAM x = *it;
+		if (x == 65) {
+			right = -1;
+		}
+		if (x == 68) {
+			right = 1;
+		}
+
+		if (x == 87) {
+			forward = 1;
+		}
+		if (x == 83) {
+			forward = -1;
+		}
+
+		if (x == 37) {
+			aimRight = 1;
+		}
+		if (x == 39) {
+			aimRight = -1;
+		}
+		if (x == 38) {
+			aimUp = 1;
+		}
+		if (x == 40) {
+			aimUp = -1;
+		}
+	}
+
+	RECT rect;
+	GetWindowRect(wnd->m_hwnd, &rect);
+
+	if (inputInfo.m_rightMouseButtonDown && !m_aiming) {
+		m_cursorRelativePos[0] = inputInfo.m_mouseMovement[0];
+		m_cursorRelativePos[1] = inputInfo.m_mouseMovement[1];
+		m_anglesCache[0] = m_azimuth;
+		m_anglesCache[1] = m_altitude;
+
+		ClipCursor(&rect);
+		ShowCursor(false);
+	}
+
+	if (!inputInfo.m_rightMouseButtonDown && m_aiming) {
+		ClipCursor(nullptr);
+		ShowCursor(true);
+	}
+
+
+	double m_mouseAngleSpeed = 0.1;
+	double m_angleSpeed = 80;
+	double m_moveSpeed = 0.3;
+
+	m_aiming = inputInfo.m_rightMouseButtonDown;
+	if (m_aiming) {
+		SetCursorPos((rect.left + rect.right) / 2, (rect.top + rect.bottom) / 2);
+
+		m_azimuth = -m_mouseAngleSpeed * (inputInfo.m_mouseMovement[0] - m_cursorRelativePos[0]) + m_anglesCache[0];
+		while (m_azimuth >= 360) {
+			m_azimuth -= 360;
+		}
+		while (m_azimuth < 0) {
+			m_azimuth += 360;
+		}
+
+		m_altitude = -m_mouseAngleSpeed * (inputInfo.m_mouseMovement[1] - m_cursorRelativePos[1]) + m_anglesCache[1];
+		if (m_altitude > 80) {
+			m_altitude = 80;
+		}
+
+		if (m_altitude < -80) {
+			m_altitude = -80;
+		}
+	}
+
+	m_azimuth += dt * m_angleSpeed * aimRight;
+	while (m_azimuth >= 360) {
+		m_azimuth -= 360;
+	}
+	while (m_azimuth < 0) {
+		m_azimuth += 360;
+	}
+
+	m_altitude += dt * m_angleSpeed * aimUp;
+	if (m_altitude > 80) {
+		m_altitude = 80;
+	}
+
+	if (m_altitude < -80) {
+		m_altitude = -80;
+	}
+
+
+	float azimuth = M_PI * m_azimuth / 180.0;
+	float altitude = M_PI * m_altitude / 180.0;
+
+	Vector3 fwdVector = { cos(azimuth) * cos(altitude), sin(altitude), sin(azimuth) * cos(altitude) };
+	Vector3 rightVector = Vector3{ 0, 1, 0 } ^ fwdVector;
+	rightVector = rightVector.Normalize();
+
+	Vector3 moveVector{ right, 0, forward };
+	moveVector = moveVector.Normalize();
+	moveVector = m_moveSpeed * moveVector;
+	moveVector = moveVector.m_coefs[0] * rightVector + moveVector.m_coefs[2] * fwdVector;
+
+	m_position = m_position + moveVector;
+	m_target = m_position + fwdVector;
+}
+
 rendering::renderer::Camera::Camera(const ReferenceTypeDef& typeDef) :
 	TickUpdater(typeDef),
-	m_cameraBuffer(DXMutableBufferTypeDef::GetTypeDef(), this)
+	m_cameraBuffer(DXMutableBufferTypeDef::GetTypeDef(), this),
+	m_window(WindowTypeDef::GetTypeDef(), this)
 {
 }
 
@@ -71,6 +207,8 @@ void rendering::renderer::Camera::Load(jobs::Job* done)
 	});
 
 	jobs::Job* init = jobs::Job::CreateByLambda([=]() {
+		m_window.AssignObject(core::utils::GetWindow());
+
 		ObjectValue* camBuffer = ObjectValueContainer::GetObjectOfType(render_pass::CameraBufferTypeDef::GetTypeDef());
 		m_cameraBuffer.AssignObject(camBuffer);
 
@@ -89,6 +227,10 @@ void rendering::renderer::Camera::Tick(double dt, jobs::Job* done)
 {
 	using namespace math;
 
+	HandleInput(dt);
+	Vector3 right, fwd, up;
+	GetCoordinateVectors(right, fwd, up);
+
 	const float fov = 60;
 	const float aspect = 800.0 / 600.0;
 	const float farPlane = 100;
@@ -101,16 +243,16 @@ void rendering::renderer::Camera::Tick(double dt, jobs::Job* done)
 
 	Matrix translate = Matrix::GetIdentityMatrix();
 
-	translate.GetCoef(0, 3) = 0;
-	translate.GetCoef(1, 3) = 0;
-	translate.GetCoef(2, 3) = 5;
+	translate.GetCoef(0, 3) = -m_position.m_coefs[0];
+	translate.GetCoef(1, 3) = -m_position.m_coefs[1];
+	translate.GetCoef(2, 3) = -m_position.m_coefs[2];
 
 	Matrix view = {
 		{
-			1,0,0,0,
-			0,1,0,0,
-			0,0,1,0,
-			0,0,0,1
+			right.m_coefs[0],	right.m_coefs[1],	right.m_coefs[2],	0,
+			up.m_coefs[0],		up.m_coefs[1],		up.m_coefs[2],		0,
+			fwd.m_coefs[0],		fwd.m_coefs[1],		fwd.m_coefs[2],		0,
+			0,					0,					0,					1
 		}
 	};
 
