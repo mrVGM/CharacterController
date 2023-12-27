@@ -4,6 +4,7 @@
 #include "CompositeValue.h"
 
 #include "Job.h"
+#include "MultiLoader.h"
 
 #include "d3dx12.h"
 #include <d3d12.h>
@@ -44,11 +45,15 @@ namespace rendering
 		virtual void Construct(Value& container) const override;
 	};
 
-	class DXShader : public ObjectValue
+	class DXShader : public ObjectValue, public jobs::LoadingClass
 	{
 	private:
-		bool m_loaded = false;
 		Microsoft::WRL::ComPtr<ID3DBlob> m_shader;
+
+		jobs::MultiLoader m_loader;
+
+	protected:
+		void LoadData(jobs::Job* done) override;
 
 	public:
 		Value m_name;
@@ -57,7 +62,6 @@ namespace rendering
 		virtual ~DXShader();
 
 		void Load(jobs::Job* done);
-		bool IsLoaded();
 
 		ID3DBlob* GetCompiledShader() const;
 	};

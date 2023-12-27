@@ -11,6 +11,8 @@ add_library (Jobs
 	"private/Thread.cpp"
 	"public/Jobs.h"
 	"private/Jobs.cpp"
+	"public/MultiLoader.h"
+	"private/MultiLoader.cpp"
 )
 
 target_include_directories(Jobs INTERFACE PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/public")

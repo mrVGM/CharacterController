@@ -150,9 +150,16 @@ const rendering::DXPixelShaderTypeDef& rendering::DXPixelShaderTypeDef::GetTypeD
 	return *m_pixelShaderTypeDef.m_object;
 }
 
+
+void rendering::DXShader::Load(jobs::Job* done)
+{
+	m_loader.Load(done);
+}
+
 rendering::DXShader::DXShader(const ReferenceTypeDef& type) :
 	ObjectValue(type),
-	m_name(StringTypeDef::GetTypeDef(), this)
+	m_name(StringTypeDef::GetTypeDef(), this),
+	m_loader(*this)
 {
 }
 
@@ -160,16 +167,8 @@ rendering::DXShader::~DXShader()
 {
 }
 
-void rendering::DXShader::Load(jobs::Job* done)
+void rendering::DXShader::LoadData(jobs::Job* done)
 {
-	if (m_loaded)
-	{
-		jobs::RunSync(done);
-		return;
-	}
-
-	m_loaded = true;
-
 	jobs::Job* compileJob = jobs::Job::CreateByLambda([=]() {
 		std::string shaderFile = files::GetDataDir() + "Shaders\\src\\" + m_name.Get<std::string>();
 		std::wstring shaderFileW(shaderFile.begin(), shaderFile.end());
@@ -191,11 +190,6 @@ void rendering::DXShader::Load(jobs::Job* done)
 	});
 
 	jobs::RunAsync(compileJob);
-}
-
-bool rendering::DXShader::IsLoaded()
-{
-	return m_loaded;
 }
 
 ID3DBlob* rendering::DXShader::GetCompiledShader() const
