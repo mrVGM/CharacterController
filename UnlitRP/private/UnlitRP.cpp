@@ -11,6 +11,8 @@
 #include "MeshBuffers.h"
 #include "Actor.h"
 
+#include "UnlitRenderTextureTexture.h"
+
 #include "ValueList.h"
 
 #include "CoreUtils.h"
@@ -236,6 +238,7 @@ void rendering::unlit_rp::Boot()
 {
 	unlit_rp::UnlitRPTypeDef::GetTypeDef();
 	unlit_rp::UnlitMaterialTypeDef::GetTypeDef();
+	unlit_rp::UnlitRenderTextureTypeDef::GetTypeDef();
 }
 
 
