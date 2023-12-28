@@ -9,6 +9,8 @@ add_library (RenderPass
 	"private/Material.cpp"
 	"public/CameraBuffer.h"
 	"private/CameraBuffer.cpp"
+	"private/DisplayTextureMaterial.cpp"
+	"public/DisplayTextureMaterial.h"
 )
 
 target_include_directories(RenderPass INTERFACE PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/public")

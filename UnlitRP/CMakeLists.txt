@@ -7,7 +7,7 @@ add_library (UnlitRP
 	"private/UnlitMaterial.cpp"
 	"private/UnlitRenderTexture.cpp"
 	"public/UnlitRenderTexture.h"
-)
+  )
 
 target_include_directories(UnlitRP INTERFACE PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/public")
 target_include_directories(UnlitRP PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/private")
