@@ -5,6 +5,7 @@ float4 PSMain(
     float4 position : SV_POSITION,
     float2 uv : UV) : SV_Target
 {
-    float4 color = p_texture.Sample(p_sampler, uv);
+    float2 coords = float2(uv.x, 1 - uv.y);
+    float4 color = p_texture.Sample(p_sampler, coords);
     return color;
 }

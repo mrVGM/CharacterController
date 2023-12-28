@@ -148,10 +148,11 @@ void rendering::unlit_rp::UnlitRP::Prepare()
 	int frameIndex = swapChain->GetCurrentSwapChainIndex();
 
 	DXTexture* rt = nullptr;
+	DXDescriptorHeap* rtHeap = nullptr;
 	{
 		UnlitMaterial* mat = m_unlitMaterial.GetValue<UnlitMaterial*>();
 		const Value& rtHeapVal = mat->GetRTHeap();
-		DXDescriptorHeap* rtHeap = rtHeapVal.GetValue<DXDescriptorHeap*>();
+		rtHeap = rtHeapVal.GetValue<DXDescriptorHeap*>();
 		const Value& textures = rtHeap->GetTextures();
 		ValueList* l = textures.GetValue<ValueList*>();
 		const Value& fst = *(l->GetIterator());
@@ -173,6 +174,9 @@ void rendering::unlit_rp::UnlitRP::Prepare()
 			CD3DX12_RESOURCE_BARRIER::CD3DX12_RESOURCE_BARRIER::Transition(swapChain->GetCurrentRenderTarget(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET)
 		};
 		m_beginCommandList->ResourceBarrier(_countof(barrier), barrier);
+
+		const float clearColor[] = { 0.0f, 0.0f, 0.0f, 0.0f };
+		m_beginCommandList->ClearRenderTargetView(rtHeap->GetDescriptorHandle(0), clearColor, 0, nullptr);
 	}
 
 	THROW_ERROR(
