@@ -37,7 +37,7 @@ const rendering::render_pass::DisplayTextureMaterialTypeDef& rendering::render_p
 }
 
 rendering::render_pass::DisplayTextureMaterialTypeDef::DisplayTextureMaterialTypeDef() :
-	ReferenceTypeDef(&MaterialTypeDef::GetTypeDef(), "A30008B2-5172-4C76-8983-65036701D061"),
+	ReferenceTypeDef(&materials::MaterialTypeDef::GetTypeDef(), "A30008B2-5172-4C76-8983-65036701D061"),
     m_texDescriptorHeap("3EAA65D3-D125-4FDE-87B9-E0EE0ECE3EC1", TypeTypeDef::GetTypeDef(ShaderResourceDescriptorHeapTypeDef::GetTypeDef()))
 {
     {
@@ -65,7 +65,7 @@ void rendering::render_pass::DisplayTextureMaterialTypeDef::Construct(Value& con
 }
 
 rendering::render_pass::DisplayTextureMaterial::DisplayTextureMaterial(const ReferenceTypeDef& typeDef) :
-	render_pass::Material(typeDef),
+	materials::Material(typeDef),
     m_texDescriptorHeapDef(DisplayTextureMaterialTypeDef::GetTypeDef().m_texDescriptorHeap.GetType(), this),
     m_texDescriptorHeap(ShaderResourceDescriptorHeapTypeDef::GetTypeDef(), this)
 {
@@ -262,7 +262,7 @@ void rendering::render_pass::DisplayTextureMaterial::LoadData(jobs::Job* done)
     };
 
     jobs::Job* loadParent = jobs::Job::CreateByLambda([=]() {
-        render_pass::Material::LoadData(jobs::Job::CreateByLambda(itemLoaded));
+        materials::Material::LoadData(jobs::Job::CreateByLambda(itemLoaded));
     });
 
     jobs::Job* loadDescriptorHeap = jobs::Job::CreateByLambda([=]() {

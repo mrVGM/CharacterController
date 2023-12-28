@@ -12,7 +12,7 @@
 
 #include <wrl.h>
 
-namespace rendering::render_pass
+namespace rendering::materials
 {
 	class MaterialTypeDef : public ReferenceTypeDef
 	{
@@ -49,7 +49,7 @@ namespace rendering::render_pass
 		virtual ~Material();
 
 		virtual void GenerateCommandList(
-			const DXBuffer& vertexBuffer,
+			const DXBuffer & vertexBuffer,
 			const DXBuffer& indexBuffer,
 			const DXBuffer& instanceBuffer,
 			UINT startIndex,

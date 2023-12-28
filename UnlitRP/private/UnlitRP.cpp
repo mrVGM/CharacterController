@@ -168,7 +168,7 @@ void rendering::unlit_rp::UnlitRP::Execute()
 
 	DXDevice* device = m_device.GetValue<DXDevice*>();
 	unlit_rp::UnlitMaterial* mat = m_unlitMaterial.GetValue<unlit_rp::UnlitMaterial*>();
-	render_pass::Material* displayRTMat = m_displayTextureMat.GetValue<render_pass::Material*>();
+	materials::Material* displayRTMat = m_displayTextureMat.GetValue<materials::Material*>();
 	geo::Mesh* quadMesh = m_quadMesh.GetValue<geo::Mesh*>();
 
 	scene::SceneObject* scene = m_scene.GetValue<scene::SceneObject*>();
@@ -275,12 +275,12 @@ void rendering::unlit_rp::UnlitRP::Load(jobs::Job* done)
 	};
 
 	jobs::Job* loadDisplayTextureMat = jobs::Job::CreateByLambda([=]() {
-		render_pass::Material* mat = m_displayTextureMat.GetValue<render_pass::Material*>();
+		materials::Material* mat = m_displayTextureMat.GetValue<materials::Material*>();
 		mat->Load(jobs::Job::CreateByLambda(itemLoaded));
 	});
 
 	jobs::Job* loadUnlitMat = jobs::Job::CreateByLambda([=]() {
-		render_pass::Material* mat = m_unlitMaterial.GetValue<render_pass::Material*>();
+		materials::Material* mat = m_unlitMaterial.GetValue<materials::Material*>();
 		mat->Load(jobs::Job::CreateByLambda(itemLoaded));
 	});
 

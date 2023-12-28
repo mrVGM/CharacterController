@@ -25,6 +25,7 @@ target_link_libraries(App PUBLIC
 	GCWorker
 	Scene
 	UnlitRP
+	Materials
 )
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)

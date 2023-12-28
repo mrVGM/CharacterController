@@ -17,7 +17,7 @@ namespace rendering::render_pass
 		void Construct(Value& container) const override;
 	};
 
-	class DisplayTextureMaterial : public render_pass::Material
+	class DisplayTextureMaterial : public materials::Material
 	{
 	private:
 		Microsoft::WRL::ComPtr<ID3D12PipelineState> m_pipelineState;

@@ -18,6 +18,7 @@
 #include "Renderer.h"
 #include "Geometry.h"
 #include "RenderPass.h"
+#include "Materials.h"
 
 #include "UnlitRP.h"
 
@@ -57,6 +58,7 @@ void app::Boot()
 	common_defs::Boot();
 	rendering::core::Boot();
 	rendering::renderer::Boot();
+	rendering::materials::Boot();
 	rendering::render_pass::Boot();
 	geo::Boot();
 	scene::Boot();

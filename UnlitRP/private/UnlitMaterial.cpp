@@ -39,7 +39,7 @@ const rendering::unlit_rp::UnlitMaterialTypeDef& rendering::unlit_rp::UnlitMater
 }
 
 rendering::unlit_rp::UnlitMaterialTypeDef::UnlitMaterialTypeDef() :
-	ReferenceTypeDef(&render_pass::MaterialTypeDef::GetTypeDef(), "FE33ED22-B48B-4567-B4DF-575CF941D787"),
+	ReferenceTypeDef(&materials::MaterialTypeDef::GetTypeDef(), "FE33ED22-B48B-4567-B4DF-575CF941D787"),
     m_rtDescHeap("20D42103-7616-4545-9123-B858E8F38050", TypeTypeDef::GetTypeDef(RenderTargetDescriptorHeapTypeDef::GetTypeDef()))
 {
     {
@@ -67,7 +67,7 @@ void rendering::unlit_rp::UnlitMaterialTypeDef::Construct(Value& container) cons
 }
 
 rendering::unlit_rp::UnlitMaterial::UnlitMaterial(const ReferenceTypeDef& typeDef) :
-    render_pass::Material(typeDef),
+    materials::Material(typeDef),
 
     m_rtDescHeapDef(UnlitMaterialTypeDef::GetTypeDef().m_rtDescHeap.GetType(), this),
     m_rtDescHeap(RenderTargetDescriptorHeapTypeDef::GetTypeDef(), this),
@@ -251,7 +251,7 @@ void rendering::unlit_rp::UnlitMaterial::LoadData(jobs::Job* done)
     });
 
     jobs::Job* loadParent = jobs::Job::CreateByLambda([=]() {
-        render_pass::Material::LoadData(parentLoaded);
+        materials::Material::LoadData(parentLoaded);
     });
 
     jobs::Job* init = jobs::Job::CreateByLambda([=]() {

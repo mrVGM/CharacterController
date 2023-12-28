@@ -5,8 +5,6 @@ add_library (RenderPass
 	"private/RenderPass.cpp"
 	"private/ClearScreenRP.h"
 	"private/ClearScreenRP.cpp"
-	"public/Material.h"
-	"private/Material.cpp"
 	"public/CameraBuffer.h"
 	"private/CameraBuffer.cpp"
 	"private/DisplayTextureMaterial.cpp"
@@ -20,6 +18,7 @@ target_link_libraries(RenderPass PUBLIC
 	Types
 	Jobs
 	RenderingCore
+	Materials
 )
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)

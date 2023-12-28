@@ -11,7 +11,7 @@
 
 namespace
 {
-	BasicObjectContainer<rendering::render_pass::MaterialTypeDef> m_material;
+	BasicObjectContainer<rendering::materials::MaterialTypeDef> m_material;
 }
 
 
@@ -20,17 +20,17 @@ if (FAILED(hRes)) {\
     throw error;\
 }
 
-const rendering::render_pass::MaterialTypeDef& rendering::render_pass::MaterialTypeDef::GetTypeDef()
+const rendering::materials::MaterialTypeDef& rendering::materials::MaterialTypeDef::GetTypeDef()
 {
 	if (!m_material.m_object)
 	{
-		m_material.m_object = new rendering::render_pass::MaterialTypeDef();
+		m_material.m_object = new rendering::materials::MaterialTypeDef();
 	}
 
 	return *m_material.m_object;
 }
 
-rendering::render_pass::MaterialTypeDef::MaterialTypeDef() :
+rendering::materials::MaterialTypeDef::MaterialTypeDef() :
 	ReferenceTypeDef(&ReferenceTypeDef::GetTypeDef(), "88865622-C8C0-4807-9A04-031CAFD12150"),
 	m_vertexShader("4152C1E7-1CC2-4901-BDCA-8A25D985E03C", TypeTypeDef::GetTypeDef(DXVertexShaderTypeDef::GetTypeDef())),
 	m_pixelShader("4508B9D7-D184-442A-85EB-1B2DDA1556AC", TypeTypeDef::GetTypeDef(DXPixelShaderTypeDef::GetTypeDef()))
@@ -59,17 +59,17 @@ rendering::render_pass::MaterialTypeDef::MaterialTypeDef() :
 	m_category = "Render Pass";
 }
 
-rendering::render_pass::MaterialTypeDef::~MaterialTypeDef()
+rendering::materials::MaterialTypeDef::~MaterialTypeDef()
 {
 }
 
-void rendering::render_pass::MaterialTypeDef::Construct(Value& container) const
+void rendering::materials::MaterialTypeDef::Construct(Value& container) const
 {
 	Material* mat = new Material(*this);
 	container.AssignObject(mat);
 }
 
-rendering::render_pass::Material::Material(const ReferenceTypeDef& typeDef) :
+rendering::materials::Material::Material(const ReferenceTypeDef& typeDef) :
 	ObjectValue(typeDef),
     m_loader(*this),
 
@@ -83,11 +83,11 @@ rendering::render_pass::Material::Material(const ReferenceTypeDef& typeDef) :
 {
 }
 
-rendering::render_pass::Material::~Material()
+rendering::materials::Material::~Material()
 {
 }
 
-void rendering::render_pass::Material::GenerateCommandList(
+void rendering::materials::Material::GenerateCommandList(
     const DXBuffer& vertexBuffer,
     const DXBuffer& indexBuffer,
     const DXBuffer& instanceBuffer,
@@ -98,12 +98,12 @@ void rendering::render_pass::Material::GenerateCommandList(
 {
 }
 
-void rendering::render_pass::Material::Load(jobs::Job* done)
+void rendering::materials::Material::Load(jobs::Job* done)
 {
     m_loader.Load(done);
 }
 
-void rendering::render_pass::Material::LoadData(jobs::Job* done)
+void rendering::materials::Material::LoadData(jobs::Job* done)
 {
     struct Context
     {

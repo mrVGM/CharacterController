@@ -17,7 +17,7 @@ namespace rendering::unlit_rp
 		void Construct(Value& container) const override;
 	};
 
-	class UnlitMaterial : public render_pass::Material
+	class UnlitMaterial : public materials::Material
 	{
 	private:
 		Microsoft::WRL::ComPtr<ID3D12PipelineState> m_pipelineState;

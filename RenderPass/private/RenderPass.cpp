@@ -51,7 +51,6 @@ void rendering::render_pass::Boot()
 {
 	RenderPassTypeDef::GetTypeDef();
 	ClearScreenRPTypeDef::GetTypeDef();
-	MaterialTypeDef::GetTypeDef();
 	DisplayTextureMaterialTypeDef::GetTypeDef();
 	CameraBufferTypeDef::GetTypeDef();
 }
