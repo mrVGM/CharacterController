@@ -1,5 +1,16 @@
 {
   "properties": {
+    "CC292084-F703-427E-AD24-6B05386A0CDB": {
+      "type": {
+        "template": {
+          "id": "D963BDD2-9E53-466B-BCAF-F3FB50434050"
+        },
+        "id": "1D4363E5-BC6F-4B49-80F3-FAC358F5B296"
+      },
+      "name": "Quad Mesh",
+      "id": "CC292084-F703-427E-AD24-6B05386A0CDB",
+      "category": "Setup"
+    },
     "4399AADE-0D5B-4EB1-A733-EE7F9E09975A": {
       "type": {
         "template": {

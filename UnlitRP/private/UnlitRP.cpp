@@ -43,7 +43,8 @@ const rendering::unlit_rp::UnlitRPTypeDef& rendering::unlit_rp::UnlitRPTypeDef::
 
 rendering::unlit_rp::UnlitRPTypeDef::UnlitRPTypeDef() :
 	ReferenceTypeDef(&render_pass::RenderPassTypeDef::GetTypeDef(), "DF88C6B2-118D-47D8-89B6-5AE3A6A61817"),
-	m_displayTextureMat("4399AADE-0D5B-4EB1-A733-EE7F9E09975A", TypeTypeDef::GetTypeDef(render_pass::DisplayTextureMaterialTypeDef::GetTypeDef()))
+	m_displayTextureMat("4399AADE-0D5B-4EB1-A733-EE7F9E09975A", TypeTypeDef::GetTypeDef(render_pass::DisplayTextureMaterialTypeDef::GetTypeDef())),
+	m_quadMesh("CC292084-F703-427E-AD24-6B05386A0CDB", TypeTypeDef::GetTypeDef(geo::MeshTypeDef::GetTypeDef()))
 {
 	{
 		m_displayTextureMat.m_name = "Display Unlit Texture Material";
@@ -53,6 +54,15 @@ rendering::unlit_rp::UnlitRPTypeDef::UnlitRPTypeDef() :
 			return unlitRP->m_displayTextureMatDef;
 		};
 		m_properties[m_displayTextureMat.GetId()] = &m_displayTextureMat;
+	}
+	{
+		m_quadMesh.m_name = "Quad Mesh";
+		m_quadMesh.m_category = "Setup";
+		m_quadMesh.m_getValue = [](CompositeValue* obj) -> Value& {
+			UnlitRP* unlitRP = static_cast<UnlitRP*>(obj);
+			return unlitRP->m_quadMeshDef;
+		};
+		m_properties[m_quadMesh.GetId()] = &m_quadMesh;
 	}
 
 	m_name = "Unlit";
@@ -79,7 +89,9 @@ rendering::unlit_rp::UnlitRP::UnlitRP(const ReferenceTypeDef& typeDef) :
 	m_scene(scene::SceneObjectTypeDef::GetTypeDef(), this),
 
 	m_displayTextureMatDef(UnlitRPTypeDef::GetTypeDef().m_displayTextureMat.GetType(), this),
-	m_displayTextureMat(render_pass::DisplayTextureMaterialTypeDef::GetTypeDef(), this)
+	m_displayTextureMat(render_pass::DisplayTextureMaterialTypeDef::GetTypeDef(), this),
+	m_quadMeshDef(UnlitRPTypeDef::GetTypeDef().m_quadMesh.GetType(), this),
+	m_quadMesh(geo::MeshTypeDef::GetTypeDef(), this)
 {
 }
 
@@ -188,6 +200,8 @@ void rendering::unlit_rp::UnlitRP::Execute()
 
 	DXDevice* device = m_device.GetValue<DXDevice*>();
 	unlit_rp::UnlitMaterial* mat = m_unlitMaterial.GetValue<unlit_rp::UnlitMaterial*>();
+	render_pass::Material* displayRTMat = m_displayTextureMat.GetValue<render_pass::Material*>();
+	geo::Mesh* quadMesh = m_quadMesh.GetValue<geo::Mesh*>();
 
 	scene::SceneObject* scene = m_scene.GetValue<scene::SceneObject*>();
 	Value& actors = scene->GetActors();
@@ -232,6 +246,37 @@ void rendering::unlit_rp::UnlitRP::Execute()
 	}
 
 	{
+		scene::MeshBuffers* meshBuffers = quadMesh->m_buffers.GetValue<scene::MeshBuffers*>();
+		DXBuffer* vertexBuffer = meshBuffers->m_vertexBuffer.GetValue<DXBuffer*>();
+		DXBuffer* indexBuffer = meshBuffers->m_indexBuffer.GetValue<DXBuffer*>();
+
+		Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList>& cmdList = m_commandLists.emplace_back();
+
+		THROW_ERROR(
+			device->GetDevice().CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, m_commandAllocator.Get(), nullptr, IID_PPV_ARGS(&cmdList)),
+			"Can't create Command List!")
+
+		THROW_ERROR(
+			cmdList->Close(),
+			"Can't close Command List!")
+
+		const geo::Mesh::MaterialRange& range = quadMesh->m_materials.front();
+
+		displayRTMat->GenerateCommandList(
+			*vertexBuffer,
+			*indexBuffer,
+			*vertexBuffer,
+			range.m_start,
+			range.m_count,
+			m_commandAllocator.Get(),
+			cmdList.Get()
+		);
+
+		ID3D12CommandList* cmdLists[] = { cmdList.Get() };
+		m_commandQueue.GetValue<DXCommandQueue*>()->GetGraphicsCommandQueue()->ExecuteCommandLists(_countof(cmdLists), cmdLists);
+	}
+
+	{
 		ID3D12CommandList* commandLists[] = { m_endCommandList.Get() };
 		commandQueue->GetGraphicsCommandQueue()->ExecuteCommandLists(_countof(commandLists), commandLists);
 	}
@@ -241,7 +286,7 @@ void rendering::unlit_rp::UnlitRP::Load(jobs::Job* done)
 {
 	struct Context
 	{
-		int m_loading = 2;
+		int m_loading = 3;
 	};
 	Context* ctx = new Context();
 
@@ -266,6 +311,21 @@ void rendering::unlit_rp::UnlitRP::Load(jobs::Job* done)
 		mat->Load(jobs::Job::CreateByLambda(itemLoaded));
 	});
 
+	jobs::Job* loadQuadMesh = jobs::Job::CreateByLambda([=]() {
+		geo::Mesh* mesh = m_quadMesh.GetValue<geo::Mesh*>();
+
+		jobs::Job* loadMeshBuffers = jobs::Job::CreateByLambda([=]() {
+			scene::MeshBuffersTypeDef::GetTypeDef().Construct(mesh->m_buffers);
+			scene::MeshBuffers* meshBuffers = mesh->m_buffers.GetValue<scene::MeshBuffers*>();
+
+			jobs::RunAsync(jobs::Job::CreateByLambda([=]() {
+				meshBuffers->Load(*mesh, jobs::Job::CreateByLambda(itemLoaded));
+			}));
+		});
+
+		mesh->Load(loadMeshBuffers);
+	});
+
 	jobs::Job* init = jobs::Job::CreateByLambda([=]() {
 		m_device.AssignObject(core::utils::GetDevice());
 		m_swapChain.AssignObject(core::utils::GetSwapChain());
@@ -275,10 +335,12 @@ void rendering::unlit_rp::UnlitRP::Load(jobs::Job* done)
 
 		m_unlitMaterial.AssignObject(ObjectValueContainer::GetObjectOfType(UnlitMaterialTypeDef::GetTypeDef()));
 		m_displayTextureMat.AssignObject(ObjectValueContainer::GetObjectOfType(*m_displayTextureMatDef.GetType<const TypeDef*>()));
+		m_quadMesh.AssignObject(ObjectValueContainer::GetObjectOfType(*m_quadMeshDef.GetType<const TypeDef*>()));
 
 		Create();
 		jobs::RunAsync(loadUnlitMat);
 		jobs::RunAsync(loadDisplayTextureMat);
+		jobs::RunAsync(loadQuadMesh);
 	});
 
 	jobs::RunSync(init);

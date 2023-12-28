@@ -16,6 +16,7 @@ namespace rendering::unlit_rp
 
 	public:
 		TypeProperty m_displayTextureMat;
+		TypeProperty m_quadMesh;
 
 		UnlitRPTypeDef();
 		virtual ~UnlitRPTypeDef();
@@ -41,8 +42,11 @@ namespace rendering::unlit_rp
 		Value m_unlitMaterial;
 		Value m_displayTextureMat;
 
+		Value m_quadMesh;
+
 		void Create();
 	public:
+		Value m_quadMeshDef;
 		Value m_displayTextureMatDef;
 
 		UnlitRP(const ReferenceTypeDef& typeDef);

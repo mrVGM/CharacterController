@@ -5,6 +5,7 @@
 
 #include "Geometry.h"
 
+#include "MultiLoader.h"
 #include "Job.h"
 
 namespace geo
@@ -23,8 +24,14 @@ namespace geo
 	};
 
 
-	class Mesh : public ObjectValue
+	class Mesh : public ObjectValue, public jobs::LoadingClass
 	{
+	private:
+		jobs::MultiLoader m_loader;
+
+	protected:
+		virtual void LoadData(jobs::Job* done) override;
+
 	public:
 		struct MaterialRange
 		{
