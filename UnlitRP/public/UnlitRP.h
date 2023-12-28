@@ -29,6 +29,7 @@ namespace rendering::unlit_rp
 	private:
 		Microsoft::WRL::ComPtr<ID3D12CommandAllocator> m_commandAllocator;
 		Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> m_beginCommandList;
+		Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> m_afterRenderObjects;
 		Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> m_endCommandList;
 
 		std::list<Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList>> m_commandLists;

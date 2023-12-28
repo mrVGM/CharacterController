@@ -124,6 +124,14 @@ void rendering::unlit_rp::UnlitRP::Create()
 		"Can't close command List!")
 
 	THROW_ERROR(
+		device->GetDevice().CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, m_commandAllocator.Get(), nullptr, IID_PPV_ARGS(&m_afterRenderObjects)),
+		"Can't create Command List!")
+
+	THROW_ERROR(
+		m_afterRenderObjects->Close(),
+		"Can't close command List!")
+
+	THROW_ERROR(
 		device->GetDevice().CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, m_commandAllocator.Get(), nullptr, IID_PPV_ARGS(&m_endCommandList)),
 		"Can't create Command List!")
 
@@ -172,13 +180,29 @@ void rendering::unlit_rp::UnlitRP::Prepare()
 		"Can't close Command List!")
 
 	THROW_ERROR(
+		m_afterRenderObjects->Reset(m_commandAllocator.Get(), nullptr),
+		"Can't reset Command List!")
+
+	{
+		CD3DX12_RESOURCE_BARRIER barrier[] =
+		{
+			CD3DX12_RESOURCE_BARRIER::CD3DX12_RESOURCE_BARRIER::Transition(rt->GetTexture(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE)
+		};
+		m_afterRenderObjects->ResourceBarrier(_countof(barrier), barrier);
+	}
+
+	THROW_ERROR(
+		m_afterRenderObjects->Close(),
+		"Can't close Command List!")
+
+	THROW_ERROR(
 		m_endCommandList->Reset(m_commandAllocator.Get(), nullptr),
 		"Can't reset Command List!")
 
 	{
 		CD3DX12_RESOURCE_BARRIER barrier[] =
 		{
-			CD3DX12_RESOURCE_BARRIER::CD3DX12_RESOURCE_BARRIER::Transition(rt->GetTexture(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT),
+			CD3DX12_RESOURCE_BARRIER::CD3DX12_RESOURCE_BARRIER::Transition(rt->GetTexture(), D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_PRESENT),
 			CD3DX12_RESOURCE_BARRIER::CD3DX12_RESOURCE_BARRIER::Transition(swapChain->GetCurrentRenderTarget(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT)
 		};
 		m_endCommandList->ResourceBarrier(_countof(barrier), barrier);
@@ -243,6 +267,11 @@ void rendering::unlit_rp::UnlitRP::Execute()
 			ID3D12CommandList* cmdLists[] = { cmdList.Get() };
 			m_commandQueue.GetValue<DXCommandQueue*>()->GetGraphicsCommandQueue()->ExecuteCommandLists(_countof(cmdLists), cmdLists);
 		}
+	}
+
+	{
+		ID3D12CommandList* commandLists[] = { m_afterRenderObjects.Get() };
+		commandQueue->GetGraphicsCommandQueue()->ExecuteCommandLists(_countof(commandLists), commandLists);
 	}
 
 	{
