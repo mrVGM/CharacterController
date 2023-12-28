@@ -126,13 +126,16 @@ void rendering::DXTexture::Place(DXHeap& heap, UINT64 heapOffset)
 	depthOptimizedClearValue.DepthStencil.Depth = 1.0f;
 	depthOptimizedClearValue.DepthStencil.Stencil = 0;
 
+	D3D12_CLEAR_VALUE regularClearValue = {};
+	regularClearValue.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+
 	THROW_ERROR(
 		device->GetDevice().CreatePlacedResource(
 			heap.GetHeap(),
 			heapOffset,
 			&textureDesc,
 			isDS ? D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_DEPTH_WRITE : D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_PRESENT,
-			isDS ? &depthOptimizedClearValue : nullptr,
+			isDS ? &depthOptimizedClearValue : &regularClearValue,
 			IID_PPV_ARGS(&m_texture)),
 		"Can't place texture in the heap!")
 }
