@@ -28,9 +28,17 @@ namespace rendering::unlit_rp
 	{
 	private:
 		Microsoft::WRL::ComPtr<ID3D12CommandAllocator> m_commandAllocator;
-		Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> m_beginCommandList;
-		Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> m_afterRenderObjects;
-		Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> m_endCommandList;
+		Microsoft::WRL::ComPtr<ID3D12CommandAllocator> m_auxCommandAllocator;
+
+		struct CMDListCache
+		{
+			bool m_cached = false;
+			Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> m_beginCommandList;
+			Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> m_afterRenderObjects;
+			Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> m_endCommandList;
+		};
+
+		CMDListCache m_cache[2];
 
 		std::list<Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList>> m_commandLists;
 
@@ -46,6 +54,7 @@ namespace rendering::unlit_rp
 		Value m_quadMesh;
 
 		void Create();
+		const CMDListCache& GetCachedLists();
 	public:
 		Value m_quadMeshDef;
 		Value m_displayTextureMatDef;

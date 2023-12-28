@@ -116,113 +116,53 @@ void rendering::unlit_rp::UnlitRP::Create()
 		"Can't create Command Allocator!")
 
 	THROW_ERROR(
-		device->GetDevice().CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, m_commandAllocator.Get(), nullptr, IID_PPV_ARGS(&m_beginCommandList)),
-		"Can't create Command List!")
+		device->GetDevice().CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&m_auxCommandAllocator)),
+		"Can't create Command Allocator!")
 
-	THROW_ERROR(
-		m_beginCommandList->Close(),
-		"Can't close command List!")
+	for (int i = 0; i < 2; ++i)
+	{
+		THROW_ERROR(
+			device->GetDevice().CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, m_auxCommandAllocator.Get(), nullptr, IID_PPV_ARGS(&m_cache[i].m_beginCommandList)),
+			"Can't create Command List!")
 
-	THROW_ERROR(
-		device->GetDevice().CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, m_commandAllocator.Get(), nullptr, IID_PPV_ARGS(&m_afterRenderObjects)),
-		"Can't create Command List!")
+		THROW_ERROR(
+			m_cache[i].m_beginCommandList->Close(),
+			"Can't close command List!")
 
-	THROW_ERROR(
-		m_afterRenderObjects->Close(),
-		"Can't close command List!")
+		THROW_ERROR(
+			device->GetDevice().CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, m_auxCommandAllocator.Get(), nullptr, IID_PPV_ARGS(&m_cache[i].m_afterRenderObjects)),
+			"Can't create Command List!")
 
-	THROW_ERROR(
-		device->GetDevice().CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, m_commandAllocator.Get(), nullptr, IID_PPV_ARGS(&m_endCommandList)),
-		"Can't create Command List!")
+		THROW_ERROR(
+			m_cache[i].m_afterRenderObjects->Close(),
+			"Can't close command List!")
 
-	THROW_ERROR(
-		m_endCommandList->Close(),
-		"Can't close command List!")
+		THROW_ERROR(
+			device->GetDevice().CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, m_auxCommandAllocator.Get(), nullptr, IID_PPV_ARGS(&m_cache[i].m_endCommandList)),
+			"Can't create Command List!")
+
+		THROW_ERROR(
+			m_cache[i].m_endCommandList->Close(),
+			"Can't close command List!")
+	}
 }
 
 void rendering::unlit_rp::UnlitRP::Prepare()
 {
 	m_commandLists.clear();
 
-	DXSwapChain* swapChain = m_swapChain.GetValue<DXSwapChain*>();
-	int frameIndex = swapChain->GetCurrentSwapChainIndex();
-
-	DXTexture* rt = nullptr;
-	DXDescriptorHeap* rtHeap = nullptr;
-	{
-		UnlitMaterial* mat = m_unlitMaterial.GetValue<UnlitMaterial*>();
-		const Value& rtHeapVal = mat->GetRTHeap();
-		rtHeap = rtHeapVal.GetValue<DXDescriptorHeap*>();
-		const Value& textures = rtHeap->GetTextures();
-		ValueList* l = textures.GetValue<ValueList*>();
-		const Value& fst = *(l->GetIterator());
-		rt = fst.GetValue<DXTexture*>();
-	}
-
 	THROW_ERROR(
 		m_commandAllocator->Reset(),
 		"Can't reset Command Allocator!")
-	
-	THROW_ERROR(
-		m_beginCommandList->Reset(m_commandAllocator.Get(), nullptr),
-		"Can't reset Command List!")
-
-	{
-		CD3DX12_RESOURCE_BARRIER barrier[] =
-		{
-			CD3DX12_RESOURCE_BARRIER::CD3DX12_RESOURCE_BARRIER::Transition(rt->GetTexture(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET),
-			CD3DX12_RESOURCE_BARRIER::CD3DX12_RESOURCE_BARRIER::Transition(swapChain->GetCurrentRenderTarget(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET)
-		};
-		m_beginCommandList->ResourceBarrier(_countof(barrier), barrier);
-
-		const float clearColor[] = { 0.0f, 0.0f, 0.0f, 0.0f };
-		m_beginCommandList->ClearRenderTargetView(rtHeap->GetDescriptorHandle(0), clearColor, 0, nullptr);
-	}
-
-	THROW_ERROR(
-		m_beginCommandList->Close(),
-		"Can't close Command List!")
-
-	THROW_ERROR(
-		m_afterRenderObjects->Reset(m_commandAllocator.Get(), nullptr),
-		"Can't reset Command List!")
-
-	{
-		CD3DX12_RESOURCE_BARRIER barrier[] =
-		{
-			CD3DX12_RESOURCE_BARRIER::CD3DX12_RESOURCE_BARRIER::Transition(rt->GetTexture(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE)
-		};
-		m_afterRenderObjects->ResourceBarrier(_countof(barrier), barrier);
-	}
-
-	THROW_ERROR(
-		m_afterRenderObjects->Close(),
-		"Can't close Command List!")
-
-	THROW_ERROR(
-		m_endCommandList->Reset(m_commandAllocator.Get(), nullptr),
-		"Can't reset Command List!")
-
-	{
-		CD3DX12_RESOURCE_BARRIER barrier[] =
-		{
-			CD3DX12_RESOURCE_BARRIER::CD3DX12_RESOURCE_BARRIER::Transition(rt->GetTexture(), D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_PRESENT),
-			CD3DX12_RESOURCE_BARRIER::CD3DX12_RESOURCE_BARRIER::Transition(swapChain->GetCurrentRenderTarget(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT)
-		};
-		m_endCommandList->ResourceBarrier(_countof(barrier), barrier);
-	}
-
-	THROW_ERROR(
-		m_endCommandList->Close(),
-		"Can't close Command List!")
 }
 
 void rendering::unlit_rp::UnlitRP::Execute()
 {
 	DXCommandQueue* commandQueue = m_commandQueue.GetValue<DXCommandQueue*>();
 
+	const CMDListCache& cache = GetCachedLists();
 	{
-		ID3D12CommandList* commandLists[] = { m_beginCommandList.Get() };
+		ID3D12CommandList* commandLists[] = { cache.m_beginCommandList.Get() };
 		commandQueue->GetGraphicsCommandQueue()->ExecuteCommandLists(_countof(commandLists), commandLists);
 	}
 
@@ -274,7 +214,7 @@ void rendering::unlit_rp::UnlitRP::Execute()
 	}
 
 	{
-		ID3D12CommandList* commandLists[] = { m_afterRenderObjects.Get() };
+		ID3D12CommandList* commandLists[] = { cache.m_afterRenderObjects.Get() };
 		commandQueue->GetGraphicsCommandQueue()->ExecuteCommandLists(_countof(commandLists), commandLists);
 	}
 
@@ -310,7 +250,7 @@ void rendering::unlit_rp::UnlitRP::Execute()
 	}
 
 	{
-		ID3D12CommandList* commandLists[] = { m_endCommandList.Get() };
+		ID3D12CommandList* commandLists[] = { cache.m_endCommandList.Get() };
 		commandQueue->GetGraphicsCommandQueue()->ExecuteCommandLists(_countof(commandLists), commandLists);
 	}
 }
@@ -377,6 +317,86 @@ void rendering::unlit_rp::UnlitRP::Load(jobs::Job* done)
 	});
 
 	jobs::RunSync(init);
+}
+
+const rendering::unlit_rp::UnlitRP::CMDListCache& rendering::unlit_rp::UnlitRP::GetCachedLists()
+{
+	DXSwapChain* swapChain = m_swapChain.GetValue<DXSwapChain*>();
+	UINT frameIndex = swapChain->GetCurrentSwapChainIndex();
+
+	DXTexture* rt = nullptr;
+	DXDescriptorHeap* rtHeap = nullptr;
+	{
+		UnlitMaterial* mat = m_unlitMaterial.GetValue<UnlitMaterial*>();
+		const Value& rtHeapVal = mat->GetRTHeap();
+		rtHeap = rtHeapVal.GetValue<DXDescriptorHeap*>();
+		const Value& textures = rtHeap->GetTextures();
+		ValueList* l = textures.GetValue<ValueList*>();
+		const Value& fst = *(l->GetIterator());
+		rt = fst.GetValue<DXTexture*>();
+	}
+
+	CMDListCache& cache = m_cache[frameIndex];
+	if (cache.m_cached)
+	{
+		return cache;
+	}
+
+	THROW_ERROR(
+		cache.m_beginCommandList->Reset(m_auxCommandAllocator.Get(), nullptr),
+		"Can't reset Command List!")
+
+	{
+		CD3DX12_RESOURCE_BARRIER barrier[] =
+		{
+			CD3DX12_RESOURCE_BARRIER::CD3DX12_RESOURCE_BARRIER::Transition(rt->GetTexture(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET),
+			CD3DX12_RESOURCE_BARRIER::CD3DX12_RESOURCE_BARRIER::Transition(swapChain->GetCurrentRenderTarget(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET)
+		};
+		cache.m_beginCommandList->ResourceBarrier(_countof(barrier), barrier);
+
+		const float clearColor[] = { 0.0f, 0.0f, 0.0f, 0.0f };
+		cache.m_beginCommandList->ClearRenderTargetView(rtHeap->GetDescriptorHandle(0), clearColor, 0, nullptr);
+	}
+
+	THROW_ERROR(
+		cache.m_beginCommandList->Close(),
+		"Can't close Command List!")
+
+	THROW_ERROR(
+		cache.m_afterRenderObjects->Reset(m_auxCommandAllocator.Get(), nullptr),
+		"Can't reset Command List!")
+
+	{
+		CD3DX12_RESOURCE_BARRIER barrier[] =
+		{
+			CD3DX12_RESOURCE_BARRIER::CD3DX12_RESOURCE_BARRIER::Transition(rt->GetTexture(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE)
+		};
+		cache.m_afterRenderObjects->ResourceBarrier(_countof(barrier), barrier);
+	}
+
+	THROW_ERROR(
+		cache.m_afterRenderObjects->Close(),
+		"Can't close Command List!")
+
+	THROW_ERROR(
+		cache.m_endCommandList->Reset(m_auxCommandAllocator.Get(), nullptr),
+		"Can't reset Command List!")
+
+	{
+		CD3DX12_RESOURCE_BARRIER barrier[] =
+		{
+			CD3DX12_RESOURCE_BARRIER::CD3DX12_RESOURCE_BARRIER::Transition(rt->GetTexture(), D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_PRESENT),
+			CD3DX12_RESOURCE_BARRIER::CD3DX12_RESOURCE_BARRIER::Transition(swapChain->GetCurrentRenderTarget(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT)
+		};
+		cache.m_endCommandList->ResourceBarrier(_countof(barrier), barrier);
+	}
+
+	THROW_ERROR(
+		cache.m_endCommandList->Close(),
+		"Can't close Command List!")
+
+	cache.m_cached = true;
+	return cache;
 }
 
 
