@@ -15,6 +15,8 @@ namespace rendering::unlit_rp
 		TYPE_DEF_BODY(UnlitRPTypeDef)
 
 	public:
+		TypeProperty m_displayTextureMat;
+
 		UnlitRPTypeDef();
 		virtual ~UnlitRPTypeDef();
 
@@ -35,10 +37,13 @@ namespace rendering::unlit_rp
 		Value m_commandQueue;
 
 		Value m_scene;
+
 		Value m_unlitMaterial;
+		Value m_displayTextureMat;
 
 		void Create();
 	public:
+		Value m_displayTextureMatDef;
 
 		UnlitRP(const ReferenceTypeDef& typeDef);
 		virtual ~UnlitRP();

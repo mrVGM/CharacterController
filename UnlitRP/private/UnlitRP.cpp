@@ -1,11 +1,14 @@
 #include "UnlitRP.h"
 
+#include "PrimitiveTypes.h"
+
 #include "Jobs.h"
 
 #include "UnlitMaterial.h"
 
 #include "ObjectValueContainer.h"
 #include "UnlitMaterial.h"
+#include "DisplayTextureMaterial.h"
 
 #include "SceneObject.h"
 #include "MeshBuffers.h"
@@ -39,8 +42,19 @@ const rendering::unlit_rp::UnlitRPTypeDef& rendering::unlit_rp::UnlitRPTypeDef::
 }
 
 rendering::unlit_rp::UnlitRPTypeDef::UnlitRPTypeDef() :
-	ReferenceTypeDef(&render_pass::RenderPassTypeDef::GetTypeDef(), "DF88C6B2-118D-47D8-89B6-5AE3A6A61817")
+	ReferenceTypeDef(&render_pass::RenderPassTypeDef::GetTypeDef(), "DF88C6B2-118D-47D8-89B6-5AE3A6A61817"),
+	m_displayTextureMat("4399AADE-0D5B-4EB1-A733-EE7F9E09975A", TypeTypeDef::GetTypeDef(render_pass::DisplayTextureMaterialTypeDef::GetTypeDef()))
 {
+	{
+		m_displayTextureMat.m_name = "Display Unlit Texture Material";
+		m_displayTextureMat.m_category = "Setup";
+		m_displayTextureMat.m_getValue = [](CompositeValue* obj) -> Value& {
+			UnlitRP* unlitRP = static_cast<UnlitRP*>(obj);
+			return unlitRP->m_displayTextureMatDef;
+		};
+		m_properties[m_displayTextureMat.GetId()] = &m_displayTextureMat;
+	}
+
 	m_name = "Unlit";
 	m_category = "Unlit RP";
 }
@@ -62,7 +76,10 @@ rendering::unlit_rp::UnlitRP::UnlitRP(const ReferenceTypeDef& typeDef) :
 	m_swapChain(DXSwapChainTypeDef::GetTypeDef(), this),
 	m_commandQueue(DXCommandQueueTypeDef::GetTypeDef(), this),
 	m_unlitMaterial(UnlitMaterialTypeDef::GetTypeDef(), this),
-	m_scene(scene::SceneObjectTypeDef::GetTypeDef(), this)
+	m_scene(scene::SceneObjectTypeDef::GetTypeDef(), this),
+
+	m_displayTextureMatDef(UnlitRPTypeDef::GetTypeDef().m_displayTextureMat.GetType(), this),
+	m_displayTextureMat(render_pass::DisplayTextureMaterialTypeDef::GetTypeDef(), this)
 {
 }
 
@@ -222,13 +239,31 @@ void rendering::unlit_rp::UnlitRP::Execute()
 
 void rendering::unlit_rp::UnlitRP::Load(jobs::Job* done)
 {
-	auto getUnlitMaterial = [=]() {
-		return m_unlitMaterial.GetValue<UnlitMaterial*>();
+	struct Context
+	{
+		int m_loading = 2;
+	};
+	Context* ctx = new Context();
+
+	auto itemLoaded = [=]() {
+		--ctx->m_loading;
+		if (ctx->m_loading > 0)
+		{
+			return;
+		}
+		delete ctx;
+
+		jobs::RunSync(done);
 	};
 
+	jobs::Job* loadDisplayTextureMat = jobs::Job::CreateByLambda([=]() {
+		render_pass::Material* mat = m_displayTextureMat.GetValue<render_pass::Material*>();
+		mat->Load(jobs::Job::CreateByLambda(itemLoaded));
+	});
+
 	jobs::Job* loadUnlitMat = jobs::Job::CreateByLambda([=]() {
-		UnlitMaterial* mat = getUnlitMaterial();
-		mat->Load(done);
+		render_pass::Material* mat = m_unlitMaterial.GetValue<render_pass::Material*>();
+		mat->Load(jobs::Job::CreateByLambda(itemLoaded));
 	});
 
 	jobs::Job* init = jobs::Job::CreateByLambda([=]() {
@@ -237,10 +272,13 @@ void rendering::unlit_rp::UnlitRP::Load(jobs::Job* done)
 		m_commandQueue.AssignObject(core::utils::GetCommandQueue());
 
 		m_scene.AssignObject(ObjectValueContainer::GetObjectOfType(scene::SceneObjectTypeDef::GetTypeDef()));
+
 		m_unlitMaterial.AssignObject(ObjectValueContainer::GetObjectOfType(UnlitMaterialTypeDef::GetTypeDef()));
+		m_displayTextureMat.AssignObject(ObjectValueContainer::GetObjectOfType(*m_displayTextureMatDef.GetType<const TypeDef*>()));
 
 		Create();
 		jobs::RunAsync(loadUnlitMat);
+		jobs::RunAsync(loadDisplayTextureMat);
 	});
 
 	jobs::RunSync(init);
