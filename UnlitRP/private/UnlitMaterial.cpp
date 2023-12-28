@@ -13,6 +13,8 @@
 
 #include "ObjectValueContainer.h"
 
+#include "DXDescriptorHeap.h"
+
 #include "CoreUtils.h"
 
 #define THROW_ERROR(hRes, error) \
@@ -37,8 +39,19 @@ const rendering::unlit_rp::UnlitMaterialTypeDef& rendering::unlit_rp::UnlitMater
 }
 
 rendering::unlit_rp::UnlitMaterialTypeDef::UnlitMaterialTypeDef() :
-	ReferenceTypeDef(&render_pass::MaterialTypeDef::GetTypeDef(), "FE33ED22-B48B-4567-B4DF-575CF941D787")
+	ReferenceTypeDef(&render_pass::MaterialTypeDef::GetTypeDef(), "FE33ED22-B48B-4567-B4DF-575CF941D787"),
+    m_rtDescHeap("20D42103-7616-4545-9123-B858E8F38050", TypeTypeDef::GetTypeDef(RenderTargetDescriptorHeapTypeDef::GetTypeDef()))
 {
+    {
+        m_rtDescHeap.m_name = "RT Heap";
+        m_rtDescHeap.m_category = "Setup";
+        m_rtDescHeap.m_getValue = [](CompositeValue* obj) -> Value& {
+            UnlitMaterial* mat = static_cast<UnlitMaterial*>(obj);
+            return mat->m_rtDescHeapDef;
+        };
+        m_properties[m_rtDescHeap.GetId()] = &m_rtDescHeap;
+    }
+
 	m_name = "Unlit Material";
 	m_category = "Unlit RP";
 }
@@ -54,7 +67,11 @@ void rendering::unlit_rp::UnlitMaterialTypeDef::Construct(Value& container) cons
 }
 
 rendering::unlit_rp::UnlitMaterial::UnlitMaterial(const ReferenceTypeDef& typeDef) :
-	render_pass::Material(typeDef),
+    render_pass::Material(typeDef),
+
+    m_rtDescHeapDef(UnlitMaterialTypeDef::GetTypeDef().m_rtDescHeap.GetType(), this),
+    m_rtDescHeap(RenderTargetDescriptorHeapTypeDef::GetTypeDef(), this),
+
 	m_dsDescriptorHeap(DXDescriptorHeapTypeDef::GetTypeDef(), this),
     m_camBuffer(render_pass::CameraBufferTypeDef::GetTypeDef(), this)
 {
@@ -122,12 +139,7 @@ void rendering::unlit_rp::UnlitMaterial::CreatePipelineStateAndRootSignatureForS
 
         psoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
 
-#if true
         psoDesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
-#else
-        psoDesc.DepthStencilState.DepthEnable = false;
-        psoDesc.DepthStencilState.StencilEnable = false;
-#endif
 
         psoDesc.SampleMask = UINT_MAX;
         psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
@@ -202,23 +214,57 @@ void rendering::unlit_rp::UnlitMaterial::GenerateCommandList(
 
 void rendering::unlit_rp::UnlitMaterial::LoadData(jobs::Job* done)
 {
-    jobs::Job* parentLoaded = jobs::Job::CreateByLambda([=]() {
-        ObjectValue* camBuff = ObjectValueContainer::GetObjectOfType(render_pass::CameraBufferTypeDef::GetTypeDef());
-        m_camBuffer.AssignObject(camBuff);
+    struct Context
+    {
+        int m_loading = 2;
+    };
+    Context* ctx = new Context();
 
-        DXDescriptorHeap* dsDescriptorHeap = core::utils::GetDepthStencilDescriptorHeap();
-        m_dsDescriptorHeap.AssignObject(dsDescriptorHeap);
+    auto itemLoaded = [=]() {
+        --ctx->m_loading;
+        if (ctx->m_loading > 0)
+        {
+            return;
+        }
+
+        delete ctx;
 
         CreatePipelineStateAndRootSignatureForStaticMesh();
-        dsDescriptorHeap->Load(done);
-    });
+        jobs::RunSync(done);
+    };
 
+
+    jobs::Job* parentLoaded = jobs::Job::CreateByLambda([=]() {
+        DXDescriptorHeap* dsHeap = m_dsDescriptorHeap.GetValue<DXDescriptorHeap*>();
+        DXDescriptorHeap* rtHeap = m_rtDescHeap.GetValue<DXDescriptorHeap*>();
+
+        jobs::RunAsync(jobs::Job::CreateByLambda([=]() {
+            dsHeap->Load(jobs::Job::CreateByLambda(itemLoaded));
+        }));
+
+        jobs::RunAsync(jobs::Job::CreateByLambda([=]() {
+            rtHeap->Load(jobs::Job::CreateByLambda(itemLoaded));
+        }));
+    });
 
     jobs::Job* loadParent = jobs::Job::CreateByLambda([=]() {
         render_pass::Material::LoadData(parentLoaded);
     });
 
-    jobs::RunAsync(loadParent);
+    jobs::Job* init = jobs::Job::CreateByLambda([=]() {
+        ObjectValue* camBuff = ObjectValueContainer::GetObjectOfType(render_pass::CameraBufferTypeDef::GetTypeDef());
+        m_camBuffer.AssignObject(camBuff);
+
+        DXDescriptorHeap* dsDescriptorHeap = core::utils::GetDepthStencilDescriptorHeap();
+        m_dsDescriptorHeap.AssignObject(dsDescriptorHeap);
+        
+        m_rtDescHeap.AssignObject(
+            ObjectValueContainer::GetObjectOfType(*m_rtDescHeapDef.GetType<const TypeDef*>()));
+
+        jobs::RunAsync(loadParent);
+    });
+
+    jobs::RunSync(init);
 }
 
 #undef THROW_ERROR
