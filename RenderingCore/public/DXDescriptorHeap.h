@@ -90,6 +90,8 @@ namespace rendering
 
 		ID3D12DescriptorHeap* GetDescriptorHeap();
 		D3D12_CPU_DESCRIPTOR_HANDLE GetDescriptorHandle(UINT index);
+
+		const Value& GetTextures() const;
 	};
 
 	class DepthStencilDescriptorHeap : public DXDescriptorHeap

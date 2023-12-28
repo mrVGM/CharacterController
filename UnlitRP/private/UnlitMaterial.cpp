@@ -145,7 +145,7 @@ void rendering::unlit_rp::UnlitMaterial::CreatePipelineStateAndRootSignatureForS
         psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
         psoDesc.NumRenderTargets = 1;
 
-        psoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
+        psoDesc.RTVFormats[0] = DXGI_FORMAT_R32G32B32A32_FLOAT;
 
         psoDesc.DSVFormat = DXGI_FORMAT_D32_FLOAT;
         psoDesc.SampleDesc.Count = 1;
@@ -170,8 +170,6 @@ void rendering::unlit_rp::UnlitMaterial::GenerateCommandList(
 
     DXSwapChain* swapChain = m_swapChain.GetValue<DXSwapChain*>();
 
-    ID3D12Resource* curRT = m_swapChain.GetValue<DXSwapChain*>()->GetCurrentRenderTarget();
-
     commandList->SetGraphicsRootSignature(m_rootSignature.Get());
     commandList->SetGraphicsRootConstantBufferView(0, m_camBuffer.GetValue<DXMutableBuffer*>()->m_buffer.GetValue<DXBuffer*>()->GetBuffer()->GetGPUVirtualAddress());
 
@@ -179,7 +177,7 @@ void rendering::unlit_rp::UnlitMaterial::GenerateCommandList(
     commandList->RSSetScissorRects(1, &swapChain->GetScissorRect());
 
     D3D12_CPU_DESCRIPTOR_HANDLE dsHandle = m_dsDescriptorHeap.GetValue<DXDescriptorHeap*>()->GetDescriptorHeap()->GetCPUDescriptorHandleForHeapStart();
-    D3D12_CPU_DESCRIPTOR_HANDLE handles[] = { swapChain->GetCurrentRTVDescriptor() };
+    D3D12_CPU_DESCRIPTOR_HANDLE handles[] = { m_rtDescHeap.GetValue<DXDescriptorHeap*>()->GetDescriptorHandle(0) };
     commandList->OMSetRenderTargets(_countof(handles), handles, FALSE, &dsHandle);
     
     D3D12_VERTEX_BUFFER_VIEW vertexBufferViews[1];
@@ -210,6 +208,11 @@ void rendering::unlit_rp::UnlitMaterial::GenerateCommandList(
     THROW_ERROR(
         commandList->Close(),
         "Can't close Command List!")
+}
+
+const Value& rendering::unlit_rp::UnlitMaterial::GetRTHeap() const
+{
+    return m_rtDescHeap;
 }
 
 void rendering::unlit_rp::UnlitMaterial::LoadData(jobs::Job* done)

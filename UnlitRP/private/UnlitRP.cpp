@@ -110,6 +110,17 @@ void rendering::unlit_rp::UnlitRP::Prepare()
 	DXSwapChain* swapChain = m_swapChain.GetValue<DXSwapChain*>();
 	int frameIndex = swapChain->GetCurrentSwapChainIndex();
 
+	DXTexture* rt = nullptr;
+	{
+		UnlitMaterial* mat = m_unlitMaterial.GetValue<UnlitMaterial*>();
+		const Value& rtHeapVal = mat->GetRTHeap();
+		DXDescriptorHeap* rtHeap = rtHeapVal.GetValue<DXDescriptorHeap*>();
+		const Value& textures = rtHeap->GetTextures();
+		ValueList* l = textures.GetValue<ValueList*>();
+		const Value& fst = *(l->GetIterator());
+		rt = fst.GetValue<DXTexture*>();
+	}
+
 	THROW_ERROR(
 		m_commandAllocator->Reset(),
 		"Can't reset Command Allocator!")
@@ -121,6 +132,7 @@ void rendering::unlit_rp::UnlitRP::Prepare()
 	{
 		CD3DX12_RESOURCE_BARRIER barrier[] =
 		{
+			CD3DX12_RESOURCE_BARRIER::CD3DX12_RESOURCE_BARRIER::Transition(rt->GetTexture(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET),
 			CD3DX12_RESOURCE_BARRIER::CD3DX12_RESOURCE_BARRIER::Transition(swapChain->GetCurrentRenderTarget(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET)
 		};
 		m_beginCommandList->ResourceBarrier(_countof(barrier), barrier);
@@ -137,6 +149,7 @@ void rendering::unlit_rp::UnlitRP::Prepare()
 	{
 		CD3DX12_RESOURCE_BARRIER barrier[] =
 		{
+			CD3DX12_RESOURCE_BARRIER::CD3DX12_RESOURCE_BARRIER::Transition(rt->GetTexture(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT),
 			CD3DX12_RESOURCE_BARRIER::CD3DX12_RESOURCE_BARRIER::Transition(swapChain->GetCurrentRenderTarget(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT)
 		};
 		m_endCommandList->ResourceBarrier(_countof(barrier), barrier);

@@ -181,6 +181,11 @@ D3D12_CPU_DESCRIPTOR_HANDLE rendering::DXDescriptorHeap::GetDescriptorHandle(UIN
 	return handle;
 }
 
+const Value& rendering::DXDescriptorHeap::GetTextures() const
+{
+	return m_textures;
+}
+
 
 rendering::DepthStencilDescriptorHeapTypeDef::DepthStencilDescriptorHeapTypeDef() :
 	ReferenceTypeDef(&DXDescriptorHeapTypeDef::GetTypeDef(), "ABB10D3E-07D1-46A8-B697-60F454CE8029")

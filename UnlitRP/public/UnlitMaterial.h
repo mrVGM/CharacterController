@@ -47,6 +47,8 @@ namespace rendering::unlit_rp
 			UINT indexCount,
 			ID3D12CommandAllocator* commandAllocator,
 			ID3D12GraphicsCommandList* commandList) override;
+
+		const Value& GetRTHeap() const;
 	};
 
 }
