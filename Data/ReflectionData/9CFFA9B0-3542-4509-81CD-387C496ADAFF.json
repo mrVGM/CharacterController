@@ -1,5 +1,31 @@
 {
-  "properties": {},
+  "properties": {
+    "6B501787-EFF6-4EDF-85A4-571428A47071": {
+      "type": {
+        "template": {
+          "id": "D963BDD2-9E53-466B-BCAF-F3FB50434050"
+        },
+        "id": "1D4363E5-BC6F-4B49-80F3-FAC358F5B296"
+      },
+      "name": "Mesh",
+      "id": "6B501787-EFF6-4EDF-85A4-571428A47071",
+      "category": "Setup"
+    },
+    "2A8E8B5A-2CCD-4957-ABDB-6685AA5A8DBF": {
+      "type": {
+        "template": {
+          "template": {
+            "id": "88865622-C8C0-4807-9A04-031CAFD12150"
+          },
+          "id": "1D4363E5-BC6F-4B49-80F3-FAC358F5B296"
+        },
+        "id": "B5883DED-257C-4E35-846C-DB5BB7E11289"
+      },
+      "name": "Materials",
+      "id": "2A8E8B5A-2CCD-4957-ABDB-6685AA5A8DBF",
+      "category": "Setup"
+    }
+  },
   "parent": {
     "id": "361D902F-526F-452D-B925-7B59B0F5AB09"
   },

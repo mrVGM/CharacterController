@@ -4,13 +4,13 @@
       "type": {
         "template": {
           "template": {
-            "id": "D963BDD2-9E53-466B-BCAF-F3FB50434050"
+            "id": "9CFFA9B0-3542-4509-81CD-387C496ADAFF"
           },
           "id": "1D4363E5-BC6F-4B49-80F3-FAC358F5B296"
         },
         "id": "B5883DED-257C-4E35-846C-DB5BB7E11289"
       },
-      "name": "Mesh List",
+      "name": "Actor List",
       "id": "267F2995-4E66-4D09-83B4-C9F021BE63FA",
       "category": "Setup"
     }

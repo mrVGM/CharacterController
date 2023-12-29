@@ -18,6 +18,7 @@ target_link_libraries(Scene PUBLIC
 	RenderingCore
 	Geometry
 	Jobs
+	Materials
 )
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)

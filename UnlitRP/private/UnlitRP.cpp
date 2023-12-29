@@ -177,40 +177,7 @@ void rendering::unlit_rp::UnlitRP::Execute()
 	for (auto it = actorList->GetIterator(); it; ++it)
 	{
 		scene::Actor* cur = (*it).GetValue<scene::Actor*>();
-		geo::Mesh* mesh = cur->m_mesh.GetValue<geo::Mesh*>();
-
-		scene::MeshBuffers* meshBuffers = mesh->m_buffers.GetValue<scene::MeshBuffers*>();
-
-		DXBuffer* vertexBuffer = meshBuffers->m_vertexBuffer.GetValue<DXBuffer*>();
-		DXBuffer* indexBuffer = meshBuffers->m_indexBuffer.GetValue<DXBuffer*>();
-
-		for (auto it = mesh->m_materials.begin(); it != mesh->m_materials.end(); ++it)
-		{
-			geo::Mesh::MaterialRange& matRange = *it;
-
-			Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList>& cmdList = m_commandLists.emplace_back();
-			
-			THROW_ERROR(
-				device->GetDevice().CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, m_commandAllocator.Get(), nullptr, IID_PPV_ARGS(&cmdList)),
-				"Can't create Command List!")
-
-			THROW_ERROR(
-				cmdList->Close(),
-				"Can't close Command List!")
-
-			mat->GenerateCommandList(
-				*vertexBuffer,
-				*indexBuffer,
-				*vertexBuffer,
-				matRange.m_start,
-				matRange.m_count,
-				m_commandAllocator.Get(),
-				cmdList.Get());
-
-
-			ID3D12CommandList* cmdLists[] = { cmdList.Get() };
-			m_commandQueue.GetValue<DXCommandQueue*>()->GetGraphicsCommandQueue()->ExecuteCommandLists(_countof(cmdLists), cmdLists);
-		}
+		
 	}
 
 	{

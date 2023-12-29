@@ -30,20 +30,20 @@ const scene::SceneObjectTypeDef& scene::SceneObjectTypeDef::GetTypeDef()
 
 scene::SceneObjectTypeDef::SceneObjectTypeDef() :
 	ReferenceTypeDef(&ReferenceTypeDef::GetTypeDef(), "F5D74F81-F245-4D04-8E56-763D88D5169D"),
-	m_meshList(
+	m_actorList(
 		"267F2995-4E66-4D09-83B4-C9F021BE63FA",
-		ListDef::GetTypeDef(TypeTypeDef::GetTypeDef(geo::MeshTypeDef::GetTypeDef())))
+		ListDef::GetTypeDef(TypeTypeDef::GetTypeDef(ActorTypeDef::GetTypeDef())))
 {
 	
 	{
-		m_meshList.m_name = "Mesh List";
-		m_meshList.m_category = "Setup";
-		m_meshList.m_getValue = [](CompositeValue* obj) -> Value& {
+		m_actorList.m_name = "Actor List";
+		m_actorList.m_category = "Setup";
+		m_actorList.m_getValue = [](CompositeValue* obj) -> Value& {
 			scene::SceneObject* scene = static_cast<SceneObject*>(obj);
-			return scene->m_meshDefList;
+			return scene->m_actorDefList;
 		};
 
-		m_properties[m_meshList.GetId()] = &m_meshList;
+		m_properties[m_actorList.GetId()] = &m_actorList;
 	}
 
 	m_name = "Scene Object";
@@ -63,7 +63,7 @@ void scene::SceneObjectTypeDef::Construct(Value& container) const
 scene::SceneObject::SceneObject(const ReferenceTypeDef& typeDef) :
 	ObjectValue(typeDef),
 	m_actors(ListDef::GetTypeDef(ActorTypeDef::GetTypeDef()), this),
-	m_meshDefList(SceneObjectTypeDef::GetTypeDef().m_meshList.GetType(), this)
+	m_actorDefList(SceneObjectTypeDef::GetTypeDef().m_actorList.GetType(), this)
 {
 }
 
@@ -73,7 +73,7 @@ scene::SceneObject::~SceneObject()
 
 void scene::SceneObject::Load(jobs::Job* done)
 {
-	ValueList* meshDefs = m_meshDefList.GetValue<ValueList*>();
+	ValueList* actorDefs = m_actorDefList.GetValue<ValueList*>();
 	ValueList* actorList = m_actors.GetValue<ValueList*>();
 
 	struct Context
@@ -102,17 +102,15 @@ void scene::SceneObject::Load(jobs::Job* done)
 
 	jobs::Job* initActors = jobs::Job::CreateByLambda([=]() {
 
-		for (auto it = meshDefs->GetIterator(); it; ++it)
+		for (auto it = actorDefs->GetIterator(); it; ++it)
 		{
 			const Value& cur = *it;
-			geo::Mesh* curMesh = static_cast<geo::Mesh*>(ObjectValueContainer::GetObjectOfType(*cur.GetType<const TypeDef*>()));
+			Actor* curActor = static_cast<Actor*>(ObjectValueContainer::GetObjectOfType(*cur.GetType<const TypeDef*>()));
 
 			Value& actorVal = actorList->EmplaceBack();
-			ActorTypeDef::GetTypeDef().Construct(actorVal);
+			actorVal.AssignObject(curActor);
 
 			Actor* actor = actorVal.GetValue<Actor*>();
-
-			actor->SetMesh(curMesh);
 
 			++ctx->m_toLoad;
 			jobs::RunAsync(loadActor(actor));
