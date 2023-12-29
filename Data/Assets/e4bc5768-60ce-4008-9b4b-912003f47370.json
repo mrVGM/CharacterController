@@ -1,15 +1,1 @@
-{
-  "parent": {
-    "id": "D963BDD2-9E53-466B-BCAF-F3FB50434050"
-  },
-  "name": "Quad",
-  "isGenerated": 1,
-  "id": {
-    "id": "e4bc5768-60ce-4008-9b4b-912003f47370"
-  },
-  "defaults": {
-    "D9F8FC86-02D0-4EAF-A73E-8616AB554825": "quad.dae",
-    "11D91937-B683-4FC8-B175-37A3670916F2": "5fb6fc88ee8cc6da9dff9511a458c860c8610d4f3769938106c627969d786ce8"
-  },
-  "category": "Mesh"
-}
+{"parent":{"id":"D963BDD2-9E53-466B-BCAF-F3FB50434050"},"name":"Quad","isGenerated":1,"id":{"id":"e4bc5768-60ce-4008-9b4b-912003f47370"},"defaults":{"D9F8FC86-02D0-4EAF-A73E-8616AB554825":"quad.dae","11D91937-B683-4FC8-B175-37A3670916F2":"5fb6fc88ee8cc6da9dff9511a458c860c8610d4f3769938106c627969d786ce8"},"category":"Mesh"}

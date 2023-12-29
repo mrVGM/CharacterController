@@ -18,6 +18,7 @@ namespace rendering
 
 	public:
 		TypeProperty m_shaderName;
+		TypeProperty m_hash;
 
 		DXShaderTypeDef();
 		virtual ~DXShaderTypeDef();
@@ -52,11 +53,13 @@ namespace rendering
 
 		jobs::MultiLoader m_loader;
 
+
 	protected:
 		void LoadData(jobs::Job* done) override;
 
 	public:
 		Value m_name;
+		Value m_hash;
 
 		DXShader(const ReferenceTypeDef& type);
 		virtual ~DXShader();

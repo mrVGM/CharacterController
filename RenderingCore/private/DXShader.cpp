@@ -66,7 +66,8 @@ namespace
 
 rendering::DXShaderTypeDef::DXShaderTypeDef() :
 	ReferenceTypeDef(&ReferenceTypeDef::GetTypeDef(), "7D55F6EB-BDB6-4199-83E8-5069BE1EB80F"),
-	m_shaderName("130EF692-9CC6-4C8C-89B2-49A5D2F8EED2", StringTypeDef::GetTypeDef())
+	m_shaderName("130EF692-9CC6-4C8C-89B2-49A5D2F8EED2", StringTypeDef::GetTypeDef()),
+	m_hash("8C20F797-3766-426A-9094-215F560FAB26", StringTypeDef::GetTypeDef())
 {
 	{
 		m_shaderName.m_name = "Shader Name";
@@ -76,6 +77,16 @@ rendering::DXShaderTypeDef::DXShaderTypeDef() :
 			return shader->m_name;
 		};
 		m_properties[m_shaderName.GetId()] = &m_shaderName;
+	}
+
+	{
+		m_hash.m_name = "Hash";
+		m_hash.m_category = "Internal";
+		m_hash.m_getValue = [](CompositeValue* obj) -> Value& {
+			DXShader* shader = static_cast<DXShader*>(obj);
+			return shader->m_hash;
+		};
+		m_properties[m_hash.GetId()] = &m_hash;
 	}
 
 	m_name = "Shader";
@@ -159,6 +170,7 @@ void rendering::DXShader::Load(jobs::Job* done)
 rendering::DXShader::DXShader(const ReferenceTypeDef& type) :
 	ObjectValue(type),
 	m_name(StringTypeDef::GetTypeDef(), this),
+	m_hash(DXShaderTypeDef::GetTypeDef().m_hash.GetType(), this),
 	m_loader(*this)
 {
 }
