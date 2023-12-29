@@ -27,7 +27,6 @@ namespace rendering::unlit_rp
 	class UnlitRP : public render_pass::RenderPass
 	{
 	private:
-		Microsoft::WRL::ComPtr<ID3D12CommandAllocator> m_commandAllocator;
 		Microsoft::WRL::ComPtr<ID3D12CommandAllocator> m_auxCommandAllocator;
 
 		struct CMDListCache
@@ -36,11 +35,10 @@ namespace rendering::unlit_rp
 			Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> m_beginCommandList;
 			Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> m_afterRenderObjects;
 			Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> m_endCommandList;
+			Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> m_displayRTCommandList;
 		};
 
 		CMDListCache m_cache[2];
-
-		std::list<Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList>> m_commandLists;
 
 		Value m_device;
 		Value m_swapChain;

@@ -112,10 +112,6 @@ void rendering::unlit_rp::UnlitRP::Create()
 	m_commandQueue.AssignObject(commandQueue);
 
 	THROW_ERROR(
-		device->GetDevice().CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&m_commandAllocator)),
-		"Can't create Command Allocator!")
-
-	THROW_ERROR(
 		device->GetDevice().CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&m_auxCommandAllocator)),
 		"Can't create Command Allocator!")
 
@@ -144,16 +140,19 @@ void rendering::unlit_rp::UnlitRP::Create()
 		THROW_ERROR(
 			m_cache[i].m_endCommandList->Close(),
 			"Can't close command List!")
+
+		THROW_ERROR(
+			device->GetDevice().CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, m_auxCommandAllocator.Get(), nullptr, IID_PPV_ARGS(&m_cache[i].m_displayRTCommandList)),
+			"Can't create Command List!")
+
+		THROW_ERROR(
+			m_cache[i].m_displayRTCommandList->Close(),
+			"Can't close command List!")
 	}
 }
 
 void rendering::unlit_rp::UnlitRP::Prepare()
 {
-	m_commandLists.clear();
-
-	THROW_ERROR(
-		m_commandAllocator->Reset(),
-		"Can't reset Command Allocator!")
 }
 
 void rendering::unlit_rp::UnlitRP::Execute()
@@ -199,33 +198,7 @@ void rendering::unlit_rp::UnlitRP::Execute()
 	}
 
 	{
-		scene::MeshBuffers* meshBuffers = quadMesh->m_buffers.GetValue<scene::MeshBuffers*>();
-		DXBuffer* vertexBuffer = meshBuffers->m_vertexBuffer.GetValue<DXBuffer*>();
-		DXBuffer* indexBuffer = meshBuffers->m_indexBuffer.GetValue<DXBuffer*>();
-
-		Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList>& cmdList = m_commandLists.emplace_back();
-
-		THROW_ERROR(
-			device->GetDevice().CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, m_commandAllocator.Get(), nullptr, IID_PPV_ARGS(&cmdList)),
-			"Can't create Command List!")
-
-		THROW_ERROR(
-			cmdList->Close(),
-			"Can't close Command List!")
-
-		const geo::Mesh::MaterialRange& range = quadMesh->m_materials.front();
-
-		displayRTMat->GenerateCommandList(
-			*vertexBuffer,
-			*indexBuffer,
-			*vertexBuffer,
-			range.m_start,
-			range.m_count,
-			m_commandAllocator.Get(),
-			cmdList.Get()
-		);
-
-		ID3D12CommandList* cmdLists[] = { cmdList.Get() };
+		ID3D12CommandList* cmdLists[] = { cache.m_displayRTCommandList.Get() };
 		m_commandQueue.GetValue<DXCommandQueue*>()->GetGraphicsCommandQueue()->ExecuteCommandLists(_countof(cmdLists), cmdLists);
 	}
 
@@ -374,6 +347,28 @@ const rendering::unlit_rp::UnlitRP::CMDListCache& rendering::unlit_rp::UnlitRP::
 	THROW_ERROR(
 		cache.m_endCommandList->Close(),
 		"Can't close Command List!")
+
+
+	{
+		materials::Material* displayRTMat = m_displayTextureMat.GetValue<materials::Material*>();
+		geo::Mesh* quadMesh = m_quadMesh.GetValue<geo::Mesh*>();
+		scene::MeshBuffers* meshBuffers = quadMesh->m_buffers.GetValue<scene::MeshBuffers*>();
+		DXBuffer* vertexBuffer = meshBuffers->m_vertexBuffer.GetValue<DXBuffer*>();
+		DXBuffer* indexBuffer = meshBuffers->m_indexBuffer.GetValue<DXBuffer*>();
+
+		const geo::Mesh::MaterialRange& range = quadMesh->m_materials.front();
+
+		displayRTMat->GenerateCommandList(
+			*vertexBuffer,
+			*indexBuffer,
+			*vertexBuffer,
+			range.m_start,
+			range.m_count,
+			m_auxCommandAllocator.Get(),
+			cache.m_displayRTCommandList.Get()
+		);
+
+	}
 
 	cache.m_cached = true;
 	return cache;
