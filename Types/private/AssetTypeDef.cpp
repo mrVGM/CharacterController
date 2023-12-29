@@ -109,5 +109,5 @@ const json_parser::JSONValue& AssetTypeDef::GetJSONData() const
 void AssetTypeDef::SaveJSONData() const
 {
 	std::string assetPath = files::GetAssetsDir() + GetId() + ".json";
-	files::WriteTextFile(assetPath, m_data.ToString(true));
+	files::WriteTextFile(assetPath, m_data.ToString(false));
 }

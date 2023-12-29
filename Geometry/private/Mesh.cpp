@@ -588,18 +588,6 @@ void geo::Mesh::LoadData(jobs::Job* done)
 		return;
 	}
 
-	{
-		const AssetTypeDef* asset = static_cast<const AssetTypeDef*>(&GetTypeDef());
-		json_parser::JSONValue& data = const_cast<json_parser::JSONValue&>(asset->GetJSONData());
-
-		auto& map = data.GetAsObj();
-		json_parser::JSONValue& defaults = map["defaults"];
-		auto& defaultsMap = defaults.GetAsObj();
-		defaultsMap[MeshTypeDef::GetTypeDef().m_hash.GetId()] = json_parser::JSONValue(hash);
-		asset->SaveJSONData();
-	}
-
-
 	xml_reader::XMLTree tree;
 	xml_reader::ReadXML(contents, tree);
 
@@ -689,6 +677,17 @@ void geo::Mesh::LoadData(jobs::Job* done)
 
 	std::string id = GetTypeDef().GetId();
 	mf.SaveToFile(files::GetDataDir() + files::GetAssetsBinDir() + id + ".bin");
+
+	{
+		const AssetTypeDef* asset = static_cast<const AssetTypeDef*>(&GetTypeDef());
+		json_parser::JSONValue& data = const_cast<json_parser::JSONValue&>(asset->GetJSONData());
+
+		auto& map = data.GetAsObj();
+		json_parser::JSONValue& defaults = map["defaults"];
+		auto& defaultsMap = defaults.GetAsObj();
+		defaultsMap[MeshTypeDef::GetTypeDef().m_hash.GetId()] = json_parser::JSONValue(hash);
+		asset->SaveJSONData();
+	}
 
 	jobs::RunSync(done);
 }

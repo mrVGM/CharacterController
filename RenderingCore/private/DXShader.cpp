@@ -1,8 +1,10 @@
 #include "DXShader.h"
 
 #include "PrimitiveTypes.h"
+#include "AssetTypeDef.h"
 
 #include "Files.h"
+#include "Hash.h"
 
 #include "Jobs.h"
 
@@ -182,8 +184,25 @@ rendering::DXShader::~DXShader()
 void rendering::DXShader::LoadData(jobs::Job* done)
 {
 	jobs::Job* compileJob = jobs::Job::CreateByLambda([=]() {
-		std::string shaderFile = files::GetDataDir() + "Shaders\\src\\" + m_name.Get<std::string>();
+		std::string shaderFileName = m_name.Get<std::string>();
+		std::string shaderFile = files::GetDataDir() + "Shaders\\src\\" + shaderFileName;
+
+		std::string shaderCode;
+		files::ReadTextFile("Shaders\\src\\" + m_name.Get<std::string>(), shaderCode);
+		std::string hash = crypto::HashString(shaderFile + shaderCode);
+
 		std::wstring shaderFileW(shaderFile.begin(), shaderFile.end());
+
+		std::string shaderBinFileName = files::GetDataDir() + files::GetAssetsBinDir() + GetTypeDef().GetId() + ".bin";
+		std::wstring shaderBinFileNameW(shaderBinFileName.begin(), shaderBinFileName.end());
+
+		std::string cachedHash = m_hash.Get<std::string>();
+		if (cachedHash == hash)
+		{
+			D3DReadFileToBlob(shaderBinFileNameW.c_str(), &m_shader);
+			jobs::RunSync(done);
+			return;
+		}
 
 		const char* entryPointVS = "VSMain";
 		const char* entryPointPS = "PSMain";
@@ -197,6 +216,18 @@ void rendering::DXShader::LoadData(jobs::Job* done)
 			TypeDef::IsA(GetTypeDef(), DXVertexShaderTypeDef::GetTypeDef()) ? profileVS : profilePS,
 			&m_shader),
 			"Can't compile shader!")
+
+		
+		D3DWriteBlobToFile(m_shader.Get(), shaderBinFileNameW.c_str(), true);
+
+		{
+			const AssetTypeDef& assetTypeDef = static_cast<const AssetTypeDef&>(GetTypeDef());
+			json_parser::JSONValue& data = const_cast<json_parser::JSONValue&>(assetTypeDef.GetJSONData());
+			auto& map = data.GetAsObj();
+			auto& defaults = map["defaults"].GetAsObj();
+			defaults[DXShaderTypeDef::GetTypeDef().m_hash.GetId()] = json_parser::JSONValue(hash);
+			assetTypeDef.SaveJSONData();
+		}
 
 		jobs::RunSync(done);
 	});
