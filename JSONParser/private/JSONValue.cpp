@@ -156,7 +156,7 @@ namespace
 						Builder* curBuilder = m_propsBuilders[key];
 
 						std::stringstream ss;
-						ss << m_manager.m_ident << "\"" << key << "\": ";
+						ss << m_manager.m_ident << "\"" << key << "\":";
 						auto it = curBuilder->m_lines.begin();
 						ss << *it;
 						++it;
