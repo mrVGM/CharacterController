@@ -41,7 +41,7 @@ namespace scene
 
 		Microsoft::WRL::ComPtr<ID3D12CommandAllocator> m_commandAllocator;
 		std::map<
-			const rendering::materials::MaterialTypeDef*, 
+			const TypeDef*, 
 			std::list<Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> > > m_cmdListCache;
 
 		void CacheCMDLists(jobs::Job* done);
@@ -60,6 +60,6 @@ namespace scene
 
 		void Load(jobs::Job* done);
 
-		void GetCMDLists(const rendering::materials::MaterialTypeDef* material, std::list<ID3D12CommandList*>& outLists);
+		void GetCMDLists(const TypeDef* material, std::list<ID3D12CommandList*>& outLists);
 	};
 }

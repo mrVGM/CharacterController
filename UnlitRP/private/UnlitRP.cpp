@@ -177,7 +177,20 @@ void rendering::unlit_rp::UnlitRP::Execute()
 	for (auto it = actorList->GetIterator(); it; ++it)
 	{
 		scene::Actor* cur = (*it).GetValue<scene::Actor*>();
-		
+		ValueList* matDefs = cur->m_materialDefs.GetValue<ValueList*>();
+
+		for (auto matIt = matDefs->GetIterator(); matIt; ++matIt)
+		{
+			Value& curMatType = *matIt;
+			std::list<ID3D12CommandList*> tmp;
+			cur->GetCMDLists(curMatType.GetType<const TypeDef*>(), tmp);
+
+			for (auto listIt = tmp.begin(); listIt != tmp.end(); ++listIt)
+			{
+				ID3D12CommandList* commandLists[] = { *listIt };
+				commandQueue->GetGraphicsCommandQueue()->ExecuteCommandLists(_countof(commandLists), commandLists);
+			}
+		}
 	}
 
 	{

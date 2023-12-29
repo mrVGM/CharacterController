@@ -190,10 +190,8 @@ void scene::Actor::CacheCMDLists(jobs::Job* done)
 
 			const geo::Mesh::MaterialRange& range = *it;
 			rendering::materials::Material* material = curMat.GetValue<rendering::materials::Material*>();
-			const rendering::materials::MaterialTypeDef* matTypeDef = 
-				static_cast<const rendering::materials::MaterialTypeDef*>(&material->GetTypeDef());
 
-			std::list<Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> >& cmdLists = m_cmdListCache[matTypeDef];
+			std::list<Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> >& cmdLists = m_cmdListCache[&material->GetTypeDef()];
 			Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList>& cmdList = cmdLists.emplace_back();
 
 			THROW_ERROR(
@@ -213,7 +211,7 @@ void scene::Actor::CacheCMDLists(jobs::Job* done)
 				*indexBuffer,
 				*vertexBuffer,
 				range.m_start,
-				range.m_start,
+				range.m_count,
 				m_commandAllocator.Get(),
 				cmdList.Get());
 		}
@@ -224,7 +222,7 @@ void scene::Actor::CacheCMDLists(jobs::Job* done)
 	jobs::RunAsync(recordCommandLists);
 }
 
-void scene::Actor::GetCMDLists(const rendering::materials::MaterialTypeDef* material, std::list<ID3D12CommandList*>& outLists)
+void scene::Actor::GetCMDLists(const TypeDef* material, std::list<ID3D12CommandList*>& outLists)
 {
 	auto it = m_cmdListCache.find(material);
 	if (it == m_cmdListCache.end())
