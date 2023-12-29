@@ -209,3 +209,41 @@ void files::MemoryFile::RestoreFromFile(const std::string& file)
 
 	fclose(f);
 }
+
+void files::BinChunk::Read(MemoryFileReader& reader)
+{
+	if (m_data)
+	{
+		delete[] m_data;
+	}
+	m_data = nullptr;
+	m_size = 0;
+
+	char* size = reinterpret_cast<char*>(&m_size);
+	reader.Read(size, sizeof(m_size));
+
+	m_data = new char[m_size];
+	reader.Read(m_data, m_size);
+}
+
+void files::BinChunk::Write(MemoryFileWriter& writer)
+{
+	if (!m_data)
+	{
+		throw "No data stored in the Chunk!";
+	}
+
+	writer.Write(reinterpret_cast<char*>(&m_size), sizeof(m_size));
+	writer.Write(m_data, m_size);
+}
+
+files::BinChunk::~BinChunk()
+{
+	if (m_data)
+	{
+		delete[] m_data;
+	}
+
+	m_data = nullptr;
+	m_size = 0;
+}

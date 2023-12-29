@@ -56,4 +56,15 @@ namespace files
 		void SaveToFile(const std::string& file);
 		void RestoreFromFile(const std::string& file);
 	};
+
+	struct BinChunk
+	{
+		unsigned int m_size = 0;
+		char* m_data = nullptr;
+
+		void Read(MemoryFileReader& reader);
+		void Write(MemoryFileWriter& writer);
+
+		~BinChunk();
+	};
 }

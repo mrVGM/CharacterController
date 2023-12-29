@@ -5,7 +5,7 @@ add_library (Files
 	"private/Files.cpp"
 	"public/MemoryFile.h"
 	"private/MemoryFile.cpp"
-)
+ )
 
 target_include_directories(Files INTERFACE PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/public")
 target_include_directories(Files PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/private")
