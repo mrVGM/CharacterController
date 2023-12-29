@@ -485,6 +485,98 @@ namespace
 				}
 			}
 		}
+
+		void ReadJointNames(const xml_reader::Node* skin, geo::Mesh::SkinData& skinData)
+		{
+			using namespace xml_reader;
+
+			const Node* joints = m_tree.FindChildNode(skin, [](const Node* node) {
+				return node->m_tagName == "joints";
+			}, true);
+
+			const Node* jointNames = m_tree.FindChildNode(joints, [](const Node* node) {
+				if (node->m_tagName != "input")
+				{
+					return false;
+				}
+
+				return node->m_tagProps.find("semantic")->second == "JOINT";
+			}, true);
+
+			std::string jointNamesSourceId = jointNames->m_tagProps.find("source")->second;
+			jointNamesSourceId = jointNamesSourceId.c_str() + 1;
+
+			const Node* jointNamesSource = m_tree.FindChildNode(skin, [&](const Node* node) {
+				if (node->m_tagName != "source")
+				{
+					return false;
+				}
+
+				return node->m_tagProps.find("id")->second == jointNamesSourceId;
+			}, true);
+
+			const Node* accessor = m_tree.FindChildNode(jointNamesSource, [&](const Node* node) {
+				return node->m_tagName == "accessor";
+				}, false);
+
+			std::string jointsArraySourceId = accessor->m_tagProps.find("source")->second;
+			jointsArraySourceId = jointsArraySourceId.c_str() + 1;
+
+			const Node* jointsArray = m_tree.FindChildNode(jointNamesSource, [&](const Node* node) {
+				if (node->m_tagName != "Name_array")
+				{
+					return false;
+				}
+
+				return node->m_tagProps.find("id")->second == jointsArraySourceId;
+			}, true);
+
+			std::stringstream ss;
+			int jointsCount;
+			ss << jointsArray->m_tagProps.find("count")->second;
+			ss >> jointsCount;
+
+			auto jointIt = jointsArray->m_data.begin();
+			for (int i = 0; i < jointsCount; ++i)
+			{
+				scripting::ISymbol* cur = *(jointIt++);
+				skinData.m_boneNames.push_back(cur->m_symbolData.m_string);
+			}
+		}
+
+		bool ReadSkin(geo::Mesh::SkinData& skinData)
+		{
+			using namespace xml_reader;
+
+			const Node* libControllers = m_tree.FindNode([](const Node* node) {
+				return node->m_tagName == "library_controllers";
+				});
+
+			if (!libControllers)
+			{
+				return false;
+			}
+
+			const Node* controller = m_tree.FindChildNode(libControllers, [](const Node* node) {
+				return node->m_tagName == "controller";
+				}, true);
+
+			if (!controller)
+			{
+				return false;
+			}
+
+			const Node* skin = m_tree.FindChildNode(controller, [](const Node* node) {
+				return node->m_tagName == "skin";
+				}, true);
+
+			if (!skin)
+			{
+				return false;
+			}
+
+			ReadJointNames(skin, skinData);
+		}
 	};
 }
 
@@ -556,9 +648,14 @@ geo::Mesh::~Mesh()
 	{
 		delete[] m_indices;
 	}
+	if (m_skinData)
+	{
+		delete m_skinData;
+	}
 
 	m_vertices = nullptr;
 	m_indices = nullptr;
+	m_skinData = nullptr;
 }
 
 void geo::Mesh::Load(jobs::Job* done)
@@ -670,6 +767,14 @@ void geo::Mesh::LoadData(jobs::Job* done)
 				m_indices[i + 2] = tmp;
 			}
 		}
+	}
+
+	SkinData skinData;
+	bool isSkinned = mr.ReadSkin(skinData);
+	if (isSkinned)
+	{
+		m_skinData = new SkinData();
+		*m_skinData = skinData;
 	}
 
 	files::MemoryFile mf;

@@ -10,6 +10,12 @@
 
 #include "MemoryFile.h"
 
+namespace xml_reader
+{
+	struct XMLTree;
+	struct Node;
+}
+
 namespace geo
 {
 	class MeshTypeDef : public ReferenceTypeDef
@@ -45,6 +51,11 @@ namespace geo
 			int m_count = -1;
 		};
 
+		struct SkinData
+		{
+			std::vector<std::string> m_boneNames;
+		};
+
 		Value m_colladaFile;
 		Value m_hash;
 		Value m_buffers;
@@ -58,6 +69,8 @@ namespace geo
 		int* m_indices = nullptr;
 		
 		std::list<MaterialRange> m_materials;
+
+		SkinData* m_skinData = nullptr;
 
 		Mesh(const ReferenceTypeDef& type);
 		virtual ~Mesh();
