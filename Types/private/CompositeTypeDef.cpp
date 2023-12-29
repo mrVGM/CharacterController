@@ -172,7 +172,7 @@ const TypeDef& TypeProperty::GetType() const
 	return m_type;
 }
 
-const std::string& TypeProperty::GetId()
+const std::string& TypeProperty::GetId() const
 {
 	return m_id;
 }

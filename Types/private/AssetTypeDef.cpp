@@ -3,6 +3,9 @@
 #include "CompositeValue.h"
 #include "ObjectValueContainer.h"
 
+#include "Files.h"
+#include "JSONValue.h"
+
 namespace
 {
 	const ReferenceTypeDef* GetParentFromJSON(json_parser::JSONValue& json)
@@ -101,4 +104,10 @@ void AssetTypeDef::DeserializeFromJSON(Value& value, json_parser::JSONValue& jso
 const json_parser::JSONValue& AssetTypeDef::GetJSONData() const
 {
 	return m_data;
+}
+
+void AssetTypeDef::SaveJSONData() const
+{
+	std::string assetPath = files::GetAssetsDir() + GetId() + ".json";
+	files::WriteTextFile(assetPath, m_data.ToString(true));
 }

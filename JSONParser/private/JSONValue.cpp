@@ -280,7 +280,7 @@ std::list<json_parser::JSONValue>& json_parser::JSONValue::GetAsList()
 	return std::get<std::list<json_parser::JSONValue>>(m_payload);
 }
 
-std::string json_parser::JSONValue::ToString(bool pretty)
+std::string json_parser::JSONValue::ToString(bool pretty) const
 {
 	BuildManager tmp(*this);
 	tmp.m_ident = pretty ? "  " : "";

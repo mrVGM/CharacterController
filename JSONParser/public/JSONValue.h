@@ -31,6 +31,6 @@ namespace json_parser
 		std::map<std::string, JSONValue>& GetAsObj();
 		std::list<JSONValue>& GetAsList();
 
-		std::string ToString(bool pretty);
+		std::string ToString(bool pretty) const;
 	};
 }

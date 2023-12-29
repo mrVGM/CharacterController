@@ -19,7 +19,7 @@ public:
 	std::string m_name;
 	std::string m_category;
 
-	const std::string& GetId();
+	const std::string& GetId() const;
 	const TypeDef& GetType();
 
 	std::function<Value&(CompositeValue*)> m_getValue;

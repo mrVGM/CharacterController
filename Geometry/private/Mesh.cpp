@@ -14,6 +14,8 @@
 
 #include "JSONValue.h"
 
+#include "AssetTypeDef.h"
+
 #include <map>
 #include <string>
 #include <vector>
@@ -573,7 +575,30 @@ void geo::Mesh::LoadData(jobs::Job* done)
 	std::string contents;
 	files::ReadTextFile(colladaFile, contents);
 
-	std::string hash = crypto::HashString(contents);
+	std::string hash = crypto::HashString(colladaFile + contents);
+	std::string savedHash = m_hash.Get<std::string>();
+
+	if (hash == savedHash)
+	{
+		files::MemoryFile mf;
+		std::string binFilePath = files::GetDataDir() + files::GetAssetsBinDir() + GetTypeDef().GetId() + ".bin";
+		mf.RestoreFromFile(binFilePath);
+		DeserializeFromMF(mf);
+		jobs::RunSync(done);
+		return;
+	}
+
+	{
+		const AssetTypeDef* asset = static_cast<const AssetTypeDef*>(&GetTypeDef());
+		json_parser::JSONValue& data = const_cast<json_parser::JSONValue&>(asset->GetJSONData());
+
+		auto& map = data.GetAsObj();
+		json_parser::JSONValue& defaults = map["defaults"];
+		auto& defaultsMap = defaults.GetAsObj();
+		defaultsMap[MeshTypeDef::GetTypeDef().m_hash.GetId()] = json_parser::JSONValue(hash);
+		asset->SaveJSONData();
+	}
+
 
 	xml_reader::XMLTree tree;
 	xml_reader::ReadXML(contents, tree);
@@ -691,6 +716,21 @@ void geo::Mesh::SerializeToMF(files::MemoryFile& mf)
 
 		indexChunk.Write(writer);
 	}
+
+	{
+		BinChunk matRangesChunk;
+		matRangesChunk.m_data = reinterpret_cast<char*>(new MaterialRange[m_materials.size()]);
+		matRangesChunk.m_size = m_materials.size() * sizeof(MaterialRange);
+
+		geo::Mesh::MaterialRange* cur = reinterpret_cast<MaterialRange*>(matRangesChunk.m_data);
+		for (auto it = m_materials.begin(); it != m_materials.end(); ++it)
+		{
+			*cur = *it;
+			cur += 1;
+		}
+
+		matRangesChunk.Write(writer);
+	}
 }
 
 void geo::Mesh::DeserializeFromMF(files::MemoryFile& mf)
@@ -717,5 +757,17 @@ void geo::Mesh::DeserializeFromMF(files::MemoryFile& mf)
 		m_indices = new int[m_numIndices];
 
 		memcpy(m_indices, indexChunk.m_data, indexChunk.m_size);
+	}
+
+	{
+		BinChunk matRangeChunk;
+		matRangeChunk.Read(reader);
+
+		int count = matRangeChunk.m_size / sizeof(MaterialRange);
+		MaterialRange* arr = reinterpret_cast<MaterialRange*>(matRangeChunk.m_data);
+		for (int i = 0; i < count; ++i)
+		{
+			m_materials.push_back(arr[i]);
+		}
 	}
 }
