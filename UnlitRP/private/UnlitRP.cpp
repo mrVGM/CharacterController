@@ -20,6 +20,8 @@
 
 #include "CoreUtils.h"
 
+#include <set>
+
 #define THROW_ERROR(hRes, error) \
 if (FAILED(hRes)) {\
     throw error;\
@@ -97,6 +99,11 @@ rendering::unlit_rp::UnlitRP::UnlitRP(const ReferenceTypeDef& typeDef) :
 
 rendering::unlit_rp::UnlitRP::~UnlitRP()
 {
+	if (m_commandLists)
+	{
+		delete[] m_commandLists;
+	}
+	m_commandLists = nullptr;
 }
 
 void rendering::unlit_rp::UnlitRP::Create()
@@ -173,24 +180,50 @@ void rendering::unlit_rp::UnlitRP::Execute()
 	scene::SceneObject* scene = m_scene.GetValue<scene::SceneObject*>();
 	Value& actors = scene->GetActors();
 	ValueList* actorList = actors.GetValue<ValueList*>();
-	for (auto it = actorList->GetIterator(); it; ++it)
-	{
-		scene::Actor* cur = (*it).GetValue<scene::Actor*>();
-		ValueList* matDefs = cur->m_materialDefs.GetValue<ValueList*>();
 
-		for (auto matIt = matDefs->GetIterator(); matIt; ++matIt)
+	auto mapCommandLists = [=](std::function<void(ID3D12CommandList*)> f) {
+		for (auto it = actorList->GetIterator(); it; ++it)
 		{
-			Value& curMatType = *matIt;
-			std::list<ID3D12CommandList*> tmp;
-			cur->GetCMDLists(curMatType.GetType<const TypeDef*>(), tmp);
+			scene::Actor* cur = (*it).GetValue<scene::Actor*>();
+			ValueList* matDefs = cur->m_materialDefs.GetValue<ValueList*>();
 
-			for (auto listIt = tmp.begin(); listIt != tmp.end(); ++listIt)
+			std::set<const TypeDef*> matsProcessed;
+			for (auto matIt = matDefs->GetIterator(); matIt; ++matIt)
 			{
-				ID3D12CommandList* commandLists[] = { *listIt };
-				commandQueue->GetGraphicsCommandQueue()->ExecuteCommandLists(_countof(commandLists), commandLists);
+				Value& curMatType = *matIt;
+				const TypeDef* matTypeDef = curMatType.GetType<const TypeDef*>();
+				if (matsProcessed.contains(matTypeDef))
+				{
+					continue;
+				}
+				matsProcessed.insert(matTypeDef);
+
+				std::list<ID3D12CommandList*> tmp;
+				cur->GetCMDLists(curMatType.GetType<const TypeDef*>(), tmp);
+
+				for (auto listIt = tmp.begin(); listIt != tmp.end(); ++listIt)
+				{
+					f(*listIt);
+				}
 			}
 		}
+	};
+
+	int numLists = 0;
+	mapCommandLists([&](ID3D12CommandList* cmdList) {
+		++numLists;
+	});
+
+	if (numLists > m_commandListsSize)
+	{
+		ResizeCommandLists(numLists);
 	}
+
+	numLists = 0;
+	mapCommandLists([&](ID3D12CommandList* cmdList) {
+		m_commandLists[numLists++] = cmdList;
+	});
+	commandQueue->GetGraphicsCommandQueue()->ExecuteCommandLists(numLists, m_commandLists);
 
 	{
 		ID3D12CommandList* commandLists[] = { cache.m_afterRenderObjects.Get() };
@@ -372,6 +405,17 @@ const rendering::unlit_rp::UnlitRP::CMDListCache& rendering::unlit_rp::UnlitRP::
 
 	cache.m_cached = true;
 	return cache;
+}
+
+void rendering::unlit_rp::UnlitRP::ResizeCommandLists(int size)
+{
+	if (m_commandLists)
+	{
+		delete[] m_commandLists;
+	}
+
+	m_commandListsSize = size;
+	m_commandLists = new ID3D12CommandList* [m_commandListsSize];
 }
 
 

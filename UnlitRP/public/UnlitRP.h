@@ -29,6 +29,9 @@ namespace rendering::unlit_rp
 	private:
 		Microsoft::WRL::ComPtr<ID3D12CommandAllocator> m_auxCommandAllocator;
 
+		int m_commandListsSize = 0;
+		ID3D12CommandList** m_commandLists = nullptr;
+
 		struct CMDListCache
 		{
 			bool m_cached = false;
@@ -53,6 +56,7 @@ namespace rendering::unlit_rp
 
 		void Create();
 		const CMDListCache& GetCachedLists();
+		void ResizeCommandLists(int size);
 	public:
 		Value m_quadMeshDef;
 		Value m_displayTextureMatDef;
