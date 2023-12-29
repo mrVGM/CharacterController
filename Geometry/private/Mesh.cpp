@@ -576,6 +576,8 @@ namespace
 			}
 
 			ReadJointNames(skin, skinData);
+
+			return true;
 		}
 	};
 }
