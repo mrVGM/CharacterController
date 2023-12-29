@@ -4,6 +4,7 @@
 
 #include "Jobs.h"
 
+#include "MemoryFile.h"
 #include "Files.h"
 #include "XMLReader.h"
 
@@ -643,5 +644,63 @@ void geo::Mesh::LoadData(jobs::Job* done)
 		}
 	}
 
+	files::MemoryFile mf;
+	SerializeToMF(mf);
+
+	std::string id = GetTypeDef().GetId();
+	mf.SaveToFile(files::GetDataDir() + files::GetAssetsBinDir() + id + ".bin");
+
 	jobs::RunSync(done);
+}
+
+void geo::Mesh::SerializeToMF(files::MemoryFile& mf)
+{
+	using namespace files;
+	
+	MemoryFileWriter writer(mf);
+
+	{
+		BinChunk vertexChunk;
+		vertexChunk.m_data = reinterpret_cast<char*>(new MeshVertex[m_numVertices]);
+		vertexChunk.m_size = m_numVertices * sizeof(MeshVertex);
+		memcpy(vertexChunk.m_data, m_vertices, vertexChunk.m_size);
+
+		vertexChunk.Write(writer);
+	}
+
+	{
+		BinChunk indexChunk;
+		indexChunk.m_data = reinterpret_cast<char*>(new int[m_numIndices]);
+		indexChunk.m_size = m_numIndices * sizeof(int);
+		memcpy(indexChunk.m_data, m_indices, indexChunk.m_size);
+
+		indexChunk.Write(writer);
+	}
+}
+
+void geo::Mesh::DeserializeFromMF(files::MemoryFile& mf)
+{
+	using namespace files;
+
+	MemoryFileReader reader(mf);
+
+	{
+		BinChunk vertexChunk;
+		vertexChunk.Read(reader);
+
+		m_numVertices = vertexChunk.m_size / sizeof(MeshVertex);
+		m_vertices = new MeshVertex[m_numVertices];
+
+		memcpy(m_vertices, vertexChunk.m_data, vertexChunk.m_size);
+	}
+
+	{
+		BinChunk indexChunk;
+		indexChunk.Read(reader);
+
+		m_numIndices = indexChunk.m_size / sizeof(int);
+		m_indices = new int[m_numIndices];
+
+		memcpy(m_indices, indexChunk.m_data, indexChunk.m_size);
+	}
 }

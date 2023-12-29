@@ -6,6 +6,7 @@ namespace
 {
 	std::string m_dataDir;
 	std::string m_assetsDir;
+	std::string m_assetsBinDir;
 	std::string m_reflectionDataDir;
 }
 
@@ -13,6 +14,7 @@ void files::Init(const std::string& dataDir)
 {
 	m_dataDir = dataDir;
 	m_assetsDir = "Assets\\";
+	m_assetsBinDir = "AssetsBin\\";
 	m_reflectionDataDir = "ReflectionData\\";
 }
 
@@ -73,6 +75,11 @@ const std::string& files::GetDataDir()
 const std::string& files::GetAssetsDir()
 {
 	return m_assetsDir;
+}
+
+const std::string& files::GetAssetsBinDir()
+{
+	return m_assetsBinDir;
 }
 
 const std::string& files::GetReflectionDataDir()

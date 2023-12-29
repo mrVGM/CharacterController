@@ -11,5 +11,6 @@ namespace files
 
 	const std::string& GetDataDir();
 	const std::string& GetAssetsDir();
+	const std::string& GetAssetsBinDir();
 	const std::string& GetReflectionDataDir();
 }
