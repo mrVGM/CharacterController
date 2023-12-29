@@ -18,6 +18,7 @@ namespace geo
 
 	public:
 		TypeProperty m_colladaFile;
+		TypeProperty m_hash;
 
 		MeshTypeDef();
 		virtual ~MeshTypeDef();
@@ -45,6 +46,7 @@ namespace geo
 		};
 
 		Value m_colladaFile;
+		Value m_hash;
 		Value m_buffers;
 
 		bool m_zUp = false;

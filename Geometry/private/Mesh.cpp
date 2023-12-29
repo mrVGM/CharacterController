@@ -7,6 +7,7 @@
 #include "MemoryFile.h"
 #include "Files.h"
 #include "XMLReader.h"
+#include "Hash.h"
 
 #include "MathUtils.h"
 #include "Geometry.h"
@@ -487,7 +488,8 @@ namespace
 
 geo::MeshTypeDef::MeshTypeDef() :
 	ReferenceTypeDef(&ReferenceTypeDef::GetTypeDef(), "D963BDD2-9E53-466B-BCAF-F3FB50434050"),
-	m_colladaFile("D9F8FC86-02D0-4EAF-A73E-8616AB554825", StringTypeDef::GetTypeDef())
+	m_colladaFile("D9F8FC86-02D0-4EAF-A73E-8616AB554825", StringTypeDef::GetTypeDef()),
+	m_hash("11D91937-B683-4FC8-B175-37A3670916F2", StringTypeDef::GetTypeDef())
 {
 	{
 		m_colladaFile.m_name = "Collada File";
@@ -497,6 +499,16 @@ geo::MeshTypeDef::MeshTypeDef() :
 			return mesh->m_colladaFile;
 		};
 		m_properties[m_colladaFile.GetId()] = &m_colladaFile;
+	}
+
+	{
+		m_hash.m_name = "Hash";
+		m_hash.m_category = "Internal";
+		m_hash.m_getValue = [](CompositeValue* obj) -> Value& {
+			Mesh* mesh = static_cast<Mesh*>(obj);
+			return mesh->m_hash;
+		};
+		m_properties[m_hash.GetId()] = &m_hash;
 	}
 
 	m_name = "Mesh";
@@ -526,6 +538,7 @@ const geo::MeshTypeDef& geo::MeshTypeDef::GetTypeDef()
 geo::Mesh::Mesh(const ReferenceTypeDef& type) :
 	ObjectValue(type),
 	m_loader(*this),
+	m_hash(MeshTypeDef::GetTypeDef().m_hash.GetType(), this),
 	m_colladaFile(MeshTypeDef::GetTypeDef().m_colladaFile.GetType(), this),
 	m_buffers(ReferenceTypeDef::GetTypeDef(), this)
 {
@@ -559,6 +572,8 @@ void geo::Mesh::LoadData(jobs::Job* done)
 
 	std::string contents;
 	files::ReadTextFile(colladaFile, contents);
+
+	std::string hash = crypto::HashString(contents);
 
 	xml_reader::XMLTree tree;
 	xml_reader::ReadXML(contents, tree);

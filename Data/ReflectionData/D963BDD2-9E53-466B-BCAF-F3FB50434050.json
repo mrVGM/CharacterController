@@ -7,6 +7,14 @@
       "name": "Collada File",
       "id": "D9F8FC86-02D0-4EAF-A73E-8616AB554825",
       "category": "Setup"
+    },
+    "11D91937-B683-4FC8-B175-37A3670916F2": {
+      "type": {
+        "id": "B641BC7D-49F6-4194-B4C9-239FDDAAA623"
+      },
+      "name": "Hash",
+      "id": "11D91937-B683-4FC8-B175-37A3670916F2",
+      "category": "Internal"
     }
   },
   "parent": {
