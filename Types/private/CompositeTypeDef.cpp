@@ -69,6 +69,13 @@ void CompositeTypeDef::DeserializeFromJSON(Value& value, json_parser::JSONValue&
 	for (auto it = m_properties.begin(); it != m_properties.end(); ++it)
 	{
 		Value& cur = it->second->m_getValue(compositeValue);
+
+		auto propIt = map.find(it->first);
+		if (propIt == map.end())
+		{
+			continue;
+		}
+
 		cur.m_type->DeserializeFromJSON(cur, map[it->first]);
 	}
 }

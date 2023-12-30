@@ -23,6 +23,7 @@ namespace scene
 
 	public:
 		TypeProperty m_mesh;
+		TypeProperty m_skeleton;
 		TypeProperty m_materials;
 
 		ActorTypeDef();
@@ -39,6 +40,9 @@ namespace scene
 		Value m_device;
 		Value m_materials;
 
+		Value m_mesh;
+		Value m_skeleton;
+
 		Microsoft::WRL::ComPtr<ID3D12CommandAllocator> m_commandAllocator;
 		std::map<
 			const TypeDef*, 
@@ -49,8 +53,8 @@ namespace scene
 		virtual void LoadData(jobs::Job* done) override;
 
 	public:
-		Value m_mesh;
 		Value m_meshDef;
+		Value m_skeletonDef;
 		Value m_materialDefs;
 
 		Actor(const ReferenceTypeDef& typeDef);

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Value.h"
+#include "PrimitiveTypes.h"
 #include "CompositeValue.h"
 
 namespace
@@ -27,15 +28,47 @@ void Value::Initialize(const TypeDef& type, const CompositeValue* outer)
 	m_type = &type;
 	m_outer = outer;
 
+	if (TypeDef::IsA(*m_type, BoolTypeDef::GetTypeDef()))
+	{
+		m_payload = false;
+		return;
+	}
+
+	if (TypeDef::IsA(*m_type, IntTypeDef::GetTypeDef()))
+	{
+		m_payload = 0;
+		return;
+	}
+
+	if (TypeDef::IsA(*m_type, FloatTypeDef::GetTypeDef()))
+	{
+		m_payload = 0.0f;
+		return;
+	}
+
+	if (TypeDef::IsA(*m_type, StringTypeDef::GetTypeDef()))
+	{
+		m_payload = "";
+		return;
+	}
+
+	if (TypeDef::IsA(*m_type, GenericTypeDef::GetTypeDef()))
+	{
+		m_payload = static_cast<const TypeDef*>(nullptr);
+		return;
+	}
+
 	if (TypeDef::IsA(*m_type, ValueTypeDef::GetTypeDef()))
 	{
 		const ValueTypeDef& type = static_cast<const ValueTypeDef&>(*m_type);
 		type.Construct(*this);
+		return;
 	}
 
 	if (TypeDef::IsA(*m_type, ReferenceTypeDef::GetTypeDef()))
 	{
 		m_payload = static_cast<CompositeValue*>(nullptr);
+		return;
 	}
 }
 

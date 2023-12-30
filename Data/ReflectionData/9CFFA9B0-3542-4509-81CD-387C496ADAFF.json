@@ -24,6 +24,17 @@
       "name":"Materials",
       "id":"2A8E8B5A-2CCD-4957-ABDB-6685AA5A8DBF",
       "category":"Setup"
+    },
+    "27391D76-9D4F-4490-B3F3-0DD453CE22A5":{
+      "type":{
+        "template":{
+          "id":"0625B5E5-7D98-42AE-97F0-E5332673B574"
+        },
+        "id":"1D4363E5-BC6F-4B49-80F3-FAC358F5B296"
+      },
+      "name":"Skeleton",
+      "id":"27391D76-9D4F-4490-B3F3-0DD453CE22A5",
+      "category":"Setup"
     }
   },
   "parent":{

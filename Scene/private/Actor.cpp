@@ -6,6 +6,7 @@
 #include "Material.h"
 
 #include "Mesh.h"
+#include "Skeleton.h"
 #include "MeshBuffers.h"
 
 #include "Jobs.h"
@@ -37,6 +38,7 @@ const scene::ActorTypeDef& scene::ActorTypeDef::GetTypeDef()
 scene::ActorTypeDef::ActorTypeDef() :
 	ReferenceTypeDef(&ReferenceTypeDef::GetTypeDef(), "9CFFA9B0-3542-4509-81CD-387C496ADAFF"),
 	m_mesh("6B501787-EFF6-4EDF-85A4-571428A47071", TypeTypeDef::GetTypeDef(geo::MeshTypeDef::GetTypeDef())),
+	m_skeleton("27391D76-9D4F-4490-B3F3-0DD453CE22A5", TypeTypeDef::GetTypeDef(geo::SkeletonTypeDef::GetTypeDef())),
 	m_materials("2A8E8B5A-2CCD-4957-ABDB-6685AA5A8DBF", ListDef::GetTypeDef(TypeTypeDef::GetTypeDef(rendering::materials::MaterialTypeDef::GetTypeDef())))
 {
 	{
@@ -59,6 +61,16 @@ scene::ActorTypeDef::ActorTypeDef() :
 		m_properties[m_materials.GetId()] = &m_materials;
 	}
 
+	{
+		m_skeleton.m_name = "Skeleton";
+		m_skeleton.m_category = "Setup";
+		m_skeleton.m_getValue = [](CompositeValue* obj) -> Value& {
+			Actor* actor = static_cast<Actor*>(obj);
+			return actor->m_skeletonDef;
+		};
+		m_properties[m_skeleton.GetId()] = &m_skeleton;
+	}
+
 	m_name = "Actor";
 	m_category = "Scene";
 }
@@ -79,6 +91,8 @@ scene::Actor::Actor(const ReferenceTypeDef& typeDef) :
 	m_device(rendering::DXDeviceTypeDef::GetTypeDef(), this),
 	m_meshDef(ActorTypeDef::GetTypeDef().m_mesh.GetType(), this),
 	m_mesh(geo::MeshTypeDef::GetTypeDef(), this),
+	m_skeletonDef(ActorTypeDef::GetTypeDef().m_skeleton.GetType(), this),
+	m_skeleton(geo::SkeletonTypeDef::GetTypeDef(), this),
 	m_materialDefs(ActorTypeDef::GetTypeDef().m_materials.GetType(), this),
 	m_materials(ListDef::GetTypeDef(rendering::materials::MaterialTypeDef::GetTypeDef()), this)
 {
@@ -140,10 +154,25 @@ void scene::Actor::LoadData(jobs::Job* done)
 		m_mesh.AssignObject(ObjectValueContainer::GetObjectOfType(*m_meshDef.GetType<const TypeDef*>()));
 		geo::Mesh* mesh = m_mesh.GetValue<geo::Mesh*>();
 
+		const TypeDef* skeletonDef = m_skeletonDef.GetType<const TypeDef*>();
+		if (skeletonDef)
+		{
+			m_skeleton.AssignObject(ObjectValueContainer::GetObjectOfType(*skeletonDef));
+		}
+		geo::Skeleton* skeleton = m_skeleton.GetValue<geo::Skeleton*>();
+
 		++ctx->m_loading;
 		jobs::RunAsync(jobs::Job::CreateByLambda([=]() {
 			mesh->Load(initMeshBuffers);
 		}));
+
+		if (skeleton)
+		{
+			++ctx->m_loading;
+			jobs::RunAsync(jobs::Job::CreateByLambda([=]() {
+				skeleton->Load(jobs::Job::CreateByLambda(itemLoaded));
+			}));
+		}
 
 		ValueList* matDefs = m_materialDefs.GetValue<ValueList*>();
 		ValueList* mats = m_materials.GetValue<ValueList*>();
