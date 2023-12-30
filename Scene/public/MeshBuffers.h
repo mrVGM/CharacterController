@@ -26,6 +26,9 @@ namespace scene
 		Value m_vertexBuffer;
 		Value m_indexBuffer;
 
+		Value m_vertexWeightsMapBuffer;
+		Value m_vertexWeightsBuffer;
+
 		MeshBuffers(const ReferenceTypeDef& typeDef);
 		virtual ~MeshBuffers();
 
