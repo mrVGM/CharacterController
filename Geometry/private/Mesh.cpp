@@ -548,6 +548,19 @@ namespace
 		{
 			using namespace xml_reader;
 
+			const Node* bindShapeMatrix = m_tree.FindChildNode(skin, [](const Node* node) {
+				return node->m_tagName == "bind_shape_matrix";
+			}, true);
+
+			{
+				auto numIt = bindShapeMatrix->m_data.begin();
+				for (int i = 0; i < 16; ++i)
+				{
+					scripting::ISymbol* cur = *(numIt++);
+					skinData.m_bindShapeMatrix.m_coefs[i] = cur->m_symbolData.m_number;
+				}
+			}
+
 			const Node* joints = m_tree.FindChildNode(skin, [](const Node* node) {
 				return node->m_tagName == "joints";
 			}, true);
@@ -605,7 +618,7 @@ namespace
 			}
 		}
 
-		bool ReadSkin(geo::Mesh::SkinData& skinData)
+		bool ReadSkin(geo::Mesh::SkinData& skinData, bool zUp)
 		{
 			using namespace xml_reader;
 
@@ -638,6 +651,50 @@ namespace
 
 			ReadJointNames(skin, skinData);
 			ReadInvBindMatrices(skin, skinData);
+
+			if (zUp)
+			{
+				{
+					math::Matrix& cur = skinData.m_bindShapeMatrix;
+
+					float tmp[] = {
+						cur.GetCoef(0, 1),
+						cur.GetCoef(1, 1),
+						cur.GetCoef(2, 1),
+						cur.GetCoef(3, 1)
+					};
+					cur.GetCoef(0, 1) = cur.GetCoef(0, 2);
+					cur.GetCoef(1, 1) = cur.GetCoef(1, 2);
+					cur.GetCoef(2, 1) = cur.GetCoef(2, 2);
+					cur.GetCoef(3, 1) = cur.GetCoef(3, 2);
+
+					cur.GetCoef(0, 2) = tmp[0];
+					cur.GetCoef(1, 2) = tmp[1];
+					cur.GetCoef(2, 2) = tmp[2];
+					cur.GetCoef(3, 2) = tmp[3];
+				}
+
+				for (auto it = skinData.m_invBindMatrices.begin(); it != skinData.m_invBindMatrices.end(); ++it)
+				{
+					math::Matrix& cur = *it;
+
+					float tmp[] = {
+						cur.GetCoef(0, 1),
+						cur.GetCoef(1, 1),
+						cur.GetCoef(2, 1),
+						cur.GetCoef(3, 1)
+					};
+					cur.GetCoef(0, 1) = cur.GetCoef(0, 2);
+					cur.GetCoef(1, 1) = cur.GetCoef(1, 2);
+					cur.GetCoef(2, 1) = cur.GetCoef(2, 2);
+					cur.GetCoef(3, 1) = cur.GetCoef(3, 2);
+
+					cur.GetCoef(0, 2) = tmp[0];
+					cur.GetCoef(1, 2) = tmp[1];
+					cur.GetCoef(2, 2) = tmp[2];
+					cur.GetCoef(3, 2) = tmp[3];
+				}
+			}
 
 			return true;
 		}
@@ -834,7 +891,7 @@ void geo::Mesh::LoadData(jobs::Job* done)
 	}
 
 	SkinData skinData;
-	bool isSkinned = mr.ReadSkin(skinData);
+	bool isSkinned = mr.ReadSkin(skinData, m_zUp);
 	if (isSkinned)
 	{
 		m_skinData = new SkinData();

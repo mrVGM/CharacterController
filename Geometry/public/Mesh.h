@@ -54,6 +54,7 @@ namespace geo
 		struct SkinData
 		{
 			std::vector<std::string> m_boneNames;
+			math::Matrix m_bindShapeMatrix;
 			std::vector<math::Matrix> m_invBindMatrices;
 		};
 
