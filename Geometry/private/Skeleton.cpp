@@ -96,6 +96,129 @@ void geo::Skeleton::Load(jobs::Job* done)
 	m_loader.Load(done);
 }
 
+void geo::Skeleton::SerializeToMF(files::MemoryFile& mf)
+{
+	using namespace files;
+
+	files::MemoryFileWriter writer(mf);
+	{
+		BinChunk namesChunk;
+
+		int size = sizeof(int);
+		for (auto it = m_boneNames.begin(); it != m_boneNames.end(); ++it)
+		{
+			size += sizeof(int) + (*it).size();
+		}
+
+		namesChunk.m_size = size * sizeof(char);
+		namesChunk.m_data = new char[namesChunk.m_size];
+
+		int* sizePtr = reinterpret_cast<int*>(namesChunk.m_data);
+		*(sizePtr++) = m_boneNames.size();
+
+		for (auto it = m_boneNames.begin(); it != m_boneNames.end(); ++it)
+		{
+			*(sizePtr++) = (*it).size();
+		}
+
+		char* curPos = reinterpret_cast<char*>(sizePtr);
+		for (auto it = m_boneNames.begin(); it != m_boneNames.end(); ++it)
+		{
+			const std::string& cur = *it;
+			int curSize = cur.size();
+			int copySize = curSize * sizeof(char);
+
+			memcpy(curPos, cur.c_str(), copySize);
+			curPos += curSize;
+		}
+		namesChunk.Write(writer);
+	}
+
+	{
+		BinChunk boneParentsChunk;
+		boneParentsChunk.m_size = m_boneParents.size() * sizeof(int);
+		boneParentsChunk.m_data = new char[boneParentsChunk.m_size];
+
+		int* boneParentsPtr = reinterpret_cast<int*>(boneParentsChunk.m_data);
+
+		for (auto it = m_boneParents.begin(); it != m_boneParents.end(); ++it)
+		{
+			int cur = *it;
+			*(boneParentsPtr++) = cur;
+		}
+		boneParentsChunk.Write(writer);
+	}
+
+	{
+		BinChunk bindPoseChunk;
+		bindPoseChunk.m_size = (m_bindPose.size()) * sizeof(math::Matrix);
+		bindPoseChunk.m_data = new char[bindPoseChunk.m_size];
+
+		math::Matrix* matrixPtr = reinterpret_cast<math::Matrix*>(bindPoseChunk.m_data);
+
+		for (auto it = m_bindPose.begin(); it != m_bindPose.end(); ++it)
+		{
+			const math::Matrix& cur = *it;
+			*(matrixPtr++) = cur;
+		}
+		bindPoseChunk.Write(writer);
+	}
+}
+
+void geo::Skeleton::DeserializeFromMF(files::MemoryFile& mf)
+{
+	using namespace files;
+
+	files::MemoryFileReader reader(mf);
+
+	{
+		BinChunk namesChunk;
+		namesChunk.Read(reader);
+		int* sizes = reinterpret_cast<int*>(namesChunk.m_data);
+
+		int count = *(sizes++);
+		char* names = reinterpret_cast<char*>(sizes + count);
+
+		for (int i = 0; i < count; ++i)
+		{
+			int curSize = sizes[i];
+			char* tmp = new char[curSize + 1];
+
+			memset(tmp, 0, curSize + 1);
+			memcpy(tmp, names, curSize);
+			names += curSize;
+
+			m_boneNames.push_back(tmp);
+			delete[] tmp;
+		}
+	}
+
+	{
+		BinChunk boneParentsChunk;
+		boneParentsChunk.Read(reader);
+		int count = boneParentsChunk.m_size / sizeof(int);
+
+		int* parentsPtr = reinterpret_cast<int*>(boneParentsChunk.m_data);
+		for (int i = 0; i < count; ++i)
+		{
+			m_boneParents.push_back(parentsPtr[i]);
+		}
+	}
+
+	{
+		BinChunk bindPoseChunk;
+		bindPoseChunk.Read(reader);
+
+		int count = bindPoseChunk.m_size / sizeof(math::Matrix);
+		math::Matrix* matrixPtr = reinterpret_cast<math::Matrix*>(bindPoseChunk.m_data);
+
+		for (int i = 0; i < count; ++i)
+		{
+			m_bindPose.push_back(matrixPtr[i]);
+		}
+	}
+}
+
 void geo::Skeleton::LoadData(jobs::Job* done)
 {
 	using namespace xml_reader;
@@ -113,7 +236,7 @@ void geo::Skeleton::LoadData(jobs::Job* done)
 		files::MemoryFile mf;
 		std::string binFilePath = files::GetDataDir() + files::GetAssetsBinDir() + GetTypeDef().GetId() + ".bin";
 		mf.RestoreFromFile(binFilePath);
-		//DeserializeFromMF(mf);
+		DeserializeFromMF(mf);
 		jobs::RunSync(done);
 		return;
 	}
@@ -173,6 +296,61 @@ void geo::Skeleton::LoadData(jobs::Job* done)
 				break;
 			}
 		}
+	}
+
+	for (auto it = joints.begin(); it != joints.end(); ++it)
+	{
+		const Node* matrix = tree.FindChildNode(*it, [](const Node* node) {
+			return node->m_tagName == "matrix";
+		}, true);
+
+		math::Matrix& cur = m_bindPose.emplace_back();
+		auto symbolIt = matrix->m_data.begin();
+		for (int i = 0; i < 16; ++i)
+		{
+			cur.m_coefs[i] = (*(symbolIt++))->m_symbolData.m_number;
+		}
+	}
+
+	if (m_zUp)
+	{
+		for (auto it = m_bindPose.begin(); it != m_bindPose.end(); ++it)
+		{
+			math::Matrix& cur = *it;
+			float tmp[] = {
+				cur.GetCoef(0, 1),
+				cur.GetCoef(1, 1),
+				cur.GetCoef(2, 1),
+				cur.GetCoef(3, 1)
+			};
+
+			cur.GetCoef(0, 1) = cur.GetCoef(0, 2);
+			cur.GetCoef(1, 1) = cur.GetCoef(1, 2);
+			cur.GetCoef(2, 1) = cur.GetCoef(2, 2);
+			cur.GetCoef(3, 1) = cur.GetCoef(3, 2);
+
+			cur.GetCoef(0, 2) = tmp[0];
+			cur.GetCoef(1, 2) = tmp[1];
+			cur.GetCoef(2, 2) = tmp[2];
+			cur.GetCoef(3, 2) = tmp[3];
+		}
+	}
+
+	files::MemoryFile mf;
+	SerializeToMF(mf);
+
+	std::string id = GetTypeDef().GetId();
+	mf.SaveToFile(files::GetDataDir() + files::GetAssetsBinDir() + id + ".bin");
+
+	{
+		const AssetTypeDef* asset = static_cast<const AssetTypeDef*>(&GetTypeDef());
+		json_parser::JSONValue& data = const_cast<json_parser::JSONValue&>(asset->GetJSONData());
+
+		auto& map = data.GetAsObj();
+		json_parser::JSONValue& defaults = map["defaults"];
+		auto& defaultsMap = defaults.GetAsObj();
+		defaultsMap[SkeletonTypeDef::GetTypeDef().m_hash.GetId()] = json_parser::JSONValue(hash);
+		asset->SaveJSONData();
 	}
 
 	jobs::RunSync(done);

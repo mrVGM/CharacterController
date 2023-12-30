@@ -38,6 +38,9 @@ namespace geo
 	private:
 		jobs::MultiLoader m_loader;
 
+		void SerializeToMF(files::MemoryFile& mf);
+		void DeserializeFromMF(files::MemoryFile& mf);
+
 	protected:
 		virtual void LoadData(jobs::Job* done) override;
 
