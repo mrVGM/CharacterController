@@ -57,6 +57,9 @@ namespace scene
 		Value m_skeletonDef;
 		Value m_materialDefs;
 
+		Value m_transformBuffer;
+		Value m_poseBuffer;
+
 		Actor(const ReferenceTypeDef& typeDef);
 		virtual ~Actor();
 

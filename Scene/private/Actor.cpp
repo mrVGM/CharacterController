@@ -13,6 +13,8 @@
 
 #include "ObjectValueContainer.h"
 
+#include "DXMutableBuffer.h"
+
 #include "CoreUtils.h"
 
 #define THROW_ERROR(hRes, error) \
@@ -94,7 +96,9 @@ scene::Actor::Actor(const ReferenceTypeDef& typeDef) :
 	m_skeletonDef(ActorTypeDef::GetTypeDef().m_skeleton.GetType(), this),
 	m_skeleton(geo::SkeletonTypeDef::GetTypeDef(), this),
 	m_materialDefs(ActorTypeDef::GetTypeDef().m_materials.GetType(), this),
-	m_materials(ListDef::GetTypeDef(rendering::materials::MaterialTypeDef::GetTypeDef()), this)
+	m_materials(ListDef::GetTypeDef(rendering::materials::MaterialTypeDef::GetTypeDef()), this),
+	m_transformBuffer(rendering::DXMutableBufferTypeDef::GetTypeDef(), this),
+	m_poseBuffer(rendering::DXMutableBufferTypeDef::GetTypeDef(), this)
 {
 }
 
@@ -138,7 +142,23 @@ void scene::Actor::LoadData(jobs::Job* done)
 		MeshBuffers* meshBuffers = mesh->m_buffers.GetValue<MeshBuffers*>();
 
 		jobs::RunAsync(jobs::Job::CreateByLambda([=]() {
-			meshBuffers->Load(*mesh, jobs::Job::CreateByLambda(itemLoaded));
+			meshBuffers->Load(*mesh, jobs::Job::CreateByLambda([=]() {
+				if (!mesh->m_skinData.m_hasAnyData)
+				{
+					jobs::RunSync(jobs::Job::CreateByLambda(itemLoaded));
+					return;
+				}
+
+				rendering::DXMutableBufferTypeDef::GetTypeDef().Construct(m_poseBuffer);
+				rendering::DXMutableBuffer* poseBuffer = m_poseBuffer.GetValue<rendering::DXMutableBuffer*>();
+
+				int poseBuffStride = sizeof(math::Matrix);
+				int poseBuffSize = mesh->m_skinData.m_boneNames.size() * poseBuffStride;
+				poseBuffer->SetSizeAndStride(poseBuffSize, poseBuffStride);
+				jobs::RunAsync(jobs::Job::CreateByLambda([=]() {
+					poseBuffer->Load(jobs::Job::CreateByLambda(itemLoaded));
+				}));
+			}));
 		}));
 	});
 
@@ -154,17 +174,25 @@ void scene::Actor::LoadData(jobs::Job* done)
 		m_mesh.AssignObject(ObjectValueContainer::GetObjectOfType(*m_meshDef.GetType<const TypeDef*>()));
 		geo::Mesh* mesh = m_mesh.GetValue<geo::Mesh*>();
 
+		++ctx->m_loading;
+		jobs::RunAsync(jobs::Job::CreateByLambda([=]() {
+			mesh->Load(initMeshBuffers);
+		}));
+
+		rendering::DXMutableBufferTypeDef::GetTypeDef().Construct(m_transformBuffer);
+		rendering::DXMutableBuffer* transformBuffer = m_transformBuffer.GetValue<rendering::DXMutableBuffer*>();
+		transformBuffer->SetSizeAndStride(256, 256);
+		++ctx->m_loading;
+		jobs::RunAsync(jobs::Job::CreateByLambda([=]() {
+			transformBuffer->Load(jobs::Job::CreateByLambda(itemLoaded));
+		}));
+
 		const TypeDef* skeletonDef = m_skeletonDef.GetType<const TypeDef*>();
 		if (skeletonDef)
 		{
 			m_skeleton.AssignObject(ObjectValueContainer::GetObjectOfType(*skeletonDef));
 		}
 		geo::Skeleton* skeleton = m_skeleton.GetValue<geo::Skeleton*>();
-
-		++ctx->m_loading;
-		jobs::RunAsync(jobs::Job::CreateByLambda([=]() {
-			mesh->Load(initMeshBuffers);
-		}));
 
 		if (skeleton)
 		{
