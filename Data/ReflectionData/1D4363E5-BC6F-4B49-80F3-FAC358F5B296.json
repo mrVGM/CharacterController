@@ -1,9 +1,9 @@
 {
-  "name": "type",
-  "isGenerated": 0,
-  "id": {
-    "id": "1D4363E5-BC6F-4B49-80F3-FAC358F5B296"
+  "name":"type",
+  "isGenerated":0,
+  "id":{
+    "id":"1D4363E5-BC6F-4B49-80F3-FAC358F5B296"
   },
-  "hint": "type",
-  "category": "Primitive"
+  "hint":"type",
+  "category":"Primitive"
 }

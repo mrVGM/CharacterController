@@ -1,12 +1,12 @@
 {
-  "properties": {},
-  "parent": {
-    "id": "7D79EC02-6FBC-48F3-BB6F-1C07BE762DE8"
+  "properties":{},
+  "parent":{
+    "id":"7D79EC02-6FBC-48F3-BB6F-1C07BE762DE8"
   },
-  "name": "Geometry App Entry",
-  "isGenerated": 0,
-  "id": {
-    "id": "F2E86D51-BDD2-4570-8338-9A0B73BF5C00"
+  "name":"Geometry App Entry",
+  "isGenerated":0,
+  "id":{
+    "id":"F2E86D51-BDD2-4570-8338-9A0B73BF5C00"
   },
-  "category": "Geometry"
+  "category":"Geometry"
 }

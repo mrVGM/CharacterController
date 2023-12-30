@@ -1,13 +1,13 @@
 {
-  "properties": {},
-  "parent": {
-    "id": "1A3E4D51-E1E3-4FD4-A487-A164913A74E2"
+  "properties":{},
+  "parent":{
+    "id":"1A3E4D51-E1E3-4FD4-A487-A164913A74E2"
   },
-  "name": "Reference Type",
-  "isGenerated": 0,
-  "id": {
-    "id": "361D902F-526F-452D-B925-7B59B0F5AB09"
+  "name":"Reference Type",
+  "isGenerated":0,
+  "id":{
+    "id":"361D902F-526F-452D-B925-7B59B0F5AB09"
   },
-  "hint": "reference_type",
-  "category": "Composite"
+  "hint":"reference_type",
+  "category":"Composite"
 }

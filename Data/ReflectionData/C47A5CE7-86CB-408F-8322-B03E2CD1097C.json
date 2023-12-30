@@ -1,12 +1,12 @@
 {
-  "properties": {},
-  "parent": {
-    "id": "B5E6EB43-2F57-4CAE-97B1-AAB34F7A0100"
+  "properties":{},
+  "parent":{
+    "id":"B5E6EB43-2F57-4CAE-97B1-AAB34F7A0100"
   },
-  "name": "Render Fence",
-  "isGenerated": 0,
-  "id": {
-    "id": "C47A5CE7-86CB-408F-8322-B03E2CD1097C"
+  "name":"Render Fence",
+  "isGenerated":0,
+  "id":{
+    "id":"C47A5CE7-86CB-408F-8322-B03E2CD1097C"
   },
-  "category": "Rendering"
+  "category":"Rendering"
 }

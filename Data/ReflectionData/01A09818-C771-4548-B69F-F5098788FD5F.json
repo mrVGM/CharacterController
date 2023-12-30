@@ -1,12 +1,12 @@
 {
-  "properties": {},
-  "parent": {
-    "id": "C997C11B-480D-4E43-A964-B213B30C4268"
+  "properties":{},
+  "parent":{
+    "id":"C997C11B-480D-4E43-A964-B213B30C4268"
   },
-  "name": "Shader Resource Descriptor Heap",
-  "isGenerated": 0,
-  "id": {
-    "id": "01A09818-C771-4548-B69F-F5098788FD5F"
+  "name":"Shader Resource Descriptor Heap",
+  "isGenerated":0,
+  "id":{
+    "id":"01A09818-C771-4548-B69F-F5098788FD5F"
   },
-  "category": "Rendering"
+  "category":"Rendering"
 }

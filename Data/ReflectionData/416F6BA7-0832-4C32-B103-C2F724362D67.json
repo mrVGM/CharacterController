@@ -1,12 +1,12 @@
 {
-  "properties": {},
-  "parent": {
-    "id": "061DFEE1-B9C6-406D-BFEC-E89830C7FD3D"
+  "properties":{},
+  "parent":{
+    "id":"061DFEE1-B9C6-406D-BFEC-E89830C7FD3D"
   },
-  "name": "Resident Heap Job System",
-  "isGenerated": 0,
-  "id": {
-    "id": "416F6BA7-0832-4C32-B103-C2F724362D67"
+  "name":"Resident Heap Job System",
+  "isGenerated":0,
+  "id":{
+    "id":"416F6BA7-0832-4C32-B103-C2F724362D67"
   },
-  "category": "Rendering"
+  "category":"Rendering"
 }

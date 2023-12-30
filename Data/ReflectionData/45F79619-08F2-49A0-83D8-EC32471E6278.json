@@ -1,12 +1,12 @@
 {
-  "properties": {},
-  "parent": {
-    "id": "C997C11B-480D-4E43-A964-B213B30C4268"
+  "properties":{},
+  "parent":{
+    "id":"C997C11B-480D-4E43-A964-B213B30C4268"
   },
-  "name": "Render Target Descriptor Heap",
-  "isGenerated": 0,
-  "id": {
-    "id": "45F79619-08F2-49A0-83D8-EC32471E6278"
+  "name":"Render Target Descriptor Heap",
+  "isGenerated":0,
+  "id":{
+    "id":"45F79619-08F2-49A0-83D8-EC32471E6278"
   },
-  "category": "Rendering"
+  "category":"Rendering"
 }

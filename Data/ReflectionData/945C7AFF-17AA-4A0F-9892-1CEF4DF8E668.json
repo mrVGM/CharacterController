@@ -1,35 +1,35 @@
 {
-  "properties": {
-    "F7922C5F-0A2B-4E0D-8B11-9D39508D0D1A": {
-      "type": {
-        "template": {
-          "id": "061DFEE1-B9C6-406D-BFEC-E89830C7FD3D"
+  "properties":{
+    "F7922C5F-0A2B-4E0D-8B11-9D39508D0D1A":{
+      "type":{
+        "template":{
+          "id":"061DFEE1-B9C6-406D-BFEC-E89830C7FD3D"
         },
-        "id": "1D4363E5-BC6F-4B49-80F3-FAC358F5B296"
+        "id":"1D4363E5-BC6F-4B49-80F3-FAC358F5B296"
       },
-      "name": "Job System",
-      "id": "F7922C5F-0A2B-4E0D-8B11-9D39508D0D1A",
-      "category": "Setup"
+      "name":"Job System",
+      "id":"F7922C5F-0A2B-4E0D-8B11-9D39508D0D1A",
+      "category":"Setup"
     },
-    "14CD8F99-7658-4A81-9049-C61CCC527659": {
-      "type": {
-        "template": {
-          "id": "B5E6EB43-2F57-4CAE-97B1-AAB34F7A0100"
+    "14CD8F99-7658-4A81-9049-C61CCC527659":{
+      "type":{
+        "template":{
+          "id":"B5E6EB43-2F57-4CAE-97B1-AAB34F7A0100"
         },
-        "id": "1D4363E5-BC6F-4B49-80F3-FAC358F5B296"
+        "id":"1D4363E5-BC6F-4B49-80F3-FAC358F5B296"
       },
-      "name": "Fence",
-      "id": "14CD8F99-7658-4A81-9049-C61CCC527659",
-      "category": "Setup"
+      "name":"Fence",
+      "id":"14CD8F99-7658-4A81-9049-C61CCC527659",
+      "category":"Setup"
     }
   },
-  "parent": {
-    "id": "361D902F-526F-452D-B925-7B59B0F5AB09"
+  "parent":{
+    "id":"361D902F-526F-452D-B925-7B59B0F5AB09"
   },
-  "name": "Copy Buffers",
-  "isGenerated": 0,
-  "id": {
-    "id": "945C7AFF-17AA-4A0F-9892-1CEF4DF8E668"
+  "name":"Copy Buffers",
+  "isGenerated":0,
+  "id":{
+    "id":"945C7AFF-17AA-4A0F-9892-1CEF4DF8E668"
   },
-  "category": "Rendering"
+  "category":"Rendering"
 }

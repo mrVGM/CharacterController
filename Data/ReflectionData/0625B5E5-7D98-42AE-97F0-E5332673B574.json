@@ -1,29 +1,29 @@
 {
   "properties":{
-    "8C20F797-3766-426A-9094-215F560FAB26":{
+    "290FE9A8-4791-4FA6-A363-6CF8CAA0EAC7":{
       "type":{
         "id":"B641BC7D-49F6-4194-B4C9-239FDDAAA623"
       },
       "name":"Hash",
-      "id":"8C20F797-3766-426A-9094-215F560FAB26",
+      "id":"290FE9A8-4791-4FA6-A363-6CF8CAA0EAC7",
       "category":"Internal"
     },
-    "130EF692-9CC6-4C8C-89B2-49A5D2F8EED2":{
+    "1FE2522B-7B59-4AB8-9D5F-CA5DCA1A58E6":{
       "type":{
         "id":"B641BC7D-49F6-4194-B4C9-239FDDAAA623"
       },
-      "name":"Shader Name",
-      "id":"130EF692-9CC6-4C8C-89B2-49A5D2F8EED2",
+      "name":"Collada File",
+      "id":"1FE2522B-7B59-4AB8-9D5F-CA5DCA1A58E6",
       "category":"Setup"
     }
   },
   "parent":{
     "id":"361D902F-526F-452D-B925-7B59B0F5AB09"
   },
-  "name":"Shader",
+  "name":"Skeleton",
   "isGenerated":0,
   "id":{
-    "id":"7D55F6EB-BDB6-4199-83E8-5069BE1EB80F"
+    "id":"0625B5E5-7D98-42AE-97F0-E5332673B574"
   },
-  "category":"Rendering"
+  "category":"Geometry"
 }

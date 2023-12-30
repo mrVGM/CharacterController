@@ -1,24 +1,24 @@
 {
-  "properties": {
-    "3EAA65D3-D125-4FDE-87B9-E0EE0ECE3EC1": {
-      "type": {
-        "template": {
-          "id": "01A09818-C771-4548-B69F-F5098788FD5F"
+  "properties":{
+    "3EAA65D3-D125-4FDE-87B9-E0EE0ECE3EC1":{
+      "type":{
+        "template":{
+          "id":"01A09818-C771-4548-B69F-F5098788FD5F"
         },
-        "id": "1D4363E5-BC6F-4B49-80F3-FAC358F5B296"
+        "id":"1D4363E5-BC6F-4B49-80F3-FAC358F5B296"
       },
-      "name": "Descriptor Heap",
-      "id": "3EAA65D3-D125-4FDE-87B9-E0EE0ECE3EC1",
-      "category": "Setup"
+      "name":"Descriptor Heap",
+      "id":"3EAA65D3-D125-4FDE-87B9-E0EE0ECE3EC1",
+      "category":"Setup"
     }
   },
-  "parent": {
-    "id": "88865622-C8C0-4807-9A04-031CAFD12150"
+  "parent":{
+    "id":"88865622-C8C0-4807-9A04-031CAFD12150"
   },
-  "name": "Display Texture Material",
-  "isGenerated": 0,
-  "id": {
-    "id": "A30008B2-5172-4C76-8983-65036701D061"
+  "name":"Display Texture Material",
+  "isGenerated":0,
+  "id":{
+    "id":"A30008B2-5172-4C76-8983-65036701D061"
   },
-  "category": "Render Pass"
+  "category":"Render Pass"
 }

@@ -1,40 +1,40 @@
 {
-  "properties": {
-    "BE6AE599-53DC-4932-9536-74D398FD1003": {
-      "type": {
-        "template": {
-          "id": "061DFEE1-B9C6-406D-BFEC-E89830C7FD3D"
+  "properties":{
+    "BE6AE599-53DC-4932-9536-74D398FD1003":{
+      "type":{
+        "template":{
+          "id":"061DFEE1-B9C6-406D-BFEC-E89830C7FD3D"
         },
-        "id": "1D4363E5-BC6F-4B49-80F3-FAC358F5B296"
+        "id":"1D4363E5-BC6F-4B49-80F3-FAC358F5B296"
       },
-      "name": "Window Update Job System",
-      "id": "BE6AE599-53DC-4932-9536-74D398FD1003",
-      "category": "Setup"
+      "name":"Window Update Job System",
+      "id":"BE6AE599-53DC-4932-9536-74D398FD1003",
+      "category":"Setup"
     },
-    "7E7854FF-F38C-47F1-8690-6FC16DB93882": {
-      "type": {
-        "id": "8E993D4A-B13D-4D59-92D1-43F0FC138DBD"
+    "7E7854FF-F38C-47F1-8690-6FC16DB93882":{
+      "type":{
+        "id":"8E993D4A-B13D-4D59-92D1-43F0FC138DBD"
       },
-      "name": "Width",
-      "id": "7E7854FF-F38C-47F1-8690-6FC16DB93882",
-      "category": "Setup"
+      "name":"Width",
+      "id":"7E7854FF-F38C-47F1-8690-6FC16DB93882",
+      "category":"Setup"
     },
-    "10A08A76-DB55-4F6C-B74B-8FA4DD263005": {
-      "type": {
-        "id": "8E993D4A-B13D-4D59-92D1-43F0FC138DBD"
+    "10A08A76-DB55-4F6C-B74B-8FA4DD263005":{
+      "type":{
+        "id":"8E993D4A-B13D-4D59-92D1-43F0FC138DBD"
       },
-      "name": "Height",
-      "id": "10A08A76-DB55-4F6C-B74B-8FA4DD263005",
-      "category": "Setup"
+      "name":"Height",
+      "id":"10A08A76-DB55-4F6C-B74B-8FA4DD263005",
+      "category":"Setup"
     }
   },
-  "parent": {
-    "id": "361D902F-526F-452D-B925-7B59B0F5AB09"
+  "parent":{
+    "id":"361D902F-526F-452D-B925-7B59B0F5AB09"
   },
-  "name": "Window",
-  "isGenerated": 0,
-  "id": {
-    "id": "99EC3C91-412A-450B-AA61-721FFC77BF8B"
+  "name":"Window",
+  "isGenerated":0,
+  "id":{
+    "id":"99EC3C91-412A-450B-AA61-721FFC77BF8B"
   },
-  "category": "Rendering"
+  "category":"Rendering"
 }

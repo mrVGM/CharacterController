@@ -1,12 +1,12 @@
 {
-  "properties": {},
-  "parent": {
-    "id": "7D79EC02-6FBC-48F3-BB6F-1C07BE762DE8"
+  "properties":{},
+  "parent":{
+    "id":"7D79EC02-6FBC-48F3-BB6F-1C07BE762DE8"
   },
-  "name": "Renderer App Entry",
-  "isGenerated": 0,
-  "id": {
-    "id": "62CBB02A-9574-4F11-B468-F14334EC6B16"
+  "name":"Renderer App Entry",
+  "isGenerated":0,
+  "id":{
+    "id":"62CBB02A-9574-4F11-B468-F14334EC6B16"
   },
-  "category": "Renderer"
+  "category":"Renderer"
 }

@@ -1,35 +1,35 @@
 {
-  "properties": {
-    "CC292084-F703-427E-AD24-6B05386A0CDB": {
-      "type": {
-        "template": {
-          "id": "D963BDD2-9E53-466B-BCAF-F3FB50434050"
+  "properties":{
+    "CC292084-F703-427E-AD24-6B05386A0CDB":{
+      "type":{
+        "template":{
+          "id":"D963BDD2-9E53-466B-BCAF-F3FB50434050"
         },
-        "id": "1D4363E5-BC6F-4B49-80F3-FAC358F5B296"
+        "id":"1D4363E5-BC6F-4B49-80F3-FAC358F5B296"
       },
-      "name": "Quad Mesh",
-      "id": "CC292084-F703-427E-AD24-6B05386A0CDB",
-      "category": "Setup"
+      "name":"Quad Mesh",
+      "id":"CC292084-F703-427E-AD24-6B05386A0CDB",
+      "category":"Setup"
     },
-    "4399AADE-0D5B-4EB1-A733-EE7F9E09975A": {
-      "type": {
-        "template": {
-          "id": "A30008B2-5172-4C76-8983-65036701D061"
+    "4399AADE-0D5B-4EB1-A733-EE7F9E09975A":{
+      "type":{
+        "template":{
+          "id":"A30008B2-5172-4C76-8983-65036701D061"
         },
-        "id": "1D4363E5-BC6F-4B49-80F3-FAC358F5B296"
+        "id":"1D4363E5-BC6F-4B49-80F3-FAC358F5B296"
       },
-      "name": "Display Unlit Texture Material",
-      "id": "4399AADE-0D5B-4EB1-A733-EE7F9E09975A",
-      "category": "Setup"
+      "name":"Display Unlit Texture Material",
+      "id":"4399AADE-0D5B-4EB1-A733-EE7F9E09975A",
+      "category":"Setup"
     }
   },
-  "parent": {
-    "id": "F451A96F-F3AB-4C7C-B510-499716FB4617"
+  "parent":{
+    "id":"F451A96F-F3AB-4C7C-B510-499716FB4617"
   },
-  "name": "Unlit",
-  "isGenerated": 0,
-  "id": {
-    "id": "DF88C6B2-118D-47D8-89B6-5AE3A6A61817"
+  "name":"Unlit",
+  "isGenerated":0,
+  "id":{
+    "id":"DF88C6B2-118D-47D8-89B6-5AE3A6A61817"
   },
-  "category": "Unlit RP"
+  "category":"Unlit RP"
 }

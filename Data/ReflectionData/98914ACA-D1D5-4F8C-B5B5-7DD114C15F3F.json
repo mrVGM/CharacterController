@@ -1,12 +1,12 @@
 {
-  "properties": {},
-  "parent": {
-    "id": "A1693B2C-8BE1-4AF8-AAC5-00206DA6FDE6"
+  "properties":{},
+  "parent":{
+    "id":"A1693B2C-8BE1-4AF8-AAC5-00206DA6FDE6"
   },
-  "name": "Unlit Render Texture",
-  "isGenerated": 0,
-  "id": {
-    "id": "98914ACA-D1D5-4F8C-B5B5-7DD114C15F3F"
+  "name":"Unlit Render Texture",
+  "isGenerated":0,
+  "id":{
+    "id":"98914ACA-D1D5-4F8C-B5B5-7DD114C15F3F"
   },
-  "category": "Rendering"
+  "category":"Rendering"
 }

@@ -1,12 +1,12 @@
 {
-  "properties": {},
-  "parent": {
-    "id": "7D55F6EB-BDB6-4199-83E8-5069BE1EB80F"
+  "properties":{},
+  "parent":{
+    "id":"7D55F6EB-BDB6-4199-83E8-5069BE1EB80F"
   },
-  "name": "Vertex Shader",
-  "isGenerated": 0,
-  "id": {
-    "id": "F2A064DD-D5B3-44B4-94B5-AFC68840828D"
+  "name":"Vertex Shader",
+  "isGenerated":0,
+  "id":{
+    "id":"F2A064DD-D5B3-44B4-94B5-AFC68840828D"
   },
-  "category": "Rendering"
+  "category":"Rendering"
 }

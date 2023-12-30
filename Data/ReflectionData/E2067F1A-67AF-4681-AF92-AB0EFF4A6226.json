@@ -1,12 +1,12 @@
 {
-  "properties": {},
-  "parent": {
-    "id": "361D902F-526F-452D-B925-7B59B0F5AB09"
+  "properties":{},
+  "parent":{
+    "id":"361D902F-526F-452D-B925-7B59B0F5AB09"
   },
-  "name": "Device",
-  "isGenerated": 0,
-  "id": {
-    "id": "E2067F1A-67AF-4681-AF92-AB0EFF4A6226"
+  "name":"Device",
+  "isGenerated":0,
+  "id":{
+    "id":"E2067F1A-67AF-4681-AF92-AB0EFF4A6226"
   },
-  "category": "Rendering"
+  "category":"Rendering"
 }

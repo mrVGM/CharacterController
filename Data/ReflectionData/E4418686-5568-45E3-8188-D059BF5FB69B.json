@@ -1,12 +1,12 @@
 {
-  "properties": {},
-  "parent": {
-    "id": "7D79EC02-6FBC-48F3-BB6F-1C07BE762DE8"
+  "properties":{},
+  "parent":{
+    "id":"7D79EC02-6FBC-48F3-BB6F-1C07BE762DE8"
   },
-  "name": "Rendering App Entry",
-  "isGenerated": 0,
-  "id": {
-    "id": "E4418686-5568-45E3-8188-D059BF5FB69B"
+  "name":"Rendering App Entry",
+  "isGenerated":0,
+  "id":{
+    "id":"E4418686-5568-45E3-8188-D059BF5FB69B"
   },
-  "category": "Rendering"
+  "category":"Rendering"
 }

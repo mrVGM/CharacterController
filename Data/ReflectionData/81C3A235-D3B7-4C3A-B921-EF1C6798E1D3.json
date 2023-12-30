@@ -1,27 +1,27 @@
 {
-  "properties": {
-    "DA9E00D1-A9AD-4B23-9DD9-F66F7BF140CA": {
-      "type": {
-        "template": {
-          "template": {
-            "id": "F451A96F-F3AB-4C7C-B510-499716FB4617"
+  "properties":{
+    "DA9E00D1-A9AD-4B23-9DD9-F66F7BF140CA":{
+      "type":{
+        "template":{
+          "template":{
+            "id":"F451A96F-F3AB-4C7C-B510-499716FB4617"
           },
-          "id": "1D4363E5-BC6F-4B49-80F3-FAC358F5B296"
+          "id":"1D4363E5-BC6F-4B49-80F3-FAC358F5B296"
         },
-        "id": "B5883DED-257C-4E35-846C-DB5BB7E11289"
+        "id":"B5883DED-257C-4E35-846C-DB5BB7E11289"
       },
-      "name": "Render Passes",
-      "id": "DA9E00D1-A9AD-4B23-9DD9-F66F7BF140CA",
-      "category": "Setup"
+      "name":"Render Passes",
+      "id":"DA9E00D1-A9AD-4B23-9DD9-F66F7BF140CA",
+      "category":"Setup"
     }
   },
-  "parent": {
-    "id": "361D902F-526F-452D-B925-7B59B0F5AB09"
+  "parent":{
+    "id":"361D902F-526F-452D-B925-7B59B0F5AB09"
   },
-  "name": "Base Renderer",
-  "isGenerated": 0,
-  "id": {
-    "id": "81C3A235-D3B7-4C3A-B921-EF1C6798E1D3"
+  "name":"Base Renderer",
+  "isGenerated":0,
+  "id":{
+    "id":"81C3A235-D3B7-4C3A-B921-EF1C6798E1D3"
   },
-  "category": "Renderer"
+  "category":"Renderer"
 }

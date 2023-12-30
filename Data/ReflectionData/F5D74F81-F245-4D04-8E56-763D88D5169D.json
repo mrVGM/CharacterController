@@ -1,27 +1,27 @@
 {
-  "properties": {
-    "267F2995-4E66-4D09-83B4-C9F021BE63FA": {
-      "type": {
-        "template": {
-          "template": {
-            "id": "9CFFA9B0-3542-4509-81CD-387C496ADAFF"
+  "properties":{
+    "267F2995-4E66-4D09-83B4-C9F021BE63FA":{
+      "type":{
+        "template":{
+          "template":{
+            "id":"9CFFA9B0-3542-4509-81CD-387C496ADAFF"
           },
-          "id": "1D4363E5-BC6F-4B49-80F3-FAC358F5B296"
+          "id":"1D4363E5-BC6F-4B49-80F3-FAC358F5B296"
         },
-        "id": "B5883DED-257C-4E35-846C-DB5BB7E11289"
+        "id":"B5883DED-257C-4E35-846C-DB5BB7E11289"
       },
-      "name": "Actor List",
-      "id": "267F2995-4E66-4D09-83B4-C9F021BE63FA",
-      "category": "Setup"
+      "name":"Actor List",
+      "id":"267F2995-4E66-4D09-83B4-C9F021BE63FA",
+      "category":"Setup"
     }
   },
-  "parent": {
-    "id": "361D902F-526F-452D-B925-7B59B0F5AB09"
+  "parent":{
+    "id":"361D902F-526F-452D-B925-7B59B0F5AB09"
   },
-  "name": "Scene Object",
-  "isGenerated": 0,
-  "id": {
-    "id": "F5D74F81-F245-4D04-8E56-763D88D5169D"
+  "name":"Scene Object",
+  "isGenerated":0,
+  "id":{
+    "id":"F5D74F81-F245-4D04-8E56-763D88D5169D"
   },
-  "category": "Scene"
+  "category":"Scene"
 }

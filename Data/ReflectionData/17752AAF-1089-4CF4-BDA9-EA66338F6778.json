@@ -1,12 +1,12 @@
 {
-  "properties": {},
-  "parent": {
-    "id": "361D902F-526F-452D-B925-7B59B0F5AB09"
+  "properties":{},
+  "parent":{
+    "id":"361D902F-526F-452D-B925-7B59B0F5AB09"
   },
-  "name": "Mesh Buffers",
-  "isGenerated": 0,
-  "id": {
-    "id": "17752AAF-1089-4CF4-BDA9-EA66338F6778"
+  "name":"Mesh Buffers",
+  "isGenerated":0,
+  "id":{
+    "id":"17752AAF-1089-4CF4-BDA9-EA66338F6778"
   },
-  "category": "Scene"
+  "category":"Scene"
 }

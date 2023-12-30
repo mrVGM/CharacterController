@@ -1,37 +1,37 @@
 {
-  "properties": {
-    "E42C1E0C-C69B-4F86-8EB2-4B5D3550249C": {
-      "type": {
-        "id": "D3B56C9E-8D0D-4065-9778-805D515D9EB6"
+  "properties":{
+    "E42C1E0C-C69B-4F86-8EB2-4B5D3550249C":{
+      "type":{
+        "id":"D3B56C9E-8D0D-4065-9778-805D515D9EB6"
       },
-      "name": "Near Plane",
-      "id": "E42C1E0C-C69B-4F86-8EB2-4B5D3550249C",
-      "category": "Setup"
+      "name":"Near Plane",
+      "id":"E42C1E0C-C69B-4F86-8EB2-4B5D3550249C",
+      "category":"Setup"
     },
-    "90F3E332-D507-4BCB-BCBE-E74E89F235F6": {
-      "type": {
-        "id": "D3B56C9E-8D0D-4065-9778-805D515D9EB6"
+    "90F3E332-D507-4BCB-BCBE-E74E89F235F6":{
+      "type":{
+        "id":"D3B56C9E-8D0D-4065-9778-805D515D9EB6"
       },
-      "name": "Far Plane",
-      "id": "90F3E332-D507-4BCB-BCBE-E74E89F235F6",
-      "category": "Setup"
+      "name":"Far Plane",
+      "id":"90F3E332-D507-4BCB-BCBE-E74E89F235F6",
+      "category":"Setup"
     },
-    "693B0DAC-75B2-42B0-AABF-1A447547B720": {
-      "type": {
-        "id": "D3B56C9E-8D0D-4065-9778-805D515D9EB6"
+    "693B0DAC-75B2-42B0-AABF-1A447547B720":{
+      "type":{
+        "id":"D3B56C9E-8D0D-4065-9778-805D515D9EB6"
       },
-      "name": "FOV",
-      "id": "693B0DAC-75B2-42B0-AABF-1A447547B720",
-      "category": "Setup"
+      "name":"FOV",
+      "id":"693B0DAC-75B2-42B0-AABF-1A447547B720",
+      "category":"Setup"
     }
   },
-  "parent": {
-    "id": "C01E1931-B22B-4CE1-8F97-D895200C2A87"
+  "parent":{
+    "id":"C01E1931-B22B-4CE1-8F97-D895200C2A87"
   },
-  "name": "Camera",
-  "isGenerated": 0,
-  "id": {
-    "id": "D026E773-A2D4-4D09-A174-A79B00E919DE"
+  "name":"Camera",
+  "isGenerated":0,
+  "id":{
+    "id":"D026E773-A2D4-4D09-A174-A79B00E919DE"
   },
-  "category": "Renderer"
+  "category":"Renderer"
 }

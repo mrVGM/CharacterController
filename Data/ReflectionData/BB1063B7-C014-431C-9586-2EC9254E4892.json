@@ -1,12 +1,12 @@
 {
-  "properties": {},
-  "parent": {
-    "id": "7D79EC02-6FBC-48F3-BB6F-1C07BE762DE8"
+  "properties":{},
+  "parent":{
+    "id":"7D79EC02-6FBC-48F3-BB6F-1C07BE762DE8"
   },
-  "name": "Reflection App Entry",
-  "isGenerated": 0,
-  "id": {
-    "id": "BB1063B7-C014-431C-9586-2EC9254E4892"
+  "name":"Reflection App Entry",
+  "isGenerated":0,
+  "id":{
+    "id":"BB1063B7-C014-431C-9586-2EC9254E4892"
   },
-  "category": "Reflection"
+  "category":"Reflection"
 }

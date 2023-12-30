@@ -1,12 +1,12 @@
 {
-  "properties": {},
-  "parent": {
-    "id": "361D902F-526F-452D-B925-7B59B0F5AB09"
+  "properties":{},
+  "parent":{
+    "id":"361D902F-526F-452D-B925-7B59B0F5AB09"
   },
-  "name": "Texture",
-  "isGenerated": 0,
-  "id": {
-    "id": "A1693B2C-8BE1-4AF8-AAC5-00206DA6FDE6"
+  "name":"Texture",
+  "isGenerated":0,
+  "id":{
+    "id":"A1693B2C-8BE1-4AF8-AAC5-00206DA6FDE6"
   },
-  "category": "Rendering"
+  "category":"Rendering"
 }

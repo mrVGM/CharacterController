@@ -1,24 +1,24 @@
 {
-  "properties": {
-    "A9E68EEE-504B-44B2-B3FF-6EF65493D3E9": {
-      "type": {
-        "template": {
-          "id": "7D79EC02-6FBC-48F3-BB6F-1C07BE762DE8"
+  "properties":{
+    "A9E68EEE-504B-44B2-B3FF-6EF65493D3E9":{
+      "type":{
+        "template":{
+          "id":"7D79EC02-6FBC-48F3-BB6F-1C07BE762DE8"
         },
-        "id": "1D4363E5-BC6F-4B49-80F3-FAC358F5B296"
+        "id":"1D4363E5-BC6F-4B49-80F3-FAC358F5B296"
       },
-      "name": "App Entry Point",
-      "id": "A9E68EEE-504B-44B2-B3FF-6EF65493D3E9",
-      "category": "Setup"
+      "name":"App Entry Point",
+      "id":"A9E68EEE-504B-44B2-B3FF-6EF65493D3E9",
+      "category":"Setup"
     }
   },
-  "parent": {
-    "id": "361D902F-526F-452D-B925-7B59B0F5AB09"
+  "parent":{
+    "id":"361D902F-526F-452D-B925-7B59B0F5AB09"
   },
-  "name": "App Type",
-  "isGenerated": 0,
-  "id": {
-    "id": "6CC559E5-8408-4894-8580-D2963791F201"
+  "name":"App Type",
+  "isGenerated":0,
+  "id":{
+    "id":"6CC559E5-8408-4894-8580-D2963791F201"
   },
-  "category": "App"
+  "category":"App"
 }

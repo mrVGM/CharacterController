@@ -1,21 +1,21 @@
 {
-  "properties": {
-    "C519F2FA-A756-42E1-B362-15556A2758D8": {
-      "type": {
-        "id": "8E993D4A-B13D-4D59-92D1-43F0FC138DBD"
+  "properties":{
+    "C519F2FA-A756-42E1-B362-15556A2758D8":{
+      "type":{
+        "id":"8E993D4A-B13D-4D59-92D1-43F0FC138DBD"
       },
-      "name": "Num Threads",
-      "id": "C519F2FA-A756-42E1-B362-15556A2758D8",
-      "category": "Setup"
+      "name":"Num Threads",
+      "id":"C519F2FA-A756-42E1-B362-15556A2758D8",
+      "category":"Setup"
     }
   },
-  "parent": {
-    "id": "361D902F-526F-452D-B925-7B59B0F5AB09"
+  "parent":{
+    "id":"361D902F-526F-452D-B925-7B59B0F5AB09"
   },
-  "name": "Job System",
-  "isGenerated": 0,
-  "id": {
-    "id": "061DFEE1-B9C6-406D-BFEC-E89830C7FD3D"
+  "name":"Job System",
+  "isGenerated":0,
+  "id":{
+    "id":"061DFEE1-B9C6-406D-BFEC-E89830C7FD3D"
   },
-  "category": "Jobs"
+  "category":"Jobs"
 }
