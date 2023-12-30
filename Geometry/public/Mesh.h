@@ -88,7 +88,7 @@ namespace geo
 		int* m_indices = nullptr;
 		
 		std::list<MaterialRange> m_materials;
-		SkinData* m_skinData = nullptr;
+		SkinData m_skinData;
 
 #pragma endregion
 

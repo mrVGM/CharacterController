@@ -934,14 +934,9 @@ geo::Mesh::~Mesh()
 	{
 		delete[] m_indices;
 	}
-	if (m_skinData)
-	{
-		delete m_skinData;
-	}
 
 	m_vertices = nullptr;
 	m_indices = nullptr;
-	m_skinData = nullptr;
 }
 
 void geo::Mesh::Load(jobs::Job* done)
@@ -1055,13 +1050,7 @@ void geo::Mesh::LoadData(jobs::Job* done)
 		}
 	}
 
-	SkinData skinData;
-	bool isSkinned = mr.ReadSkin(skinData, m_zUp);
-	if (isSkinned)
-	{
-		m_skinData = new SkinData();
-		*m_skinData = skinData;
-	}
+	mr.ReadSkin(m_skinData, m_zUp);
 
 	files::MemoryFile mf;
 	SerializeToMF(mf);
@@ -1121,6 +1110,8 @@ void geo::Mesh::SerializeToMF(files::MemoryFile& mf)
 
 		matRangesChunk.Write(writer);
 	}
+
+	m_skinData.WriteToMF(writer);
 }
 
 void geo::Mesh::DeserializeFromMF(files::MemoryFile& mf)
@@ -1160,6 +1151,8 @@ void geo::Mesh::DeserializeFromMF(files::MemoryFile& mf)
 			m_materials.push_back(arr[i]);
 		}
 	}
+
+	m_skinData.ReadFromMF(reader);
 }
 
 void geo::Mesh::SkinData::WriteToMF(files::MemoryFileWriter& writer)
