@@ -517,7 +517,7 @@ namespace
 
 			const Node* accessor = m_tree.FindChildNode(jointNamesSource, [&](const Node* node) {
 				return node->m_tagName == "accessor";
-				}, false);
+			}, false);
 
 			std::string jointsArraySourceId = accessor->m_tagProps.find("source")->second;
 			jointsArraySourceId = jointsArraySourceId.c_str() + 1;
@@ -533,7 +533,7 @@ namespace
 
 			std::stringstream ss;
 			int jointsCount;
-			ss << jointsArray->m_tagProps.find("count")->second;
+			ss << accessor->m_tagProps.find("count")->second;
 			ss >> jointsCount;
 
 			auto jointIt = jointsArray->m_data.begin();
@@ -541,6 +541,67 @@ namespace
 			{
 				scripting::ISymbol* cur = *(jointIt++);
 				skinData.m_boneNames.push_back(cur->m_symbolData.m_string);
+			}
+		}
+
+		void ReadInvBindMatrices(const xml_reader::Node* skin, geo::Mesh::SkinData& skinData)
+		{
+			using namespace xml_reader;
+
+			const Node* joints = m_tree.FindChildNode(skin, [](const Node* node) {
+				return node->m_tagName == "joints";
+			}, true);
+
+			const Node* invBindMatricesInput = m_tree.FindChildNode(joints, [](const Node* node) {
+				if (node->m_tagName != "input")
+				{
+					return false;
+				}
+
+				return node->m_tagProps.find("semantic")->second == "INV_BIND_MATRIX";
+			}, true);
+
+			std::string invBindMatrixSourceId = invBindMatricesInput->m_tagProps.find("source")->second;
+			invBindMatrixSourceId = invBindMatrixSourceId.c_str() + 1;
+
+			const Node* invBindMatrixSource = m_tree.FindChildNode(skin, [&](const Node* node) {
+				if (node->m_tagName != "source")
+				{
+					return false;
+				}
+
+				return node->m_tagProps.find("id")->second == invBindMatrixSourceId;
+			}, true);
+
+			const Node* accessor = m_tree.FindChildNode(invBindMatrixSource, [&](const Node* node) {
+				return node->m_tagName == "accessor";
+			}, false);
+
+			std::string floatArraySource = accessor->m_tagProps.find("source")->second;
+			floatArraySource = floatArraySource.c_str() + 1;
+
+			const Node* matrixArray = m_tree.FindChildNode(invBindMatrixSource, [&](const Node* node) {
+				if (node->m_tagName != "float_array")
+				{
+					return false;
+				}
+				
+				return node->m_tagProps.find("id")->second == floatArraySource;
+			}, true);
+
+			std::stringstream ss;
+			int matrixCount;
+			ss << accessor->m_tagProps.find("count")->second;
+			ss >> matrixCount;
+
+			auto numIt = matrixArray->m_data.begin();
+			for (int i = 0; i < matrixCount; ++i)
+			{
+				math::Matrix& mat = skinData.m_invBindMatrices.emplace_back();
+				for (int j = 0; j < 16; ++j)
+				{
+					mat.m_coefs[j] = (*(numIt++))->m_symbolData.m_number;
+				}
 			}
 		}
 
@@ -576,6 +637,7 @@ namespace
 			}
 
 			ReadJointNames(skin, skinData);
+			ReadInvBindMatrices(skin, skinData);
 
 			return true;
 		}
