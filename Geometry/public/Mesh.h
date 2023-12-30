@@ -53,16 +53,33 @@ namespace geo
 
 		struct SkinData
 		{
+			struct VertexWeights
+			{
+				int m_jointIndex[8] = { -1, -1, -1, -1, -1, -1, -1, -1 };
+				float m_jointWeight[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
+			};
+			bool m_hasAnyData = false;
 			std::vector<std::string> m_boneNames;
 			math::Matrix m_bindShapeMatrix;
 			std::vector<math::Matrix> m_invBindMatrices;
+			std::vector<VertexWeights> m_vertexWeights;
+			std::vector<int> m_vertexToWeightsMap;
+
+			void WriteToMF(files::MemoryFileWriter& writer);
+			void ReadFromMF(files::MemoryFileReader& reader);
 		};
 
 		Value m_colladaFile;
 		Value m_hash;
 		Value m_buffers;
 
+#pragma region Collada read helpers
+		
 		bool m_zUp = false;
+
+#pragma endregion
+
+#pragma region Binary Serialized
 
 		int m_numVertices = -1;
 		MeshVertex* m_vertices = nullptr;
@@ -71,8 +88,9 @@ namespace geo
 		int* m_indices = nullptr;
 		
 		std::list<MaterialRange> m_materials;
-
 		SkinData* m_skinData = nullptr;
+
+#pragma endregion
 
 		Mesh(const ReferenceTypeDef& type);
 		virtual ~Mesh();

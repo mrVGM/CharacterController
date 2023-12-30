@@ -35,6 +35,7 @@ namespace
 		std::vector<math::Vector3> m_normals;
 		std::vector<math::Vector2> m_uvs;
 
+		std::vector<int> m_vertexToPositionMap;
 		std::vector<geo::MeshVertex> m_verts;
 		std::map<std::string, int> m_vertexMap;
 
@@ -470,6 +471,8 @@ namespace
 					if (vertIt == m_vertexMap.end())
 					{
 						geo::MeshVertex& vert = m_verts.emplace_back();
+						m_vertexToPositionMap.push_back(vertIndex);
+
 						vert.m_position = m_positions[vertIndex];
 						vert.m_normal = m_normals[normalIndex] ;
 						vert.m_uv = m_uvs[uvIndex];
@@ -618,6 +621,164 @@ namespace
 			}
 		}
 
+		void ReadWeightsArray(const xml_reader::Node* skin, std::vector<float>& outWeightsArray)
+		{
+			using namespace xml_reader;
+
+			const Node* weightsNode = m_tree.FindChildNode(skin, [](const Node* node) {
+				return node->m_tagName == "vertex_weights";
+			}, true);
+
+			const Node* weightsArrayInput = m_tree.FindChildNode(weightsNode, [](const Node* node) {
+				if (node->m_tagName != "input")
+				{
+					return false;
+				}
+
+				return node->m_tagProps.find("semantic")->second == "WEIGHT";
+			}, true);
+
+			std::string weightsArraySourceId = weightsArrayInput->m_tagProps.find("source")->second;
+			weightsArraySourceId = weightsArraySourceId.c_str() + 1;
+
+			const Node* weightsArraySource = m_tree.FindChildNode(skin, [&](const Node* node) {
+				if (node->m_tagName != "source")
+				{
+					return false;
+				}
+
+				return node->m_tagProps.find("id")->second == weightsArraySourceId;
+			}, true);
+
+			const Node* accessor = m_tree.FindChildNode(weightsArraySource, [&](const Node* node) {
+				return node->m_tagName == "accessor";
+			}, false);
+
+			std::string floatArraySource = accessor->m_tagProps.find("source")->second;
+			floatArraySource = floatArraySource.c_str() + 1;
+
+			const Node* weightsArray = m_tree.FindChildNode(weightsArraySource, [&](const Node* node) {
+				if (node->m_tagName != "float_array")
+				{
+					return false;
+				}
+
+				return node->m_tagProps.find("id")->second == floatArraySource;
+			}, true);
+
+			std::stringstream ss;
+			int count;
+			ss << accessor->m_tagProps.find("count")->second;
+			ss >> count;
+
+			auto numIt = weightsArray->m_data.begin();
+			for (int i = 0; i < count; ++i)
+			{
+				float cur = (*(numIt++))->m_symbolData.m_number;
+				outWeightsArray.push_back(cur);
+			}
+		}
+
+		void ReadWeights(const xml_reader::Node* skin, geo::Mesh::SkinData& skinData)
+		{
+			using namespace xml_reader;
+
+			std::vector<float> weightsArray;
+			ReadWeightsArray(skin, weightsArray);
+
+			const Node* weightsNode = m_tree.FindChildNode(skin, [](const Node* node) {
+				return node->m_tagName == "vertex_weights";
+			}, true);
+
+			int count;
+			int stride = -1;
+
+			std::stringstream ss;
+			ss << weightsNode->m_tagProps.find("count")->second;
+			ss >> count;
+
+			{
+				std::list<const Node*> tmp;
+				m_tree.FindChildNodes(weightsNode, [](const Node* node) {
+					return node->m_tagName == "input";
+				}, true, tmp);
+
+				stride = tmp.size();
+			}
+
+			int jointOffset = -1;
+			int weightOffset = -1;
+
+			{
+				const Node* jointInput = m_tree.FindChildNode(weightsNode, [](const Node* node) {
+					if (node->m_tagName != "input")
+					{
+						return false;
+					}
+
+					return node->m_tagProps.find("semantic")->second == "JOINT";
+				}, true);
+
+				ss.clear();
+				ss << jointInput->m_tagProps.find("offset")->second;
+				ss >> jointOffset;
+			}
+
+			{
+				const Node* weightInput = m_tree.FindChildNode(weightsNode, [](const Node* node) {
+					if (node->m_tagName != "input")
+					{
+						return false;
+					}
+
+					return node->m_tagProps.find("semantic")->second == "WEIGHT";
+				}, true);
+
+				ss.clear();
+				ss << weightInput->m_tagProps.find("offset")->second;
+				ss >> weightOffset;
+			}
+
+			const Node* vcount = m_tree.FindChildNode(weightsNode, [](const Node* node) {
+				return node->m_tagName == "vcount";
+			}, true);
+
+			const Node* v = m_tree.FindChildNode(weightsNode, [](const Node* node) {
+				return node->m_tagName == "v";
+			}, true);
+
+			auto vcountIt = vcount->m_data.begin();
+			auto vIt = v->m_data.begin();
+
+			for (int i = 0; i < count; ++i)
+			{
+				int curV = static_cast<int>((*(vcountIt++))->m_symbolData.m_number);
+
+				geo::Mesh::SkinData::VertexWeights& weights = skinData.m_vertexWeights.emplace_back();
+
+				for (int j = 0; j < curV; ++j)
+				{
+					for (int k = 0; k < stride; ++k)
+					{
+						scripting::ISymbol* curSymbol = *vIt;
+						++vIt;
+
+						if (k == jointOffset)
+						{
+							weights.m_jointIndex[j] = static_cast<int>(curSymbol->m_symbolData.m_number);
+							continue;
+						}
+
+						if (k == weightOffset)
+						{
+							weights.m_jointWeight[j] = weightsArray[static_cast<int>(curSymbol->m_symbolData.m_number)];
+							continue;
+						}
+					}
+				}
+			}
+		}
+
 		bool ReadSkin(geo::Mesh::SkinData& skinData, bool zUp)
 		{
 			using namespace xml_reader;
@@ -651,6 +812,8 @@ namespace
 
 			ReadJointNames(skin, skinData);
 			ReadInvBindMatrices(skin, skinData);
+			ReadWeights(skin, skinData);
+			skinData.m_vertexToWeightsMap = m_vertexToPositionMap;
 
 			if (zUp)
 			{
@@ -695,6 +858,8 @@ namespace
 					cur.GetCoef(3, 2) = tmp[3];
 				}
 			}
+
+			skinData.m_hasAnyData = true;
 
 			return true;
 		}
@@ -993,6 +1158,188 @@ void geo::Mesh::DeserializeFromMF(files::MemoryFile& mf)
 		for (int i = 0; i < count; ++i)
 		{
 			m_materials.push_back(arr[i]);
+		}
+	}
+}
+
+void geo::Mesh::SkinData::WriteToMF(files::MemoryFileWriter& writer)
+{
+	using namespace files;
+	{
+		BinChunk hasDataChunk;
+		hasDataChunk.m_size = sizeof(bool);
+		bool* hasAnyData = new bool[1];
+		hasDataChunk.m_data = reinterpret_cast<char*>(hasAnyData);
+
+		*hasAnyData = m_hasAnyData;
+
+		hasDataChunk.Write(writer);
+	}
+
+	if (!m_hasAnyData)
+	{
+		return;
+	}
+
+	{
+		BinChunk namesChunk;
+
+		int size = sizeof(int);
+		for (auto it = m_boneNames.begin(); it != m_boneNames.end(); ++it)
+		{
+			size += sizeof(int) + (*it).size();
+		}
+
+		namesChunk.m_size = size * sizeof(char);
+		namesChunk.m_data = new char[namesChunk.m_size];
+
+		int* sizePtr = reinterpret_cast<int*>(namesChunk.m_data);
+		*(sizePtr++) = m_boneNames.size();
+
+		for (auto it = m_boneNames.begin(); it != m_boneNames.end(); ++it)
+		{
+			*(sizePtr++) = (*it).size();
+		}
+
+		char* curPos = reinterpret_cast<char*>(sizePtr);
+		for (auto it = m_boneNames.begin(); it != m_boneNames.end(); ++it)
+		{
+			const std::string& cur = *it;
+			int curSize = cur.size();
+			int copySize = curSize * sizeof(char);
+
+			memcpy(curPos, cur.c_str(), copySize);
+			curPos += curSize;
+		}
+		namesChunk.Write(writer);
+	}
+
+	{
+		BinChunk matrixChunk;
+		matrixChunk.m_size = (m_invBindMatrices.size() + 1) * sizeof(math::Matrix);
+		matrixChunk.m_data = new char[matrixChunk.m_size];
+
+		math::Matrix* matrixPtr = reinterpret_cast<math::Matrix*>(matrixChunk.m_data);
+
+		*(matrixPtr++) = m_bindShapeMatrix;
+		for (auto it = m_invBindMatrices.begin(); it != m_invBindMatrices.end(); ++it)
+		{
+			const math::Matrix& cur = *it;
+			*(matrixPtr++) = cur;
+		}
+		matrixChunk.Write(writer);
+	}
+
+	{
+		BinChunk weightsChunk;
+		weightsChunk.m_size = (m_vertexWeights.size()) * sizeof(geo::Mesh::SkinData::VertexWeights);
+		weightsChunk.m_data = new char[weightsChunk.m_size];
+
+		geo::Mesh::SkinData::VertexWeights* weightsPtr = reinterpret_cast<geo::Mesh::SkinData::VertexWeights*>(weightsChunk.m_data);
+
+		for (auto it = m_vertexWeights.begin(); it != m_vertexWeights.end(); ++it)
+		{
+			const geo::Mesh::SkinData::VertexWeights& cur = *it;
+			*(weightsPtr++) = cur;
+		}
+		weightsChunk.Write(writer);
+	}
+
+	{
+		BinChunk vertexToWeightsChunk;
+		vertexToWeightsChunk.m_size = (m_vertexToWeightsMap.size()) * sizeof(int);
+		vertexToWeightsChunk.m_data = new char[vertexToWeightsChunk.m_size];
+
+		int* vertexToWeightsPtr = reinterpret_cast<int*>(vertexToWeightsChunk.m_data);
+		for (auto it = m_vertexToWeightsMap.begin(); it != m_vertexToWeightsMap.end(); ++it)
+		{
+			*(vertexToWeightsPtr++) = *it;
+		}
+		vertexToWeightsChunk.Write(writer);
+	}
+}
+
+void geo::Mesh::SkinData::ReadFromMF(files::MemoryFileReader& reader)
+{
+	using namespace files;
+	{
+		BinChunk hasDataChunk;
+		hasDataChunk.Read(reader);
+
+		bool* hasAnyDataPtr = reinterpret_cast<bool*>(hasDataChunk.m_data);
+		m_hasAnyData = *hasAnyDataPtr;
+	}
+
+	if (!m_hasAnyData)
+	{
+		return;
+	}
+
+	{
+		BinChunk namesChunk;
+		namesChunk.Read(reader);
+		int* sizes = reinterpret_cast<int*>(namesChunk.m_data);
+
+		int count = *(sizes++);
+		char* names = reinterpret_cast<char*>(sizes + count);
+
+		for (int i = 0; i < count; ++i)
+		{
+			int curSize = sizes[i];
+			char* tmp = new char[curSize + 1];
+			
+			memset(tmp, 0, curSize + 1);
+			memcpy(tmp, names, curSize);
+			names += curSize;
+
+			m_boneNames.push_back(tmp);
+			delete[] tmp;
+		}
+	}
+
+	{
+		BinChunk matrixChunk;
+		matrixChunk.Read(reader);
+		int numMatrices = matrixChunk.m_size / sizeof(math::Matrix);
+
+		math::Matrix* matrixPtr = reinterpret_cast<math::Matrix*>(matrixChunk.m_data);
+		for (int i = 0; i < numMatrices; ++i)
+		{
+			math::Matrix* cur = &m_bindShapeMatrix;
+
+			if (i > 0)
+			{
+				math::Matrix& tmp = m_invBindMatrices.emplace_back();
+				cur = &tmp;
+			}
+			*cur = *(matrixPtr++);
+		}
+	}
+
+	{
+		BinChunk weightsChunk;
+		weightsChunk.Read(reader);
+		int numWeights = weightsChunk.m_size / sizeof(geo::Mesh::SkinData::VertexWeights);
+
+		geo::Mesh::SkinData::VertexWeights* weightsPtr = reinterpret_cast<geo::Mesh::SkinData::VertexWeights*>(weightsChunk.m_data);
+
+		for (int i = 0; i < numWeights; ++i)
+		{
+			geo::Mesh::SkinData::VertexWeights& cur = m_vertexWeights.emplace_back();
+			cur = *(weightsPtr++);
+		}
+	}
+
+	{
+		BinChunk vertexToWeightsChunk;
+		vertexToWeightsChunk.Read(reader);
+		int numIndices = vertexToWeightsChunk.m_size / sizeof(int);
+		int* indexPtr = reinterpret_cast<int*>(vertexToWeightsChunk.m_data);
+
+		for (int i = 0; i < numIndices; ++i)
+		{
+			int& cur = m_vertexToWeightsMap.emplace_back();
+			cur = *(indexPtr++);
 		}
 	}
 }
