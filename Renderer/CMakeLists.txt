@@ -5,8 +5,6 @@ add_library (Renderer
 	"private/Renderer.cpp"
 	"private/RendererAppEntry.h"
 	"private/RendererAppEntry.cpp"
-	"public/TickUpdater.h"
-	"private/TickUpdater.cpp"
 	"public/Camera.h"
 	"private/Camera.cpp"
 )
@@ -19,6 +17,7 @@ target_link_libraries(Renderer PUBLIC
 	App
 	Types
 	Scene
+	Runtime
 )
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)

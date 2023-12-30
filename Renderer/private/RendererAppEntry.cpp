@@ -150,7 +150,7 @@ void rendering::RendererAppEntryObj::RunTickUpdaters(double dt, jobs::Job* done)
 		jobs::RunSync(done);
 	};
 
-	auto startUpdater = [=](TickUpdater* updater) {
+	auto startUpdater = [=](runtime::TickUpdater* updater) {
 		return jobs::Job::CreateByLambda([=]() {
 			updater->Tick(dt, jobs::Job::CreateByLambda(updaterDone));
 		});
@@ -159,12 +159,12 @@ void rendering::RendererAppEntryObj::RunTickUpdaters(double dt, jobs::Job* done)
 	jobs::Job* getUpdaters = jobs::Job::CreateByLambda([=]() {
 		ObjectValueContainer& container = ObjectValueContainer::GetContainer();
 
-		container.GetObjectsOfType(TickUpdaterTypeDef::GetTypeDef(), updaters);
+		container.GetObjectsOfType(runtime::TickUpdaterTypeDef::GetTypeDef(), updaters);
 
 		bool anyUpdater = false;
 		for (auto it = updaters.begin(); it != updaters.end(); ++it)
 		{
-			TickUpdater* cur = static_cast<TickUpdater*>(*it);
+			runtime::TickUpdater* cur = static_cast<runtime::TickUpdater*>(*it);
 			if (!cur->IsTicking())
 			{
 				continue;

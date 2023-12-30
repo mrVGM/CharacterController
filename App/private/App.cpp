@@ -13,6 +13,7 @@
 #include "Reflection.h"
 #include "AssetManager.h"
 #include "Animation.h"
+#include "Runtime.h"
 
 #include "CommonTypeDefs.h"
 #include "RenderingCore.h"
@@ -65,6 +66,7 @@ void app::Boot()
 	scene::Boot();
 	rendering::unlit_rp::Boot();
 	animation::Boot();
+	runtime::Boot();
 
 #pragma endregion
 

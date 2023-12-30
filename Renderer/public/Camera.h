@@ -24,7 +24,7 @@ namespace rendering::renderer
 		void Construct(Value& container) const override;
 	};
 
-	class Camera : public TickUpdater
+	class Camera : public runtime::TickUpdater
 	{
 	private:
 		bool m_isLoaded = false;

@@ -30,7 +30,7 @@ const rendering::renderer::CameraTypeDef& rendering::renderer::CameraTypeDef::Ge
 }
 
 rendering::renderer::CameraTypeDef::CameraTypeDef() :
-	ReferenceTypeDef(&TickUpdaterTypeDef::GetTypeDef(), "D026E773-A2D4-4D09-A174-A79B00E919DE"),
+	ReferenceTypeDef(&runtime::TickUpdaterTypeDef::GetTypeDef(), "D026E773-A2D4-4D09-A174-A79B00E919DE"),
 	m_fov("693B0DAC-75B2-42B0-AABF-1A447547B720", FloatTypeDef::GetTypeDef()),
 	m_nearPlane("E42C1E0C-C69B-4F86-8EB2-4B5D3550249C", FloatTypeDef::GetTypeDef()),
 	m_farPlane("90F3E332-D507-4BCB-BCBE-E74E89F235F6", FloatTypeDef::GetTypeDef())

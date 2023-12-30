@@ -200,7 +200,5 @@ void rendering::renderer::Boot()
 {
 	RendererAppEntryTypeDef::GetTypeDef();
 	RendererTypeDef::GetTypeDef();
-	TickUpdaterTypeDef::GetTypeDef();
-
 	CameraTypeDef::GetTypeDef();
 }

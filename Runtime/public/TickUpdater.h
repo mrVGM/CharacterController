@@ -5,7 +5,7 @@
 
 #include "Job.h"
 
-namespace rendering::renderer
+namespace runtime
 {
 	class TickUpdaterTypeDef : public ReferenceTypeDef
 	{

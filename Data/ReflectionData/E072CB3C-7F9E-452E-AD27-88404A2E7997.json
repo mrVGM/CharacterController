@@ -1,0 +1,12 @@
+{
+  "properties":{},
+  "parent":{
+    "id":"361D902F-526F-452D-B925-7B59B0F5AB09"
+  },
+  "name":"Device",
+  "isGenerated":0,
+  "id":{
+    "id":"E072CB3C-7F9E-452E-AD27-88404A2E7997"
+  },
+  "category":"Rendering"
+}
