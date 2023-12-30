@@ -13,6 +13,7 @@ target_include_directories(Animation PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/privat
 target_link_libraries(Animation PUBLIC
 	Types
 	Jobs
+	Runtime
 )
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)

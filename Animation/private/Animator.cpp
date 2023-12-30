@@ -20,8 +20,8 @@ const animation::AnimatorTypeDef& animation::AnimatorTypeDef::GetTypeDef()
 animation::AnimatorTypeDef::AnimatorTypeDef() :
     ReferenceTypeDef(&ReferenceTypeDef::GetTypeDef(), "E072CB3C-7F9E-452E-AD27-88404A2E7997")
 {
-    m_name = "Device";
-    m_category = "Rendering";
+    m_name = "Animator";
+    m_category = "Animation";
 }
 
 animation::AnimatorTypeDef::~AnimatorTypeDef()
@@ -40,7 +40,7 @@ void animation::Animator::LoadData(jobs::Job* done)
 }
 
 animation::Animator::Animator(const ReferenceTypeDef& typeDef) :
-    ObjectValue(typeDef),
+    runtime::TickUpdater(typeDef),
     m_loader(*this)
 {
 }
@@ -52,6 +52,16 @@ animation::Animator::~Animator()
 void animation::Animator::Load(jobs::Job* done)
 {
     m_loader.Load(done);
+}
+
+bool animation::Animator::IsTicking()
+{
+    return false;
+}
+
+void animation::Animator::Tick(double dt, jobs::Job* done)
+{
+    jobs::RunSync(done);
 }
 
 

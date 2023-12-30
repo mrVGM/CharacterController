@@ -1,7 +1,6 @@
 #pragma once
 
-#include "CompositeTypeDef.h"
-#include "CompositeValue.h"
+#include "TickUpdater.h"
 
 #include "MultiLoader.h"
 
@@ -19,7 +18,7 @@ namespace animation
 	};
 
 
-	class Animator : public ObjectValue, public jobs::LoadingClass
+	class Animator : public runtime::TickUpdater, public jobs::LoadingClass
 	{
 	private:
 		jobs::MultiLoader m_loader;
@@ -32,5 +31,8 @@ namespace animation
 		virtual ~Animator();
 
 		void Load(jobs::Job* done);
+
+		virtual bool IsTicking() override;
+		virtual void Tick(double dt, jobs::Job* done) override;
 	};
 }
