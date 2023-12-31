@@ -103,8 +103,8 @@ void scene::MeshBuffers::Load(geo::Mesh& mesh, jobs::Job* done)
 		DXMutableBuffer* vBuff = ctx->m_vMutBuffer.GetValue<rendering::DXMutableBuffer*>();
 		DXMutableBuffer* iBuff = ctx->m_iMutBuffer.GetValue<rendering::DXMutableBuffer*>();
 		
-		vBuff->SetSizeAndStride(meshPtr->m_numVertices * sizeof(geo::MeshVertex), sizeof(geo::MeshVertex));
-		iBuff->SetSizeAndStride(meshPtr->m_numIndices * sizeof(int), sizeof(int));
+		vBuff->SetSizeAndStride(meshPtr->m_vertices.size() * sizeof(geo::MeshVertex), sizeof(geo::MeshVertex));
+		iBuff->SetSizeAndStride(meshPtr->m_indices.size() * sizeof(int), sizeof(int));
 
 		++ctx->m_toLoad;
 		jobs::RunAsync(jobs::Job::CreateByLambda([=]() {
@@ -112,7 +112,7 @@ void scene::MeshBuffers::Load(geo::Mesh& mesh, jobs::Job* done)
 			vBuff->Load(jobs::Job::CreateByLambda([=]() {
 				DXBuffer* upload = vBuff->m_uploadBuffer.GetValue<DXBuffer*>();
 				void* data = upload->Map();
-				memcpy(data, meshPtr->m_vertices, upload->GetBufferSize());
+				meshPtr->InitVertexBuffer(data);
 				upload->Unmap();
 
 				vBuff->Upload(jobs::Job::CreateByLambda(buffLoaded));
@@ -126,7 +126,7 @@ void scene::MeshBuffers::Load(geo::Mesh& mesh, jobs::Job* done)
 			iBuff->Load(jobs::Job::CreateByLambda([=]() {
 				DXBuffer* upload = iBuff->m_uploadBuffer.GetValue<DXBuffer*>();
 				void* data = upload->Map();
-				memcpy(data, meshPtr->m_indices, upload->GetBufferSize());
+				meshPtr->InitIndexBuffer(data);
 				upload->Unmap();
 
 				iBuff->Upload(jobs::Job::CreateByLambda(buffLoaded));

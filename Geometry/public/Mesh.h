@@ -78,12 +78,8 @@ namespace geo
 #pragma endregion
 
 #pragma region Binary Serialized
-
-		int m_numVertices = -1;
-		MeshVertex* m_vertices = nullptr;
-
-		int m_numIndices = -1;
-		int* m_indices = nullptr;
+		std::vector<MeshVertex> m_vertices;
+		std::vector<int> m_indices;
 		
 		std::list<MaterialRange> m_materials;
 		SkinData m_skinData;
@@ -92,5 +88,8 @@ namespace geo
 
 		Mesh(const ReferenceTypeDef& type);
 		virtual ~Mesh();
+
+		void InitVertexBuffer(void* dataPtr);
+		void InitIndexBuffer(void* dataPtr);
 	};
 }

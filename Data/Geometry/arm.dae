@@ -36,7 +36,7 @@
     </material>
   </library_materials>
   <library_geometries>
-    <geometry id="Cube-mesh" name="Cube">
+  <geometry id="Cube-mesh" name="Cube">
       <mesh>
         <source id="Cube-mesh-positions">
           <float_array id="Cube-mesh-positions-array" count="48">1 1 1 1 1 -1 1 -1 1 1 -1 -1 -1 1 1 -1 1 -1 -1 -1 1 -1 -1 -1 1 1 2.852975 1 -1 2.852975 -1 1 2.852975 -1 -1 2.852975 1 1 4.5397 1 -1 4.5397 -1 1 4.5397 -1 -1 4.5397</float_array>

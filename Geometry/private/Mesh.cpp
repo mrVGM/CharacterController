@@ -925,17 +925,6 @@ geo::Mesh::Mesh(const ReferenceTypeDef& type) :
 
 geo::Mesh::~Mesh()
 {
-	if (m_vertices)
-	{
-		delete[] m_vertices;
-	}
-	if (m_indices)
-	{
-		delete[] m_indices;
-	}
-
-	m_vertices = nullptr;
-	m_indices = nullptr;
 }
 
 void geo::Mesh::LoadData(jobs::Job* done)
@@ -986,7 +975,7 @@ void geo::Mesh::LoadData(jobs::Job* done)
 		return node->m_tagName == "triangles";
 	}, true, triangles);
 
-	m_numIndices = 0;
+	int numIndices = 0;
 	std::list<std::list<int>> indices;
 	MeshReader mr(tree);
 	for (auto it = triangles.begin(); it != triangles.end(); ++it)
@@ -994,18 +983,17 @@ void geo::Mesh::LoadData(jobs::Job* done)
 		std::list<int>& curIndices = indices.emplace_back();
 		mr.ReadTriangles(*it, curIndices);
 		MaterialRange& range = m_materials.emplace_back();
-		range.m_start = m_numIndices;
+		range.m_start = numIndices;
 		range.m_count = curIndices.size();
-		m_numIndices += curIndices.size();
+		numIndices += curIndices.size();
 	}
 
-	m_numVertices = mr.m_verts.size();
-	m_vertices = new MeshVertex[m_numVertices];
+	m_vertices = std::vector<MeshVertex>(mr.m_verts.begin(), mr.m_verts.end());
 	{
 		int index = 0;
-		for (auto it = mr.m_verts.begin(); it != mr.m_verts.end(); ++it)
+		for (auto it = m_vertices.begin(); it != m_vertices.end(); ++it)
 		{
-			MeshVertex& cur = m_vertices[index++];
+			MeshVertex& cur = *it;
 			cur = *it;
 
 			if (m_zUp)
@@ -1021,21 +1009,19 @@ void geo::Mesh::LoadData(jobs::Job* done)
 		}
 	}
 
-	m_indices = new int[m_numIndices];
 	{
-		int index = 0;
 		for (auto it = indices.begin(); it != indices.end(); ++it)
 		{
 			const std::list<int>& cur = *it;
 			for (auto curIt = cur.begin(); curIt != cur.end(); ++curIt)
 			{
-				m_indices[index++] = *curIt;
+				m_indices.push_back(*curIt);
 			}
 		}
 
 		if (m_zUp)
 		{
-			for (int i = 0; i < m_numIndices; i += 3)
+			for (int i = 0; i < m_indices.size(); i += 3)
 			{
 				int tmp = m_indices[i + 1];
 				m_indices[i + 1] = m_indices[i + 2];
@@ -1074,18 +1060,28 @@ void geo::Mesh::SerializeToMF(files::MemoryFile& mf)
 
 	{
 		BinChunk vertexChunk;
-		vertexChunk.m_data = reinterpret_cast<char*>(new MeshVertex[m_numVertices]);
-		vertexChunk.m_size = m_numVertices * sizeof(MeshVertex);
-		memcpy(vertexChunk.m_data, m_vertices, vertexChunk.m_size);
+		vertexChunk.m_data = reinterpret_cast<char*>(new MeshVertex[m_vertices.size()]);
+		vertexChunk.m_size = m_vertices.size() * sizeof(MeshVertex);
+
+		MeshVertex* vertsPtr = reinterpret_cast<MeshVertex*>(vertexChunk.m_data);
+		for (auto it = m_vertices.begin(); it != m_vertices.end(); ++it)
+		{
+			*(vertsPtr++) = *it;
+		}
 
 		vertexChunk.Write(writer);
 	}
 
 	{
 		BinChunk indexChunk;
-		indexChunk.m_data = reinterpret_cast<char*>(new int[m_numIndices]);
-		indexChunk.m_size = m_numIndices * sizeof(int);
-		memcpy(indexChunk.m_data, m_indices, indexChunk.m_size);
+		indexChunk.m_data = reinterpret_cast<char*>(new int[m_indices.size()]);
+		indexChunk.m_size = m_indices.size() * sizeof(int);
+		
+		int* indexPtr = reinterpret_cast<int*>(indexChunk.m_data);
+		for (auto it = m_indices.begin(); it != m_indices.end(); ++it)
+		{
+			*(indexPtr++) = *it;
+		}
 
 		indexChunk.Write(writer);
 	}
@@ -1118,20 +1114,24 @@ void geo::Mesh::DeserializeFromMF(files::MemoryFile& mf)
 		BinChunk vertexChunk;
 		vertexChunk.Read(reader);
 
-		m_numVertices = vertexChunk.m_size / sizeof(MeshVertex);
-		m_vertices = new MeshVertex[m_numVertices];
-
-		memcpy(m_vertices, vertexChunk.m_data, vertexChunk.m_size);
+		int numVertices = vertexChunk.m_size / sizeof(MeshVertex);
+		MeshVertex* vertsPtr = reinterpret_cast<MeshVertex*>(vertexChunk.m_data);
+		for (int i = 0; i < numVertices; ++i)
+		{
+			m_vertices.push_back(vertsPtr[i]);
+		}
 	}
 
 	{
 		BinChunk indexChunk;
 		indexChunk.Read(reader);
 
-		m_numIndices = indexChunk.m_size / sizeof(int);
-		m_indices = new int[m_numIndices];
-
-		memcpy(m_indices, indexChunk.m_data, indexChunk.m_size);
+		int numIndices = indexChunk.m_size / sizeof(int);
+		int* indexPtr = reinterpret_cast<int*>(indexChunk.m_data);
+		for (int i = 0; i < numIndices; ++i)
+		{
+			m_indices.push_back(indexPtr[i]);
+		}
 	}
 
 	{
@@ -1328,5 +1328,24 @@ void geo::Mesh::SkinData::ReadFromMF(files::MemoryFileReader& reader)
 			int& cur = m_vertexToWeightsMap.emplace_back();
 			cur = *(indexPtr++);
 		}
+	}
+}
+
+
+void geo::Mesh::InitVertexBuffer(void* dataPtr)
+{
+	MeshVertex* vertPtr = reinterpret_cast<MeshVertex*>(dataPtr);
+	for (auto it = m_vertices.begin(); it != m_vertices.end(); ++it)
+	{
+		*(vertPtr++) = *it;
+	}
+}
+
+void geo::Mesh::InitIndexBuffer(void* dataPtr)
+{
+	int* indexPtr = reinterpret_cast<int*>(dataPtr);
+	for (auto it = m_indices.begin(); it != m_indices.end(); ++it)
+	{
+		*(indexPtr++) = *it;
 	}
 }
