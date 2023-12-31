@@ -917,7 +917,6 @@ const geo::MeshTypeDef& geo::MeshTypeDef::GetTypeDef()
 
 geo::Mesh::Mesh(const ReferenceTypeDef& type) :
 	ObjectValue(type),
-	m_loader(*this),
 	m_hash(MeshTypeDef::GetTypeDef().m_hash.GetType(), this),
 	m_colladaFile(MeshTypeDef::GetTypeDef().m_colladaFile.GetType(), this),
 	m_buffers(ReferenceTypeDef::GetTypeDef(), this)

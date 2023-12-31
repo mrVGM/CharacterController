@@ -89,7 +89,6 @@ void scene::ActorTypeDef::Construct(Value& container) const
 
 scene::Actor::Actor(const ReferenceTypeDef& typeDef) :
 	ObjectValue(typeDef),
-	m_loader(*this),
 	m_device(rendering::DXDeviceTypeDef::GetTypeDef(), this),
 	m_meshDef(ActorTypeDef::GetTypeDef().m_mesh.GetType(), this),
 	m_mesh(geo::MeshTypeDef::GetTypeDef(), this),

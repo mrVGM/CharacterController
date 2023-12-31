@@ -45,7 +45,6 @@ void rendering::DXTextureTypeDef::Construct(Value& container) const
 
 rendering::DXTexture::DXTexture(const ReferenceTypeDef& typeDef) :
 	ObjectValue(typeDef),
-	m_loader(*this),
 	m_device(DXDeviceTypeDef::GetTypeDef(), this),
 	m_heap(DXHeapTypeDef::GetTypeDef(), this)
 {

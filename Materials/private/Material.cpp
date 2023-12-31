@@ -71,8 +71,6 @@ void rendering::materials::MaterialTypeDef::Construct(Value& container) const
 
 rendering::materials::Material::Material(const ReferenceTypeDef& typeDef) :
 	ObjectValue(typeDef),
-    m_loader(*this),
-
 	m_vertexShader(DXVertexShaderTypeDef::GetTypeDef(), this),
 	m_pixelShader(DXPixelShaderTypeDef::GetTypeDef(), this),
 	m_device(DXDeviceTypeDef::GetTypeDef(), this),

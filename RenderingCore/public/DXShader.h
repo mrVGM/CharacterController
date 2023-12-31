@@ -51,9 +51,6 @@ namespace rendering
 	private:
 		Microsoft::WRL::ComPtr<ID3DBlob> m_shader;
 
-		jobs::MultiLoader m_loader;
-
-
 	protected:
 		void LoadData(jobs::Job* done) override;
 

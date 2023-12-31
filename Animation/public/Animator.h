@@ -21,8 +21,6 @@ namespace animation
 	class Animator : public runtime::TickUpdater, public jobs::LoadingClass
 	{
 	private:
-		jobs::MultiLoader m_loader;
-
 		virtual void LoadData(jobs::Job* done) override;
 
 	public:

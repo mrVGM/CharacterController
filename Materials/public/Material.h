@@ -30,9 +30,6 @@ namespace rendering::materials
 
 	class Material : public ObjectValue, public jobs::LoadingClass
 	{
-	private:
-		jobs::MultiLoader m_loader;
-
 	protected:
 		Value m_device;
 		Value m_swapChain;

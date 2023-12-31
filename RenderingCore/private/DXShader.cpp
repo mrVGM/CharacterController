@@ -166,8 +166,7 @@ const rendering::DXPixelShaderTypeDef& rendering::DXPixelShaderTypeDef::GetTypeD
 rendering::DXShader::DXShader(const ReferenceTypeDef& type) :
 	ObjectValue(type),
 	m_name(StringTypeDef::GetTypeDef(), this),
-	m_hash(DXShaderTypeDef::GetTypeDef().m_hash.GetType(), this),
-	m_loader(*this)
+	m_hash(DXShaderTypeDef::GetTypeDef().m_hash.GetType(), this)
 {
 }
 

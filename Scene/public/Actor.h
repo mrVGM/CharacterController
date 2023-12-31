@@ -35,8 +35,6 @@ namespace scene
 	class Actor : public ObjectValue, public jobs::LoadingClass
 	{
 	private:
-		jobs::MultiLoader m_loader;
-
 		Value m_device;
 		Value m_materials;
 

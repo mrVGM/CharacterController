@@ -30,8 +30,6 @@ namespace rendering
 		Value m_heap;
 		Value m_device;
 
-		jobs::MultiLoader m_loader;
-
 		D3D12_RESOURCE_DESC m_description;
 		Microsoft::WRL::ComPtr<ID3D12Resource> m_texture;
 

@@ -65,9 +65,6 @@ namespace rendering
 
 	class DXDescriptorHeap : public ObjectValue, public jobs::LoadingClass
 	{
-	private:
-		jobs::MultiLoader m_loader;
-
 	protected:
 		Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> m_descriptorHeap;
 		UINT m_descriptorSize = 0;

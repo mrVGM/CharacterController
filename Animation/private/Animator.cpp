@@ -40,8 +40,7 @@ void animation::Animator::LoadData(jobs::Job* done)
 }
 
 animation::Animator::Animator(const ReferenceTypeDef& typeDef) :
-    runtime::TickUpdater(typeDef),
-    m_loader(*this)
+    runtime::TickUpdater(typeDef)
 {
 }
 

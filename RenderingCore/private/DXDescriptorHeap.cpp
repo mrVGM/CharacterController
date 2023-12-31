@@ -148,7 +148,6 @@ void rendering::DXDescriptorHeap::Init()
 
 rendering::DXDescriptorHeap::DXDescriptorHeap(const ReferenceTypeDef& typeDef) :
 	ObjectValue(typeDef),
-	m_loader(*this),
 	m_textureDefs(DXDescriptorHeapTypeDef::GetTypeDef().m_textures.GetType(), this),
 	m_device(DXDeviceTypeDef::GetTypeDef(), this),
 	m_textures(ListDef::GetTypeDef(DXTextureTypeDef::GetTypeDef()), this)

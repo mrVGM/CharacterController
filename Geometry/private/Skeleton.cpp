@@ -80,7 +80,6 @@ void geo::SkeletonTypeDef::Construct(Value& container) const
 
 geo::Skeleton::Skeleton(const ReferenceTypeDef& type) :
 	ObjectValue(type),
-	m_loader(*this),
 	m_hash(SkeletonTypeDef::GetTypeDef().m_hash.GetType(), this),
 	m_colladaFile(SkeletonTypeDef::GetTypeDef().m_colladaFile.GetType(), this),
 	m_buffers(ReferenceTypeDef::GetTypeDef(), this)
