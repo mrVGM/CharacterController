@@ -8,6 +8,14 @@ struct VertexInput3D
     float2 uv : UV;
 };
 
+struct SkMVertexInput3D
+{
+    float3 position : POSITION;
+    float3 normal : NORMAL;
+    float2 uv : UV;
+    int weightsIndex : WEIGHTS_INDEX;
+};
+
 struct SkeletalMeshVertexInput3D
 {
     float3 position : POSITION;

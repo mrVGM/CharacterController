@@ -319,7 +319,7 @@ void rendering::unlit_rp::UnlitMaterial::GenerateCommandList(
     ID3D12GraphicsCommandList* commandList)
 {
     THROW_ERROR(
-        commandList->Reset(commandAllocator, m_pipelineState.Get()),
+        commandList->Reset(commandAllocator, m_pipelineStateSkeletalMesh.Get()),
         "Can't reset Command List!")
 
     DXSwapChain* swapChain = m_swapChain.GetValue<DXSwapChain*>();
