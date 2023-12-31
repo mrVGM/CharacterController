@@ -10,6 +10,8 @@
 
 #include "MemoryFile.h"
 
+#include <map>
+
 namespace xml_reader
 {
 	struct XMLTree;
@@ -39,6 +41,8 @@ namespace geo
 		void SerializeToMF(files::MemoryFile& mf);
 		void DeserializeFromMF(files::MemoryFile& mf);
 
+		std::map<std::string, int> m_boneIndices;
+
 	protected:
 		virtual void LoadData(jobs::Job* done) override;
 
@@ -63,5 +67,7 @@ namespace geo
 
 		Skeleton(const ReferenceTypeDef& type);
 		virtual ~Skeleton();
+
+		int GetBoneIndex(const std::string& boneName) const;
 	};
 }

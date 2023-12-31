@@ -493,6 +493,33 @@ namespace
 		{
 			using namespace xml_reader;
 
+			std::map<std::string, std::string> boneIdToName;
+			{
+				const Node* lib = m_tree.FindNode([](const Node* node) {
+					return node->m_tagName == "library_visual_scenes";
+				});
+
+				const Node* visualScene = m_tree.FindChildNode(lib, [](const Node* node) {
+					return node->m_tagName == "visual_scene";
+				}, true);
+
+				std::list<const Node*> joints;
+				m_tree.FindChildNodes(visualScene, [](const Node* node) {
+					if (node->m_tagName != "node")
+					{
+						return false;
+					}
+
+					return node->m_tagProps.find("type")->second == "JOINT";
+				}, false, joints);
+
+				for (auto it = joints.begin(); it != joints.end(); ++it)
+				{
+					const Node* cur = *it;
+					boneIdToName[cur->m_tagProps.find("sid")->second] = cur->m_tagProps.find("name")->second;
+				}
+			}
+
 			const Node* joints = m_tree.FindChildNode(skin, [](const Node* node) {
 				return node->m_tagName == "joints";
 			}, true);
@@ -543,7 +570,7 @@ namespace
 			for (int i = 0; i < jointsCount; ++i)
 			{
 				scripting::ISymbol* cur = *(jointIt++);
-				skinData.m_boneNames.push_back(cur->m_symbolData.m_string);
+				skinData.m_boneNames.push_back(boneIdToName[cur->m_symbolData.m_string]);
 			}
 		}
 

@@ -90,6 +90,21 @@ geo::Skeleton::~Skeleton()
 {
 }
 
+int geo::Skeleton::GetBoneIndex(const std::string& boneName) const
+{
+	if (m_boneIndices.empty())
+	{
+		std::map<std::string, int>& map = const_cast<std::map<std::string, int>&>(m_boneIndices);
+		int index = 0;
+		for (auto it = m_boneNames.begin(); it != m_boneNames.end(); ++it)
+		{
+			map[*it] = index++;
+		}
+	}
+
+	return m_boneIndices.find(boneName)->second;
+}
+
 void geo::Skeleton::SerializeToMF(files::MemoryFile& mf)
 {
 	using namespace files;
@@ -270,7 +285,7 @@ void geo::Skeleton::LoadData(jobs::Job* done)
 	for (int i = 0; i < joints.size(); ++i)
 	{
 		const Node* cur = joints[i];
-		std::string id = cur->m_tagProps.find("id")->second;
+		std::string id = cur->m_tagProps.find("name")->second;
 		m_boneNames.push_back(id);
 	}
 

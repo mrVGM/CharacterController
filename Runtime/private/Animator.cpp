@@ -2,6 +2,9 @@
 
 #include "TickUpdater.h"
 
+#include "DXMutableBuffer.h"
+#include "Skeleton.h"
+
 #include "Jobs.h"
 
 namespace
@@ -53,12 +56,39 @@ animation::Animator::~Animator()
 
 bool animation::Animator::IsTicking()
 {
-    return false;
+    runtime::Actor* actor = m_actor.GetValue<runtime::Actor*>();
+    return actor;
 }
 
 void animation::Animator::Tick(double dt, jobs::Job* done)
 {
+    runtime::Actor* actor = m_actor.GetValue<runtime::Actor*>();
+    rendering::DXMutableBuffer* poseBuffer = actor->m_poseBuffer.GetValue<rendering::DXMutableBuffer*>();
+    rendering::DXBuffer* uploadBuff = poseBuffer->m_uploadBuffer.GetValue<rendering::DXBuffer*>();
 
+    geo::Mesh* mesh = actor->m_mesh.GetValue<geo::Mesh*>();
+    const geo::Mesh::SkinData& skinData = mesh->m_skinData;
+
+    geo::Skeleton* skeleton = actor->m_skeleton.GetValue<geo::Skeleton*>();
+
+    math::Matrix* poseData = static_cast<math::Matrix*>(uploadBuff->Map());
+
+    for (auto it = skinData.m_boneNames.begin(); it != skinData.m_boneNames.end(); ++it)
+    {
+        math::Matrix mat = math::Matrix::GetIdentityMatrix();
+
+        int curIndex = skeleton->GetBoneIndex(*it);
+        while (curIndex >= 0)
+        {
+            mat = skeleton->m_bindPose[curIndex] * mat;
+            curIndex = skeleton->m_boneParents[curIndex];
+        }
+
+        *(poseData++) = mat.Transpose();
+    }
+
+    uploadBuff->Unmap();
+    poseBuffer->SetDirty(true);
 
     jobs::RunSync(done);
 }

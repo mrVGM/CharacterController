@@ -38,9 +38,6 @@ namespace runtime
 		Value m_device;
 		Value m_materials;
 
-		Value m_mesh;
-		Value m_skeleton;
-
 		Microsoft::WRL::ComPtr<ID3D12CommandAllocator> m_commandAllocator;
 		std::map<
 			const TypeDef*, 
@@ -55,6 +52,8 @@ namespace runtime
 		Value m_skeletonDef;
 		Value m_materialDefs;
 
+		Value m_mesh;
+		Value m_skeleton;
 		Value m_transformBuffer;
 		Value m_poseBuffer;
 		Value m_animator;
