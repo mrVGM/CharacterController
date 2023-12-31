@@ -40,7 +40,8 @@ const rendering::unlit_rp::UnlitMaterialTypeDef& rendering::unlit_rp::UnlitMater
 
 rendering::unlit_rp::UnlitMaterialTypeDef::UnlitMaterialTypeDef() :
 	ReferenceTypeDef(&materials::MaterialTypeDef::GetTypeDef(), "FE33ED22-B48B-4567-B4DF-575CF941D787"),
-    m_rtDescHeap("20D42103-7616-4545-9123-B858E8F38050", TypeTypeDef::GetTypeDef(RenderTargetDescriptorHeapTypeDef::GetTypeDef()))
+    m_rtDescHeap("20D42103-7616-4545-9123-B858E8F38050", TypeTypeDef::GetTypeDef(RenderTargetDescriptorHeapTypeDef::GetTypeDef())),
+    m_skeletalMeshVertexShader("24133A1B-721D-4B89-A796-4609ACACAD1C", TypeTypeDef::GetTypeDef(DXVertexShaderTypeDef::GetTypeDef()))
 {
     {
         m_rtDescHeap.m_name = "RT Heap";
@@ -50,6 +51,16 @@ rendering::unlit_rp::UnlitMaterialTypeDef::UnlitMaterialTypeDef() :
             return mat->m_rtDescHeapDef;
         };
         m_properties[m_rtDescHeap.GetId()] = &m_rtDescHeap;
+    }
+
+    {
+        m_skeletalMeshVertexShader.m_name = "Skeletal Mesh Vertex Shader";
+        m_skeletalMeshVertexShader.m_category = "Setup";
+        m_skeletalMeshVertexShader.m_getValue = [](CompositeValue* obj) -> Value& {
+            UnlitMaterial* mat = static_cast<UnlitMaterial*>(obj);
+            return mat->m_skeletalMeshVertexShaderDef;
+        };
+        m_properties[m_skeletalMeshVertexShader.GetId()] = &m_skeletalMeshVertexShader;
     }
 
 	m_name = "Unlit Material";
@@ -71,6 +82,9 @@ rendering::unlit_rp::UnlitMaterial::UnlitMaterial(const ReferenceTypeDef& typeDe
 
     m_rtDescHeapDef(UnlitMaterialTypeDef::GetTypeDef().m_rtDescHeap.GetType(), this),
     m_rtDescHeap(RenderTargetDescriptorHeapTypeDef::GetTypeDef(), this),
+
+    m_skeletalMeshVertexShaderDef(UnlitMaterialTypeDef::GetTypeDef().m_skeletalMeshVertexShader.GetType(), this),
+    m_skeletalMeshVertexShader(DXVertexShaderTypeDef::GetTypeDef(), this),
 
 	m_dsDescriptorHeap(DXDescriptorHeapTypeDef::GetTypeDef(), this),
     m_camBuffer(render_pass::CameraBufferTypeDef::GetTypeDef(), this)
@@ -263,6 +277,9 @@ void rendering::unlit_rp::UnlitMaterial::LoadData(jobs::Job* done)
         
         m_rtDescHeap.AssignObject(
             ObjectValueContainer::GetObjectOfType(*m_rtDescHeapDef.GetType<const TypeDef*>()));
+
+        m_skeletalMeshVertexShader.AssignObject(
+            ObjectValueContainer::GetObjectOfType(*m_skeletalMeshVertexShaderDef.GetType<const TypeDef*>()));
 
         jobs::RunAsync(loadParent);
     });

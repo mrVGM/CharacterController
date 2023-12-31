@@ -96,6 +96,23 @@ void rendering::materials::Material::GenerateCommandList(
 {
 }
 
+void rendering::materials::Material::GenerateCommandList(
+	const DXBuffer& vertexBuffer,
+	const DXBuffer& indexBuffer,
+	const DXBuffer& instanceBuffer,
+
+	const DXBuffer& weightsIdBuffer,
+	const DXBuffer& weightsBuffer,
+
+	const DXBuffer& poseBuffer,
+
+	UINT startIndex,
+	UINT indexCount,
+	ID3D12CommandAllocator* commandAllocator,
+	ID3D12GraphicsCommandList* commandList)
+{
+}
+
 void rendering::materials::Material::LoadData(jobs::Job* done)
 {
     struct Context

@@ -9,6 +9,7 @@ namespace rendering::unlit_rp
 		TYPE_DEF_BODY(UnlitMaterialTypeDef)
 
 	public:
+		TypeProperty m_skeletalMeshVertexShader;
 		TypeProperty m_rtDescHeap;
 
 		UnlitMaterialTypeDef();
@@ -29,12 +30,14 @@ namespace rendering::unlit_rp
 		virtual void CreatePipelineStateAndRootSignatureForStaticMesh();
 
 		Value m_rtDescHeap;
+		Value m_skeletalMeshVertexShader;
 
 	protected:
 		void LoadData(jobs::Job* done) override;
 
 	public:
 		Value m_rtDescHeapDef;
+		Value m_skeletalMeshVertexShaderDef;
 
 		UnlitMaterial(const ReferenceTypeDef& typeDef);
 		virtual ~UnlitMaterial();

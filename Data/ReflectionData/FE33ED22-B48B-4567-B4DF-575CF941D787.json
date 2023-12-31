@@ -1,5 +1,16 @@
 {
   "properties":{
+    "24133A1B-721D-4B89-A796-4609ACACAD1C":{
+      "type":{
+        "template":{
+          "id":"F2A064DD-D5B3-44B4-94B5-AFC68840828D"
+        },
+        "id":"1D4363E5-BC6F-4B49-80F3-FAC358F5B296"
+      },
+      "name":"Skeletal Mesh Vertex Shader",
+      "id":"24133A1B-721D-4B89-A796-4609ACACAD1C",
+      "category":"Setup"
+    },
     "20D42103-7616-4545-9123-B858E8F38050":{
       "type":{
         "template":{
