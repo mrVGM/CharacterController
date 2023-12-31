@@ -562,6 +562,8 @@ namespace
 					scripting::ISymbol* cur = *(numIt++);
 					skinData.m_bindShapeMatrix.m_coefs[i] = cur->m_symbolData.m_number;
 				}
+
+				skinData.m_bindShapeMatrix = skinData.m_bindShapeMatrix.Transpose();
 			}
 
 			const Node* joints = m_tree.FindChildNode(skin, [](const Node* node) {
@@ -618,6 +620,7 @@ namespace
 				{
 					mat.m_coefs[j] = (*(numIt++))->m_symbolData.m_number;
 				}
+				mat = mat.Transpose();
 			}
 		}
 
