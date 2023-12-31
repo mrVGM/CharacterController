@@ -15,7 +15,7 @@
 #include <map>
 #include <list>
 
-namespace scene
+namespace runtime
 {
 	class ActorTypeDef : public ReferenceTypeDef
 	{

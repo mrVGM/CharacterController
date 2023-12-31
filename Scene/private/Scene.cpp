@@ -7,6 +7,4 @@
 void scene::Boot()
 {
 	SceneObjectTypeDef::GetTypeDef();
-	ActorTypeDef::GetTypeDef();
-	MeshBuffersTypeDef::GetTypeDef();
 }

@@ -184,7 +184,7 @@ void rendering::unlit_rp::UnlitRP::Execute()
 	auto mapCommandLists = [=](std::function<void(ID3D12CommandList*)> f) {
 		for (auto it = actorList->GetIterator(); it; ++it)
 		{
-			scene::Actor* cur = (*it).GetValue<scene::Actor*>();
+			runtime::Actor* cur = (*it).GetValue<runtime::Actor*>();
 			ValueList* matDefs = cur->m_materialDefs.GetValue<ValueList*>();
 
 			std::set<const TypeDef*> matsProcessed;
@@ -274,8 +274,8 @@ void rendering::unlit_rp::UnlitRP::Load(jobs::Job* done)
 		geo::Mesh* mesh = m_quadMesh.GetValue<geo::Mesh*>();
 
 		jobs::Job* loadMeshBuffers = jobs::Job::CreateByLambda([=]() {
-			scene::MeshBuffersTypeDef::GetTypeDef().Construct(mesh->m_buffers);
-			scene::MeshBuffers* meshBuffers = mesh->m_buffers.GetValue<scene::MeshBuffers*>();
+			runtime::MeshBuffersTypeDef::GetTypeDef().Construct(mesh->m_buffers);
+			runtime::MeshBuffers* meshBuffers = mesh->m_buffers.GetValue<runtime::MeshBuffers*>();
 
 			jobs::RunAsync(jobs::Job::CreateByLambda([=]() {
 				meshBuffers->Load(*mesh, jobs::Job::CreateByLambda(itemLoaded));
@@ -385,7 +385,7 @@ const rendering::unlit_rp::UnlitRP::CMDListCache& rendering::unlit_rp::UnlitRP::
 	{
 		materials::Material* displayRTMat = m_displayTextureMat.GetValue<materials::Material*>();
 		geo::Mesh* quadMesh = m_quadMesh.GetValue<geo::Mesh*>();
-		scene::MeshBuffers* meshBuffers = quadMesh->m_buffers.GetValue<scene::MeshBuffers*>();
+		runtime::MeshBuffers* meshBuffers = quadMesh->m_buffers.GetValue<runtime::MeshBuffers*>();
 		DXBuffer* vertexBuffer = meshBuffers->m_vertexBuffer.GetValue<DXBuffer*>();
 		DXBuffer* indexBuffer = meshBuffers->m_indexBuffer.GetValue<DXBuffer*>();
 

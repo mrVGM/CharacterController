@@ -7,7 +7,7 @@
 
 #include "Job.h"
 
-namespace scene
+namespace runtime
 {
 	class MeshBuffersTypeDef : public ReferenceTypeDef
 	{

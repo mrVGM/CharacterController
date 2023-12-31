@@ -11,10 +11,10 @@
 
 namespace
 {
-	BasicObjectContainer<scene::MeshBuffersTypeDef> m_meshBuffers;
+	BasicObjectContainer<runtime::MeshBuffersTypeDef> m_meshBuffers;
 }
 
-const scene::MeshBuffersTypeDef& scene::MeshBuffersTypeDef::GetTypeDef()
+const runtime::MeshBuffersTypeDef& runtime::MeshBuffersTypeDef::GetTypeDef()
 {
 	if (!m_meshBuffers.m_object)
 	{
@@ -24,24 +24,24 @@ const scene::MeshBuffersTypeDef& scene::MeshBuffersTypeDef::GetTypeDef()
 	return *m_meshBuffers.m_object;
 }
 
-scene::MeshBuffersTypeDef::MeshBuffersTypeDef() :
+runtime::MeshBuffersTypeDef::MeshBuffersTypeDef() :
 	ReferenceTypeDef(&ReferenceTypeDef::GetTypeDef(), "17752AAF-1089-4CF4-BDA9-EA66338F6778")
 {
 	m_name = "Mesh Buffers";
 	m_category = "Scene";
 }
 
-scene::MeshBuffersTypeDef::~MeshBuffersTypeDef()
+runtime::MeshBuffersTypeDef::~MeshBuffersTypeDef()
 {
 }
 
-void scene::MeshBuffersTypeDef::Construct(Value& container) const
+void runtime::MeshBuffersTypeDef::Construct(Value& container) const
 {
 	MeshBuffers* meshBuffers = new MeshBuffers(*this);
 	container.AssignObject(meshBuffers);
 }
 
-scene::MeshBuffers::MeshBuffers(const ReferenceTypeDef& typeDef) :
+runtime::MeshBuffers::MeshBuffers(const ReferenceTypeDef& typeDef) :
 	ObjectValue(typeDef),
 	m_vertexBuffer(rendering::DXBufferTypeDef::GetTypeDef(), this),
 	m_indexBuffer(rendering::DXBufferTypeDef::GetTypeDef(), this),
@@ -50,11 +50,11 @@ scene::MeshBuffers::MeshBuffers(const ReferenceTypeDef& typeDef) :
 {
 }
 
-scene::MeshBuffers::~MeshBuffers()
+runtime::MeshBuffers::~MeshBuffers()
 {
 }
 
-void scene::MeshBuffers::Load(geo::Mesh& mesh, jobs::Job* done)
+void runtime::MeshBuffers::Load(geo::Mesh& mesh, jobs::Job* done)
 {
 	struct Context
 	{

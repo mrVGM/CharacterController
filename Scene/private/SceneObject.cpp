@@ -32,7 +32,7 @@ scene::SceneObjectTypeDef::SceneObjectTypeDef() :
 	ReferenceTypeDef(&ReferenceTypeDef::GetTypeDef(), "F5D74F81-F245-4D04-8E56-763D88D5169D"),
 	m_actorList(
 		"267F2995-4E66-4D09-83B4-C9F021BE63FA",
-		ListDef::GetTypeDef(TypeTypeDef::GetTypeDef(ActorTypeDef::GetTypeDef())))
+		ListDef::GetTypeDef(TypeTypeDef::GetTypeDef(runtime::ActorTypeDef::GetTypeDef())))
 {
 	
 	{
@@ -62,7 +62,7 @@ void scene::SceneObjectTypeDef::Construct(Value& container) const
 
 scene::SceneObject::SceneObject(const ReferenceTypeDef& typeDef) :
 	ObjectValue(typeDef),
-	m_actors(ListDef::GetTypeDef(ActorTypeDef::GetTypeDef()), this),
+	m_actors(ListDef::GetTypeDef(runtime::ActorTypeDef::GetTypeDef()), this),
 	m_actorDefList(SceneObjectTypeDef::GetTypeDef().m_actorList.GetType(), this)
 {
 }
@@ -94,7 +94,7 @@ void scene::SceneObject::Load(jobs::Job* done)
 		jobs::RunSync(done);
 	};
 
-	auto loadActor = [=](Actor* actor) {
+	auto loadActor = [=](runtime::Actor* actor) {
 		return jobs::Job::CreateByLambda([=]() {
 			actor->Load(jobs::Job::CreateByLambda(actorLoaded));
 		});
@@ -105,12 +105,12 @@ void scene::SceneObject::Load(jobs::Job* done)
 		for (auto it = actorDefs->GetIterator(); it; ++it)
 		{
 			const Value& cur = *it;
-			Actor* curActor = static_cast<Actor*>(ObjectValueContainer::GetObjectOfType(*cur.GetType<const TypeDef*>()));
+			runtime::Actor* curActor = static_cast<runtime::Actor*>(ObjectValueContainer::GetObjectOfType(*cur.GetType<const TypeDef*>()));
 
 			Value& actorVal = actorList->EmplaceBack();
 			actorVal.AssignObject(curActor);
 
-			Actor* actor = actorVal.GetValue<Actor*>();
+			runtime::Actor* actor = actorVal.GetValue<runtime::Actor*>();
 
 			++ctx->m_toLoad;
 			jobs::RunAsync(loadActor(actor));

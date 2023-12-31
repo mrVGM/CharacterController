@@ -24,10 +24,10 @@ if (FAILED(hRes)) {\
 
 namespace
 {
-	BasicObjectContainer<scene::ActorTypeDef> m_actorTypeDef;
+	BasicObjectContainer<runtime::ActorTypeDef> m_actorTypeDef;
 }
 
-const scene::ActorTypeDef& scene::ActorTypeDef::GetTypeDef()
+const runtime::ActorTypeDef& runtime::ActorTypeDef::GetTypeDef()
 {
 	if (!m_actorTypeDef.m_object)
 	{
@@ -37,7 +37,7 @@ const scene::ActorTypeDef& scene::ActorTypeDef::GetTypeDef()
 	return *m_actorTypeDef.m_object;
 }
 
-scene::ActorTypeDef::ActorTypeDef() :
+runtime::ActorTypeDef::ActorTypeDef() :
 	ReferenceTypeDef(&ReferenceTypeDef::GetTypeDef(), "9CFFA9B0-3542-4509-81CD-387C496ADAFF"),
 	m_mesh("6B501787-EFF6-4EDF-85A4-571428A47071", TypeTypeDef::GetTypeDef(geo::MeshTypeDef::GetTypeDef())),
 	m_skeleton("27391D76-9D4F-4490-B3F3-0DD453CE22A5", TypeTypeDef::GetTypeDef(geo::SkeletonTypeDef::GetTypeDef())),
@@ -77,17 +77,17 @@ scene::ActorTypeDef::ActorTypeDef() :
 	m_category = "Scene";
 }
 
-scene::ActorTypeDef::~ActorTypeDef()
+runtime::ActorTypeDef::~ActorTypeDef()
 {
 }
 
-void scene::ActorTypeDef::Construct(Value& container) const
+void runtime::ActorTypeDef::Construct(Value& container) const
 {
 	Actor* actor = new Actor(*this);
 	container.AssignObject(actor);
 }
 
-scene::Actor::Actor(const ReferenceTypeDef& typeDef) :
+runtime::Actor::Actor(const ReferenceTypeDef& typeDef) :
 	ObjectValue(typeDef),
 	m_device(rendering::DXDeviceTypeDef::GetTypeDef(), this),
 	m_meshDef(ActorTypeDef::GetTypeDef().m_mesh.GetType(), this),
@@ -101,16 +101,16 @@ scene::Actor::Actor(const ReferenceTypeDef& typeDef) :
 {
 }
 
-scene::Actor::~Actor()
+runtime::Actor::~Actor()
 {
 }
 
-void scene::Actor::SetMesh(geo::Mesh* mesh)
+void runtime::Actor::SetMesh(geo::Mesh* mesh)
 {
 	m_mesh.AssignObject(mesh);
 }
 
-void scene::Actor::LoadData(jobs::Job* done)
+void runtime::Actor::LoadData(jobs::Job* done)
 {
 	struct Context
 	{
@@ -216,7 +216,7 @@ void scene::Actor::LoadData(jobs::Job* done)
 	jobs::RunSync(init);
 }
 
-void scene::Actor::CacheCMDLists(jobs::Job* done)
+void runtime::Actor::CacheCMDLists(jobs::Job* done)
 {
 	jobs::Job* recordCommandLists = jobs::Job::CreateByLambda([=]() {
 		rendering::DXDevice* device = m_device.GetValue<rendering::DXDevice*>();
@@ -273,7 +273,7 @@ void scene::Actor::CacheCMDLists(jobs::Job* done)
 	jobs::RunAsync(recordCommandLists);
 }
 
-void scene::Actor::GetCMDLists(const TypeDef* material, std::list<ID3D12CommandList*>& outLists)
+void runtime::Actor::GetCMDLists(const TypeDef* material, std::list<ID3D12CommandList*>& outLists)
 {
 	auto it = m_cmdListCache.find(material);
 	if (it == m_cmdListCache.end())
