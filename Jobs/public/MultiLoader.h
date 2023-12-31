@@ -6,15 +6,7 @@
 
 namespace jobs
 {
-	class LoadingClass
-	{
-		friend class MultiLoader;
-	protected:
-		virtual void LoadData(Job* done) = 0;
-
-	public:
-		virtual ~LoadingClass();
-	};
+	class LoadingClass;
 
 	class MultiLoader
 	{
@@ -29,5 +21,20 @@ namespace jobs
 		MultiLoader(LoadingClass& loadingClass);
 
 		void Load(jobs::Job* done);
+	};
+
+	class LoadingClass
+	{
+		friend class MultiLoader;
+	private:
+		MultiLoader m_loader;
+	protected:
+		virtual void LoadData(Job* done) = 0;
+
+	public:
+		LoadingClass();
+
+		void Load(Job* done);
+		virtual ~LoadingClass();
 	};
 }

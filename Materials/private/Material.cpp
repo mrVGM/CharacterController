@@ -98,11 +98,6 @@ void rendering::materials::Material::GenerateCommandList(
 {
 }
 
-void rendering::materials::Material::Load(jobs::Job* done)
-{
-    m_loader.Load(done);
-}
-
 void rendering::materials::Material::LoadData(jobs::Job* done)
 {
     struct Context

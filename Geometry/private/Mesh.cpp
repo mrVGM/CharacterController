@@ -939,11 +939,6 @@ geo::Mesh::~Mesh()
 	m_indices = nullptr;
 }
 
-void geo::Mesh::Load(jobs::Job* done)
-{
-	m_loader.Load(done);
-}
-
 void geo::Mesh::LoadData(jobs::Job* done)
 {
 	using namespace xml_reader;

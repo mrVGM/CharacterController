@@ -64,8 +64,6 @@ namespace rendering
 		DXShader(const ReferenceTypeDef& type);
 		virtual ~DXShader();
 
-		void Load(jobs::Job* done);
-
 		ID3DBlob* GetCompiledShader() const;
 	};
 

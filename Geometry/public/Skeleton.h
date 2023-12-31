@@ -65,7 +65,5 @@ namespace geo
 
 		Skeleton(const ReferenceTypeDef& type);
 		virtual ~Skeleton();
-
-		void Load(jobs::Job* done);
 	};
 }

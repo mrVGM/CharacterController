@@ -46,6 +46,16 @@ void jobs::MultiLoader::Load(jobs::Job* done)
 	jobs::RunSync(registerRequest);
 }
 
+jobs::LoadingClass::LoadingClass() :
+	m_loader(*this)
+{
+}
+
 jobs::LoadingClass::~LoadingClass()
 {
+}
+
+void jobs::LoadingClass::Load(jobs::Job* done)
+{
+	m_loader.Load(done);
 }

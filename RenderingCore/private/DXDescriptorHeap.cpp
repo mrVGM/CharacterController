@@ -159,11 +159,6 @@ rendering::DXDescriptorHeap::~DXDescriptorHeap()
 {
 }
 
-void rendering::DXDescriptorHeap::Load(jobs::Job* done)
-{
-	m_loader.Load(done);
-}
-
 ID3D12DescriptorHeap* rendering::DXDescriptorHeap::GetDescriptorHeap()
 {
 	return m_descriptorHeap.Get();

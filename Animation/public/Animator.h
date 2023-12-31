@@ -30,8 +30,6 @@ namespace animation
 		Animator(const ReferenceTypeDef& type);
 		virtual ~Animator();
 
-		void Load(jobs::Job* done);
-
 		virtual bool IsTicking() override;
 		virtual void Tick(double dt, jobs::Job* done) override;
 	};

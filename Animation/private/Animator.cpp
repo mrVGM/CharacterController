@@ -49,11 +49,6 @@ animation::Animator::~Animator()
 {
 }
 
-void animation::Animator::Load(jobs::Job* done)
-{
-    m_loader.Load(done);
-}
-
 bool animation::Animator::IsTicking()
 {
     return false;

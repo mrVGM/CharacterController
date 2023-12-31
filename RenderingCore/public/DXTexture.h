@@ -46,7 +46,6 @@ namespace rendering
 		virtual ~DXTexture();
 
 		void SetDescription(const D3D12_RESOURCE_DESC& description);
-		void Load(jobs::Job* done);
 
 		const D3D12_RESOURCE_DESC& GetTextureDescription() const;
 		D3D12_RESOURCE_ALLOCATION_INFO GetTextureAllocationInfo() const;

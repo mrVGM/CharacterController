@@ -94,7 +94,5 @@ namespace geo
 
 		Mesh(const ReferenceTypeDef& type);
 		virtual ~Mesh();
-
-		void Load(jobs::Job* done);
 	};
 }

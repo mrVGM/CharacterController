@@ -32,7 +32,7 @@ namespace scene
 		void Construct(Value& container) const override;
 	};
 
-	class Actor : public ObjectValue, jobs::LoadingClass
+	class Actor : public ObjectValue, public jobs::LoadingClass
 	{
 	private:
 		jobs::MultiLoader m_loader;
@@ -64,8 +64,6 @@ namespace scene
 		virtual ~Actor();
 
 		void SetMesh(geo::Mesh* mesh);
-
-		void Load(jobs::Job* done);
 
 		void GetCMDLists(const TypeDef* material, std::list<ID3D12CommandList*>& outLists);
 	};

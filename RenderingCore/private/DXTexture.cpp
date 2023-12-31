@@ -109,11 +109,6 @@ void rendering::DXTexture::LoadData(jobs::Job* done)
 	jobs::RunSync(init);
 }
 
-void rendering::DXTexture::Load(jobs::Job* done)
-{
-	m_loader.Load(done);
-}
-
 void rendering::DXTexture::Place(DXHeap& heap, UINT64 heapOffset)
 {
 	DXDevice* device = m_device.GetValue<DXDevice*>();

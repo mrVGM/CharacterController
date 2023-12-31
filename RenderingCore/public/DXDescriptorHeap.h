@@ -86,8 +86,6 @@ namespace rendering
 		DXDescriptorHeap(const ReferenceTypeDef& typeDef);
 		virtual ~DXDescriptorHeap();
 
-		void Load(jobs::Job* done);
-
 		ID3D12DescriptorHeap* GetDescriptorHeap();
 		D3D12_CPU_DESCRIPTOR_HANDLE GetDescriptorHandle(UINT index);
 

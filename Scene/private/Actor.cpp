@@ -111,11 +111,6 @@ void scene::Actor::SetMesh(geo::Mesh* mesh)
 	m_mesh.AssignObject(mesh);
 }
 
-void scene::Actor::Load(jobs::Job* done)
-{
-	m_loader.Load(done);
-}
-
 void scene::Actor::LoadData(jobs::Job* done)
 {
 	struct Context

@@ -91,11 +91,6 @@ geo::Skeleton::~Skeleton()
 {
 }
 
-void geo::Skeleton::Load(jobs::Job* done)
-{
-	m_loader.Load(done);
-}
-
 void geo::Skeleton::SerializeToMF(files::MemoryFile& mf)
 {
 	using namespace files;

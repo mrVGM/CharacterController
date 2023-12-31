@@ -163,12 +163,6 @@ const rendering::DXPixelShaderTypeDef& rendering::DXPixelShaderTypeDef::GetTypeD
 	return *m_pixelShaderTypeDef.m_object;
 }
 
-
-void rendering::DXShader::Load(jobs::Job* done)
-{
-	m_loader.Load(done);
-}
-
 rendering::DXShader::DXShader(const ReferenceTypeDef& type) :
 	ObjectValue(type),
 	m_name(StringTypeDef::GetTypeDef(), this),

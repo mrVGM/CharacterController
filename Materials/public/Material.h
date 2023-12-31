@@ -56,8 +56,6 @@ namespace rendering::materials
 			UINT indexCount,
 			ID3D12CommandAllocator* commandAllocator,
 			ID3D12GraphicsCommandList* commandList);
-
-		virtual void Load(jobs::Job* done);
 	};
 
 }
