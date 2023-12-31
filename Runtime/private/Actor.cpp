@@ -121,6 +121,15 @@ void runtime::Actor::LoadData(jobs::Job* done)
 
 	Context* ctx = new Context();
 
+	jobs::Job* initAnimator = jobs::Job::CreateByLambda([=]() {
+		animation::Animator* animator = m_animator.GetValue<animation::Animator*>();
+		if (animator)
+		{
+			animator->SetActor(*this);
+		}
+		jobs::RunSync(done);
+	});
+
 	auto itemLoaded = [=]() {
 		--ctx->m_loading;
 		if (ctx->m_loading > 0)
@@ -129,7 +138,7 @@ void runtime::Actor::LoadData(jobs::Job* done)
 		}
 		delete ctx;
 
-		CacheCMDLists(done);
+		CacheCMDLists(initAnimator);
 	};
 
 	jobs::Job* initMeshBuffers = jobs::Job::CreateByLambda([=]() {

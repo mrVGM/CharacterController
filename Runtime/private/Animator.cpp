@@ -42,7 +42,8 @@ void animation::Animator::LoadData(jobs::Job* done)
 }
 
 animation::Animator::Animator(const ReferenceTypeDef& typeDef) :
-    runtime::TickUpdater(typeDef)
+    runtime::TickUpdater(typeDef),
+    m_actor(runtime::ActorTypeDef::GetTypeDef(), this)
 {
 }
 
@@ -62,4 +63,7 @@ void animation::Animator::Tick(double dt, jobs::Job* done)
     jobs::RunSync(done);
 }
 
-
+void animation::Animator::SetActor(runtime::Actor& actor)
+{
+    m_actor.AssignObject(&actor);
+}
