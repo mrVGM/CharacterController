@@ -16,7 +16,7 @@ namespace math
 
 	struct Vector4
 	{
-		float m_coefs[3];
+		float m_coefs[4];
 	};
 
 	struct Matrix
@@ -31,6 +31,7 @@ namespace math
 	};
 
 	Matrix operator*(const Matrix& m1, const Matrix& m2);
+	Vector4 operator*(const Matrix& m, const Vector4& v);
 
 	Vector3 operator^(const Vector3& v1, const Vector3& v2);
 	Vector3 operator*(float coef, const Vector3& v);

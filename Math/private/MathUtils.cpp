@@ -44,6 +44,23 @@ math::Matrix math::operator*(const Matrix& m1, const Matrix& m2)
 	return res;
 }
 
+math::Vector4 math::operator*(const Matrix& m, const Vector4& v)
+{
+	Vector4 res;
+	Matrix& mat = const_cast<Matrix&>(m);
+
+	for (int i = 0; i < 4; ++i)
+	{
+		res.m_coefs[i] = 0;
+		for (int j = 0; j < 4; ++j)
+		{
+			res.m_coefs[i] += mat.GetCoef(i, j) * v.m_coefs[j];
+		}
+	}
+
+	return res;
+}
+
 math::Matrix math::Matrix::Transpose() const
 {
 	Matrix* self = const_cast<Matrix*>(this);
