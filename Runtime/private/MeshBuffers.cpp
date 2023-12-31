@@ -76,6 +76,8 @@ void runtime::MeshBuffers::Load(geo::Mesh& mesh, jobs::Job* done)
 	};
 	Context* ctx = new Context();
 
+	geo::Mesh* meshPtr = &mesh;
+
 	auto buffLoaded = [=]() {
 		using namespace rendering;
 
@@ -88,12 +90,17 @@ void runtime::MeshBuffers::Load(geo::Mesh& mesh, jobs::Job* done)
 		m_vertexBuffer = ctx->m_vMutBuffer.GetValue<DXMutableBuffer*>()->m_buffer;
 		m_indexBuffer = ctx->m_iMutBuffer.GetValue<DXMutableBuffer*>()->m_buffer;
 
+		if (meshPtr->m_skinData.m_hasAnyData)
+		{
+			m_vertexWeightsMapBuffer = ctx->m_weightsMapBuffer.GetValue<DXMutableBuffer*>()->m_buffer;
+			m_vertexWeightsBuffer = ctx->m_weightsBuffer.GetValue<DXMutableBuffer*>()->m_buffer;
+		}
+
 		delete ctx;
 
 		jobs::RunSync(done);
 	};
 
-	geo::Mesh* meshPtr = &mesh;
 	jobs::Job* initMutBuffers = jobs::Job::CreateByLambda([=]() {
 		using namespace rendering;
 

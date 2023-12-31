@@ -24,10 +24,14 @@ namespace rendering::unlit_rp
 		Microsoft::WRL::ComPtr<ID3D12PipelineState> m_pipelineState;
 		Microsoft::WRL::ComPtr<ID3D12RootSignature> m_rootSignature;
 
+		Microsoft::WRL::ComPtr<ID3D12PipelineState> m_pipelineStateSkeletalMesh;
+		Microsoft::WRL::ComPtr<ID3D12RootSignature> m_rootSignatureSkeletalMesh;
+
 		Value m_camBuffer;
 		Value m_dsDescriptorHeap;
 
 		virtual void CreatePipelineStateAndRootSignatureForStaticMesh();
+		virtual void CreatePipelineStateAndRootSignatureForSkeletalMesh();
 
 		Value m_rtDescHeap;
 		Value m_skeletalMeshVertexShader;
@@ -46,6 +50,21 @@ namespace rendering::unlit_rp
 			const DXBuffer& vertexBuffer,
 			const DXBuffer& indexBuffer,
 			const DXBuffer& instanceBuffer,
+			UINT startIndex,
+			UINT indexCount,
+			ID3D12CommandAllocator* commandAllocator,
+			ID3D12GraphicsCommandList* commandList) override;
+
+		void GenerateCommandList(
+			const DXBuffer& vertexBuffer,
+			const DXBuffer& indexBuffer,
+			const DXBuffer& instanceBuffer,
+
+			const DXBuffer& weightsIdBuffer,
+			const DXBuffer& weightsBuffer,
+
+			const DXBuffer& poseBuffer,
+
 			UINT startIndex,
 			UINT indexCount,
 			ID3D12CommandAllocator* commandAllocator,

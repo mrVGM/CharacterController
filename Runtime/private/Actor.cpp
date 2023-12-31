@@ -273,15 +273,41 @@ void runtime::Actor::CacheCMDLists(jobs::Job* done)
 			MeshBuffers* meshBuffers = mesh->m_buffers.GetValue<MeshBuffers*>();
 			rendering::DXBuffer* vertexBuffer = meshBuffers->m_vertexBuffer.GetValue<rendering::DXBuffer*>();
 			rendering::DXBuffer* indexBuffer = meshBuffers->m_indexBuffer.GetValue<rendering::DXBuffer*>();
+
+			if (!mesh->m_skinData.m_hasAnyData)
+			{
 			
-			material->GenerateCommandList(
-				*vertexBuffer,
-				*indexBuffer,
-				*vertexBuffer,
-				range.m_start,
-				range.m_count,
-				m_commandAllocator.Get(),
-				cmdList.Get());
+				material->GenerateCommandList(
+					*vertexBuffer,
+					*indexBuffer,
+					*vertexBuffer,
+					range.m_start,
+					range.m_count,
+					m_commandAllocator.Get(),
+					cmdList.Get());
+			}
+			else
+			{
+				rendering::DXBuffer* weightsIdBuffer = meshBuffers->m_vertexWeightsMapBuffer.GetValue<rendering::DXBuffer*>();
+				rendering::DXBuffer* weightsBuffer = meshBuffers->m_vertexWeightsBuffer.GetValue<rendering::DXBuffer*>();
+
+				rendering::DXMutableBuffer* poseMutBuffer = m_poseBuffer.GetValue<rendering::DXMutableBuffer*>();
+				rendering::DXBuffer* poseBuffer = poseMutBuffer->m_buffer.GetValue<rendering::DXBuffer*>();
+
+				material->GenerateCommandList(
+					*vertexBuffer,
+					*indexBuffer,
+					*vertexBuffer,
+
+					*weightsIdBuffer,
+					*weightsBuffer,
+					*poseBuffer,
+
+					range.m_start,
+					range.m_count,
+					m_commandAllocator.Get(),
+					cmdList.Get());
+			}
 		}
 
 		jobs::RunSync(done);
