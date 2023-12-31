@@ -28,6 +28,7 @@ namespace runtime
 
 		Value m_vertexWeightsMapBuffer;
 		Value m_vertexWeightsBuffer;
+		Value m_bindShapeBuffer;
 
 		MeshBuffers(const ReferenceTypeDef& typeDef);
 		virtual ~MeshBuffers();

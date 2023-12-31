@@ -62,6 +62,7 @@ namespace rendering::materials
 			const DXBuffer& weightsIdBuffer,
 			const DXBuffer& weightsBuffer,
 
+			const DXBuffer& bindShapeBuffer,
 			const DXBuffer& poseBuffer,
 
 			UINT startIndex,

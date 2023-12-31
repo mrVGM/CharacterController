@@ -290,6 +290,7 @@ void runtime::Actor::CacheCMDLists(jobs::Job* done)
 			{
 				rendering::DXBuffer* weightsIdBuffer = meshBuffers->m_vertexWeightsMapBuffer.GetValue<rendering::DXBuffer*>();
 				rendering::DXBuffer* weightsBuffer = meshBuffers->m_vertexWeightsBuffer.GetValue<rendering::DXBuffer*>();
+				rendering::DXBuffer* bindShapeBuffer = meshBuffers->m_bindShapeBuffer.GetValue<rendering::DXBuffer*>();
 
 				rendering::DXMutableBuffer* poseMutBuffer = m_poseBuffer.GetValue<rendering::DXMutableBuffer*>();
 				rendering::DXBuffer* poseBuffer = poseMutBuffer->m_buffer.GetValue<rendering::DXBuffer*>();
@@ -301,6 +302,7 @@ void runtime::Actor::CacheCMDLists(jobs::Job* done)
 
 					*weightsIdBuffer,
 					*weightsBuffer,
+					*bindShapeBuffer,
 					*poseBuffer,
 
 					range.m_start,

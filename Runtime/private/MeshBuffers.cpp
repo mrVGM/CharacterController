@@ -46,7 +46,8 @@ runtime::MeshBuffers::MeshBuffers(const ReferenceTypeDef& typeDef) :
 	m_vertexBuffer(rendering::DXBufferTypeDef::GetTypeDef(), this),
 	m_indexBuffer(rendering::DXBufferTypeDef::GetTypeDef(), this),
 	m_vertexWeightsBuffer(rendering::DXBufferTypeDef::GetTypeDef(), this),
-	m_vertexWeightsMapBuffer(rendering::DXBufferTypeDef::GetTypeDef(), this)
+	m_vertexWeightsMapBuffer(rendering::DXBufferTypeDef::GetTypeDef(), this),
+	m_bindShapeBuffer(rendering::DXBufferTypeDef::GetTypeDef(), this)
 {
 }
 
@@ -63,6 +64,7 @@ void runtime::MeshBuffers::Load(geo::Mesh& mesh, jobs::Job* done)
 
 		Value m_weightsMapBuffer;
 		Value m_weightsBuffer;
+		Value m_bindShapeBuffer;
 
 		int m_toLoad = 0;
 
@@ -70,7 +72,8 @@ void runtime::MeshBuffers::Load(geo::Mesh& mesh, jobs::Job* done)
 			m_vMutBuffer(rendering::DXMutableBufferTypeDef::GetTypeDef(), nullptr),
 			m_iMutBuffer(rendering::DXMutableBufferTypeDef::GetTypeDef(), nullptr),
 			m_weightsMapBuffer(rendering::DXMutableBufferTypeDef::GetTypeDef(), nullptr),
-			m_weightsBuffer(rendering::DXMutableBufferTypeDef::GetTypeDef(), nullptr)
+			m_weightsBuffer(rendering::DXMutableBufferTypeDef::GetTypeDef(), nullptr),
+			m_bindShapeBuffer(rendering::DXMutableBufferTypeDef::GetTypeDef(), nullptr)
 		{
 		}
 	};
@@ -94,6 +97,7 @@ void runtime::MeshBuffers::Load(geo::Mesh& mesh, jobs::Job* done)
 		{
 			m_vertexWeightsMapBuffer = ctx->m_weightsMapBuffer.GetValue<DXMutableBuffer*>()->m_buffer;
 			m_vertexWeightsBuffer = ctx->m_weightsBuffer.GetValue<DXMutableBuffer*>()->m_buffer;
+			m_bindShapeBuffer = ctx->m_bindShapeBuffer.GetValue<DXMutableBuffer*>()->m_buffer;
 		}
 
 		delete ctx;
@@ -148,12 +152,16 @@ void runtime::MeshBuffers::Load(geo::Mesh& mesh, jobs::Job* done)
 
 		DXMutableBufferTypeDef::GetTypeDef().Construct(ctx->m_weightsBuffer);
 		DXMutableBufferTypeDef::GetTypeDef().Construct(ctx->m_weightsMapBuffer);
+		DXMutableBufferTypeDef::GetTypeDef().Construct(ctx->m_bindShapeBuffer);
 
 		DXMutableBuffer* weightsBuff = ctx->m_weightsBuffer.GetValue<rendering::DXMutableBuffer*>();
 		weightsBuff->SetSizeAndStride(meshPtr->m_skinData.m_vertexWeights.size() * sizeof(geo::Mesh::SkinData::VertexWeights), sizeof(geo::Mesh::SkinData::VertexWeights));
 
 		DXMutableBuffer* weightsMapBuff = ctx->m_weightsMapBuffer.GetValue<rendering::DXMutableBuffer*>();
 		weightsMapBuff->SetSizeAndStride(meshPtr->m_skinData.m_vertexToWeightsMap.size() * sizeof(int), sizeof(int));
+
+		DXMutableBuffer* bindShapeBuffer = ctx->m_bindShapeBuffer.GetValue<DXMutableBuffer*>();
+		bindShapeBuffer->SetSizeAndStride((meshPtr->m_skinData.m_invBindMatrices.size() + 1) * sizeof(math::Matrix), sizeof(math::Matrix));
 
 		++ctx->m_toLoad;
 		jobs::RunAsync(jobs::Job::CreateByLambda([=]() {
@@ -187,6 +195,25 @@ void runtime::MeshBuffers::Load(geo::Mesh& mesh, jobs::Job* done)
 				upload->Unmap();
 
 				weightsMapBuff->Upload(jobs::Job::CreateByLambda(buffLoaded));
+			}));
+
+		}));
+
+		++ctx->m_toLoad;
+		jobs::RunAsync(jobs::Job::CreateByLambda([=]() {
+
+			bindShapeBuffer->Load(jobs::Job::CreateByLambda([=]() {
+				DXBuffer* upload = bindShapeBuffer->m_uploadBuffer.GetValue<DXBuffer*>();
+				void* data = upload->Map();
+				math::Matrix* bindShapePtr = reinterpret_cast<math::Matrix*>(data);
+				*(bindShapePtr++) = meshPtr->m_skinData.m_bindShapeMatrix.Transpose();
+				for (auto it = meshPtr->m_skinData.m_invBindMatrices.begin(); it != meshPtr->m_skinData.m_invBindMatrices.end(); ++it)
+				{
+					*(bindShapePtr++) = (*it).Transpose();
+				}
+				upload->Unmap();
+
+				bindShapeBuffer->Upload(jobs::Job::CreateByLambda(buffLoaded));
 			}));
 
 		}));
