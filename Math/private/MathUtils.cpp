@@ -60,6 +60,17 @@ math::Matrix math::Matrix::Transpose() const
 	return res;
 }
 
+math::Matrix math::Matrix::FlipYZAxis() const
+{
+	Matrix changeBasis = Matrix::GetIdentityMatrix();
+	changeBasis.GetCoef(1, 2) = 1;
+	changeBasis.GetCoef(1, 1) = 0;
+	changeBasis.GetCoef(2, 1) = 1;
+	changeBasis.GetCoef(2, 2) = 0;
+
+	return changeBasis * (*this) * changeBasis;
+}
+
 math::Vector3 math::operator^(const math::Vector3& v1, const math::Vector3& v2)
 {
 	math::Vector3 res;

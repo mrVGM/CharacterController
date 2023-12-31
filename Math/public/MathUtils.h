@@ -27,6 +27,7 @@ namespace math
 		float& GetCoef(int row, int col);
 
 		Matrix Transpose() const;
+		Matrix FlipYZAxis() const;
 	};
 
 	Matrix operator*(const Matrix& m1, const Matrix& m2);

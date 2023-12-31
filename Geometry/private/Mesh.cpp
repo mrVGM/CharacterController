@@ -817,45 +817,12 @@ namespace
 
 			if (zUp)
 			{
-				{
-					math::Matrix& cur = skinData.m_bindShapeMatrix;
-
-					float tmp[] = {
-						cur.GetCoef(0, 1),
-						cur.GetCoef(1, 1),
-						cur.GetCoef(2, 1),
-						cur.GetCoef(3, 1)
-					};
-					cur.GetCoef(0, 1) = cur.GetCoef(0, 2);
-					cur.GetCoef(1, 1) = cur.GetCoef(1, 2);
-					cur.GetCoef(2, 1) = cur.GetCoef(2, 2);
-					cur.GetCoef(3, 1) = cur.GetCoef(3, 2);
-
-					cur.GetCoef(0, 2) = tmp[0];
-					cur.GetCoef(1, 2) = tmp[1];
-					cur.GetCoef(2, 2) = tmp[2];
-					cur.GetCoef(3, 2) = tmp[3];
-				}
+				skinData.m_bindShapeMatrix = skinData.m_bindShapeMatrix.FlipYZAxis();
 
 				for (auto it = skinData.m_invBindMatrices.begin(); it != skinData.m_invBindMatrices.end(); ++it)
 				{
 					math::Matrix& cur = *it;
-
-					float tmp[] = {
-						cur.GetCoef(0, 1),
-						cur.GetCoef(1, 1),
-						cur.GetCoef(2, 1),
-						cur.GetCoef(3, 1)
-					};
-					cur.GetCoef(0, 1) = cur.GetCoef(0, 2);
-					cur.GetCoef(1, 1) = cur.GetCoef(1, 2);
-					cur.GetCoef(2, 1) = cur.GetCoef(2, 2);
-					cur.GetCoef(3, 1) = cur.GetCoef(3, 2);
-
-					cur.GetCoef(0, 2) = tmp[0];
-					cur.GetCoef(1, 2) = tmp[1];
-					cur.GetCoef(2, 2) = tmp[2];
-					cur.GetCoef(3, 2) = tmp[3];
+					cur = cur.FlipYZAxis();
 				}
 			}
 
