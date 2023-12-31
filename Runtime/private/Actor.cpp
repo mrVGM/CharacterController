@@ -8,6 +8,7 @@
 #include "Mesh.h"
 #include "Skeleton.h"
 #include "MeshBuffers.h"
+#include "Animator.h"
 
 #include "Jobs.h"
 
@@ -97,7 +98,8 @@ runtime::Actor::Actor(const ReferenceTypeDef& typeDef) :
 	m_materialDefs(ActorTypeDef::GetTypeDef().m_materials.GetType(), this),
 	m_materials(ListDef::GetTypeDef(rendering::materials::MaterialTypeDef::GetTypeDef()), this),
 	m_transformBuffer(rendering::DXMutableBufferTypeDef::GetTypeDef(), this),
-	m_poseBuffer(rendering::DXMutableBufferTypeDef::GetTypeDef(), this)
+	m_poseBuffer(rendering::DXMutableBufferTypeDef::GetTypeDef(), this),
+	m_animator(animation::AnimatorTypeDef::GetTypeDef(), this)
 {
 }
 
@@ -194,6 +196,12 @@ void runtime::Actor::LoadData(jobs::Job* done)
 			jobs::RunAsync(jobs::Job::CreateByLambda([=]() {
 				skeleton->Load(jobs::Job::CreateByLambda(itemLoaded));
 			}));
+
+			animation::AnimatorTypeDef::GetTypeDef().Construct(m_animator);
+			animation::Animator* animator = m_animator.GetValue<animation::Animator*>();
+
+			++ctx->m_loading;
+			animator->Load(jobs::Job::CreateByLambda(itemLoaded));
 		}
 
 		ValueList* matDefs = m_materialDefs.GetValue<ValueList*>();

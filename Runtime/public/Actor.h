@@ -57,6 +57,7 @@ namespace runtime
 
 		Value m_transformBuffer;
 		Value m_poseBuffer;
+		Value m_animator;
 
 		Actor(const ReferenceTypeDef& typeDef);
 		virtual ~Actor();

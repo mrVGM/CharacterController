@@ -26,7 +26,6 @@ target_link_libraries(App PUBLIC
 	Scene
 	UnlitRP
 	Materials
-	Animation
 	Runtime
 )
 

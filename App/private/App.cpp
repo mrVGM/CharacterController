@@ -12,7 +12,6 @@
 #include "Jobs.h"
 #include "Reflection.h"
 #include "AssetManager.h"
-#include "Animation.h"
 #include "Runtime.h"
 
 #include "CommonTypeDefs.h"
@@ -65,7 +64,6 @@ void app::Boot()
 	geo::Boot();
 	scene::Boot();
 	rendering::unlit_rp::Boot();
-	animation::Boot();
 	runtime::Boot();
 
 #pragma endregion

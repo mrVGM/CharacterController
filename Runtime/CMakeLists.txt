@@ -9,6 +9,8 @@ add_library (Runtime
 	"public/Actor.h"
 	"private/MeshBuffers.cpp"
 	"public/MeshBuffers.h"
+	"private/Animator.cpp"
+	"public/Animator.h"
 )
 
 target_include_directories(Runtime INTERFACE PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/public")

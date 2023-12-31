@@ -1,5 +1,7 @@
 #include "Animator.h"
 
+#include "TickUpdater.h"
+
 #include "Jobs.h"
 
 namespace
@@ -18,7 +20,7 @@ const animation::AnimatorTypeDef& animation::AnimatorTypeDef::GetTypeDef()
 }
 
 animation::AnimatorTypeDef::AnimatorTypeDef() :
-    ReferenceTypeDef(&ReferenceTypeDef::GetTypeDef(), "E072CB3C-7F9E-452E-AD27-88404A2E7997")
+    ReferenceTypeDef(&runtime::TickUpdaterTypeDef::GetTypeDef(), "E072CB3C-7F9E-452E-AD27-88404A2E7997")
 {
     m_name = "Animator";
     m_category = "Animation";
@@ -55,6 +57,8 @@ bool animation::Animator::IsTicking()
 
 void animation::Animator::Tick(double dt, jobs::Job* done)
 {
+
+
     jobs::RunSync(done);
 }
 
