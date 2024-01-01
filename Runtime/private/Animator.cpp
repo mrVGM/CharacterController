@@ -1,9 +1,13 @@
 #include "Animator.h"
 
+#include "PrimitiveTypes.h"
+
 #include "TickUpdater.h"
 
 #include "DXMutableBuffer.h"
 #include "Skeleton.h"
+
+#include "ObjectValueContainer.h"
 
 #include "Jobs.h"
 
@@ -23,8 +27,19 @@ const animation::AnimatorTypeDef& animation::AnimatorTypeDef::GetTypeDef()
 }
 
 animation::AnimatorTypeDef::AnimatorTypeDef() :
-    ReferenceTypeDef(&runtime::TickUpdaterTypeDef::GetTypeDef(), "E072CB3C-7F9E-452E-AD27-88404A2E7997")
+    ReferenceTypeDef(&runtime::TickUpdaterTypeDef::GetTypeDef(), "E072CB3C-7F9E-452E-AD27-88404A2E7997"),
+    m_idle("719574BD-6DC2-434A-BD56-D7891C7C4983", TypeTypeDef::GetTypeDef(geo::AnimationTypeDef::GetTypeDef()))
 {
+    {
+        m_idle.m_name = "Idle Anim";
+        m_idle.m_category = "Setup";
+        m_idle.m_getValue = [](CompositeValue* obj) -> Value& {
+            Animator* animator = static_cast<Animator*>(obj);
+            return animator->m_idleDef;
+        };
+        m_properties[m_idle.GetId()] = &m_idle;
+    }
+
     m_name = "Animator";
     m_category = "Animations";
 }
@@ -41,11 +56,35 @@ void animation::AnimatorTypeDef::Construct(Value& value) const
 
 void animation::Animator::LoadData(jobs::Job* done)
 {
-    jobs::RunSync(done);
+    jobs::Job* load = jobs::Job::CreateByLambda([=]() {
+        geo::Animation* idle = m_idle.GetValue<geo::Animation*>();
+        if (!idle)
+        {
+            jobs::RunSync(done);
+            return;
+        }
+
+        idle->Load(done);
+    });
+
+    jobs::Job* init = jobs::Job::CreateByLambda([=]() {
+        const TypeDef* idleDef = m_idleDef.GetType<const TypeDef*>();
+        if (idleDef)
+        {
+            m_idle.AssignObject(ObjectValueContainer::GetObjectOfType(*idleDef));
+        }
+        jobs::RunAsync(load);
+    });
+
+    jobs::RunSync(init);
 }
 
 animation::Animator::Animator(const ReferenceTypeDef& typeDef) :
     runtime::TickUpdater(typeDef),
+
+    m_idleDef(AnimatorTypeDef::GetTypeDef().m_idle.GetType(), this),
+    m_idle(geo::AnimationTypeDef::GetTypeDef(), this),
+
     m_actor(runtime::ActorTypeDef::GetTypeDef(), this)
 {
 }

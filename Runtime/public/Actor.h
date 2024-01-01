@@ -23,6 +23,7 @@ namespace runtime
 
 	public:
 		TypeProperty m_mesh;
+		TypeProperty m_animator;
 		TypeProperty m_skeleton;
 		TypeProperty m_materials;
 
@@ -51,6 +52,7 @@ namespace runtime
 		Value m_meshDef;
 		Value m_skeletonDef;
 		Value m_materialDefs;
+		Value m_animatorDef;
 
 		Value m_mesh;
 		Value m_skeleton;

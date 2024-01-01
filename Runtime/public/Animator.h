@@ -3,6 +3,8 @@
 #include "TickUpdater.h"
 #include "Actor.h"
 
+#include "Animation.h"
+
 #include "MultiLoader.h"
 
 namespace animation
@@ -12,6 +14,8 @@ namespace animation
 		TYPE_DEF_BODY(AnimatorTypeDef)
 
 	public:
+		TypeProperty m_idle;
+
 		AnimatorTypeDef();
 		virtual ~AnimatorTypeDef();
 
@@ -23,11 +27,14 @@ namespace animation
 	{
 	private:
 		Value m_actor;
+		Value m_idle;
 		
 	protected:
 		virtual void LoadData(jobs::Job* done) override;
 
 	public:
+		Value m_idleDef;
+
 		Animator(const ReferenceTypeDef& type);
 		virtual ~Animator();
 

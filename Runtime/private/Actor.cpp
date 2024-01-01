@@ -16,6 +16,8 @@
 
 #include "DXMutableBuffer.h"
 
+#include "AssetTypeDef.h"
+
 #include "CoreUtils.h"
 
 #define THROW_ERROR(hRes, error) \
@@ -41,6 +43,7 @@ const runtime::ActorTypeDef& runtime::ActorTypeDef::GetTypeDef()
 runtime::ActorTypeDef::ActorTypeDef() :
 	ReferenceTypeDef(&ReferenceTypeDef::GetTypeDef(), "9CFFA9B0-3542-4509-81CD-387C496ADAFF"),
 	m_mesh("6B501787-EFF6-4EDF-85A4-571428A47071", TypeTypeDef::GetTypeDef(geo::MeshTypeDef::GetTypeDef())),
+	m_animator("C2D55EEE-8279-4CA5-BDA9-699FA696EF19", TypeTypeDef::GetTypeDef(animation::AnimatorTypeDef::GetTypeDef())),
 	m_skeleton("27391D76-9D4F-4490-B3F3-0DD453CE22A5", TypeTypeDef::GetTypeDef(geo::SkeletonTypeDef::GetTypeDef())),
 	m_materials("2A8E8B5A-2CCD-4957-ABDB-6685AA5A8DBF", ListDef::GetTypeDef(TypeTypeDef::GetTypeDef(rendering::materials::MaterialTypeDef::GetTypeDef())))
 {
@@ -52,6 +55,16 @@ runtime::ActorTypeDef::ActorTypeDef() :
 			return actor->m_meshDef;
 		};
 		m_properties[m_mesh.GetId()] = &m_mesh;
+	}
+
+	{
+		m_animator.m_name = "Animator";
+		m_animator.m_category = "Setup";
+		m_animator.m_getValue = [](CompositeValue* obj) -> Value& {
+			Actor* actor = static_cast<Actor*>(obj);
+			return actor->m_animatorDef;
+		};
+		m_properties[m_animator.GetId()] = &m_animator;
 	}
 
 	{
@@ -99,6 +112,7 @@ runtime::Actor::Actor(const ReferenceTypeDef& typeDef) :
 	m_materials(ListDef::GetTypeDef(rendering::materials::MaterialTypeDef::GetTypeDef()), this),
 	m_transformBuffer(rendering::DXMutableBufferTypeDef::GetTypeDef(), this),
 	m_poseBuffer(rendering::DXMutableBufferTypeDef::GetTypeDef(), this),
+	m_animatorDef(ActorTypeDef::GetTypeDef().m_animator.GetType(), this),
 	m_animator(animation::AnimatorTypeDef::GetTypeDef(), this)
 {
 }
@@ -206,7 +220,21 @@ void runtime::Actor::LoadData(jobs::Job* done)
 				skeleton->Load(jobs::Job::CreateByLambda(itemLoaded));
 			}));
 
-			animation::AnimatorTypeDef::GetTypeDef().Construct(m_animator);
+
+			const AssetTypeDef* animatorAssetDef = static_cast<const AssetTypeDef*>(m_animatorDef.GetType<const TypeDef*>());
+			const TypeDef* animatorDef = animatorAssetDef;
+			if (!animatorDef)
+			{
+				animatorDef = &animation::AnimatorTypeDef::GetTypeDef();
+			}
+			static_cast<const CompositeTypeDef*>(animatorDef)->Construct(m_animator);
+			if (animatorAssetDef)
+			{
+				AssetTypeDef* asset = const_cast<AssetTypeDef*>(animatorAssetDef);
+				auto& map = asset->m_data.GetAsObj();
+				asset->DeserializeFromJSON(m_animator, map["defaults"]);
+			}
+
 			animation::Animator* animator = m_animator.GetValue<animation::Animator*>();
 
 			++ctx->m_loading;

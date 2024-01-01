@@ -1,5 +1,16 @@
 {
   "properties":{
+    "C2D55EEE-8279-4CA5-BDA9-699FA696EF19":{
+      "type":{
+        "template":{
+          "id":"E072CB3C-7F9E-452E-AD27-88404A2E7997"
+        },
+        "id":"1D4363E5-BC6F-4B49-80F3-FAC358F5B296"
+      },
+      "name":"Animator",
+      "id":"C2D55EEE-8279-4CA5-BDA9-699FA696EF19",
+      "category":"Setup"
+    },
     "6B501787-EFF6-4EDF-85A4-571428A47071":{
       "type":{
         "template":{

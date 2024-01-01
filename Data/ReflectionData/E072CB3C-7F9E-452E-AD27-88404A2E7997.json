@@ -1,5 +1,17 @@
 {
-  "properties":{},
+  "properties":{
+    "719574BD-6DC2-434A-BD56-D7891C7C4983":{
+      "type":{
+        "template":{
+          "id":"B2836B8D-7C9B-436F-A9DA-4A0238FCAD6B"
+        },
+        "id":"1D4363E5-BC6F-4B49-80F3-FAC358F5B296"
+      },
+      "name":"Idle Anim",
+      "id":"719574BD-6DC2-434A-BD56-D7891C7C4983",
+      "category":"Setup"
+    }
+  },
   "parent":{
     "id":"C01E1931-B22B-4CE1-8F97-D895200C2A87"
   },

@@ -37,12 +37,23 @@ namespace geo
 
 	class Animation : public ObjectValue, public jobs::LoadingClass
 	{
+	public:
+		struct KeyFrame
+		{
+			float m_time;
+			math::Matrix m_transform;
+		};
+
+		struct AnimChannel
+		{
+			std::string m_name;
+			std::vector<KeyFrame> m_keyFrames;
+		};
+
 	private:
 		void SerializeToMF(files::MemoryFile& mf);
 		void DeserializeFromMF(files::MemoryFile& mf);
 
-		std::map<std::string, int> m_boneIndices;
-		std::vector<std::string> m_boneNames;
 
 	protected:
 		virtual void LoadData(jobs::Job* done) override;
@@ -59,12 +70,11 @@ namespace geo
 
 #pragma region Binary Serialized
 
+		std::vector<AnimChannel> m_animation;
 
 #pragma endregion
 
 		Animation(const ReferenceTypeDef& type);
 		virtual ~Animation();
-
-		int GetBoneIndex(const std::string& boneName) const;
 	};
 }
