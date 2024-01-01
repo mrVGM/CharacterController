@@ -319,6 +319,8 @@ void geo::Skeleton::LoadData(jobs::Job* done)
 		{
 			cur.m_coefs[i] = (*(symbolIt++))->m_symbolData.m_number;
 		}
+
+		cur = cur.Transpose();
 	}
 
 	if (m_zUp)
@@ -326,22 +328,7 @@ void geo::Skeleton::LoadData(jobs::Job* done)
 		for (auto it = m_bindPose.begin(); it != m_bindPose.end(); ++it)
 		{
 			math::Matrix& cur = *it;
-			float tmp[] = {
-				cur.GetCoef(0, 1),
-				cur.GetCoef(1, 1),
-				cur.GetCoef(2, 1),
-				cur.GetCoef(3, 1)
-			};
-
-			cur.GetCoef(0, 1) = cur.GetCoef(0, 2);
-			cur.GetCoef(1, 1) = cur.GetCoef(1, 2);
-			cur.GetCoef(2, 1) = cur.GetCoef(2, 2);
-			cur.GetCoef(3, 1) = cur.GetCoef(3, 2);
-
-			cur.GetCoef(0, 2) = tmp[0];
-			cur.GetCoef(1, 2) = tmp[1];
-			cur.GetCoef(2, 2) = tmp[2];
-			cur.GetCoef(3, 2) = tmp[3];
+			cur = cur.FlipYZAxis();
 		}
 	}
 
