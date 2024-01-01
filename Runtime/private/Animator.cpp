@@ -138,10 +138,7 @@ void animation::Animator::Tick(double dt, jobs::Job* done)
         int curIndex = skeleton->GetBoneIndex(*it);
         while (curIndex >= 0)
         {
-            mat = skeleton->m_bindPose[curIndex] * mat;
-
-#if false
-            if (true)
+            if (!anim)
             {
                 mat = skeleton->m_bindPose[curIndex] * mat;
             }
@@ -149,7 +146,6 @@ void animation::Animator::Tick(double dt, jobs::Job* done)
             {
                 mat = SampleTransform(m_curTime, *it, *anim) * mat;
             }
-#endif
             curIndex = skeleton->m_boneParents[curIndex];
         }
 
