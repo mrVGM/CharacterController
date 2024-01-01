@@ -26,7 +26,7 @@ animation::AnimatorTypeDef::AnimatorTypeDef() :
     ReferenceTypeDef(&runtime::TickUpdaterTypeDef::GetTypeDef(), "E072CB3C-7F9E-452E-AD27-88404A2E7997")
 {
     m_name = "Animator";
-    m_category = "Animation";
+    m_category = "Animations";
 }
 
 animation::AnimatorTypeDef::~AnimatorTypeDef()

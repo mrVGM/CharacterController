@@ -9,6 +9,8 @@ add_library (Geometry
 	"private/GeometryAppEntry.cpp"
 	"public/Skeleton.h"
 	"private/Skeleton.cpp"
+	"public/Animation.h"
+	"private/Animation.cpp"
 )
 
 target_include_directories(Geometry INTERFACE PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/public")

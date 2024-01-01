@@ -1,0 +1,29 @@
+{
+  "properties":{
+    "DFBBD880-6B60-4B0B-AFE0-F34AE19A7C75":{
+      "type":{
+        "id":"B641BC7D-49F6-4194-B4C9-239FDDAAA623"
+      },
+      "name":"Hash",
+      "id":"DFBBD880-6B60-4B0B-AFE0-F34AE19A7C75",
+      "category":"Internal"
+    },
+    "D02EEA99-AD2D-4777-A9AC-B6C1DE3C99D5":{
+      "type":{
+        "id":"B641BC7D-49F6-4194-B4C9-239FDDAAA623"
+      },
+      "name":"Collada File",
+      "id":"D02EEA99-AD2D-4777-A9AC-B6C1DE3C99D5",
+      "category":"Setup"
+    }
+  },
+  "parent":{
+    "id":"361D902F-526F-452D-B925-7B59B0F5AB09"
+  },
+  "name":"Animation",
+  "isGenerated":0,
+  "id":{
+    "id":"B2836B8D-7C9B-436F-A9DA-4A0238FCAD6B"
+  },
+  "category":"Animations"
+}
