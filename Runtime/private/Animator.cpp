@@ -138,13 +138,14 @@ void animation::Animator::Tick(double dt, jobs::Job* done)
         int curIndex = skeleton->GetBoneIndex(*it);
         while (curIndex >= 0)
         {
+            const std::string& curBone = skeleton->m_boneNames[curIndex];
             if (!anim)
             {
                 mat = skeleton->m_bindPose[curIndex] * mat;
             }
             else
             {
-                mat = SampleTransform(m_curTime, *it, *anim) * mat;
+                mat = SampleTransform(m_curTime, curBone, *anim) * mat;
             }
             curIndex = skeleton->m_boneParents[curIndex];
         }
