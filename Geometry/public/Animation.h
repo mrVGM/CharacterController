@@ -4,6 +4,7 @@
 #include "CompositeValue.h"
 
 #include "Geometry.h"
+#include "Skeleton.h"
 
 #include "MultiLoader.h"
 #include "Job.h"
@@ -54,6 +55,7 @@ namespace geo
 		void SerializeToMF(files::MemoryFile& mf);
 		void DeserializeFromMF(files::MemoryFile& mf);
 
+		std::map<std::string, const AnimChannel*> m_channelMap;
 
 	protected:
 		virtual void LoadData(jobs::Job* done) override;
@@ -76,5 +78,9 @@ namespace geo
 
 		Animation(const ReferenceTypeDef& type);
 		virtual ~Animation();
+
+		double GetLength() const;
+		const AnimChannel* GetAnimChannel(const std::string& name) const;
+		const math::Matrix& SampleChannel(double time, const AnimChannel& channel) const;
 	};
 }

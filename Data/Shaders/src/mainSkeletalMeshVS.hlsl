@@ -40,7 +40,7 @@ PSInput VSMain(SkMVertexInput3D vertexInput)
                 continue;
             }
             
-            worldPos += weight * mul(v_bindShape[jointIndex + 1], mul(v_bindShape[0], vertexPos));
+            worldPos += weight * mul(v_pose[jointIndex], mul(v_bindShape[jointIndex + 1], mul(v_bindShape[0], vertexPos)));
         }
     }
     

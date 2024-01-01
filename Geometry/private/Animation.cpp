@@ -318,6 +318,37 @@ geo::Animation::~Animation()
 {
 }
 
+const math::Matrix& geo::Animation::SampleChannel(double time, const AnimChannel& channel) const
+{
+	int tmp = time / GetLength();
+	time -= tmp * GetLength();
+
+	int left = 0;
+	int right = channel.m_keyFrames.size() - 1;
+
+	while (right - left > 1)
+	{
+		int mid = (left + right) / 2;
+		const KeyFrame& midKF = channel.m_keyFrames[mid];
+
+		if (midKF.m_time <= time)
+		{
+			left = mid;
+		}
+		else
+		{
+			right = mid;
+		}
+	}
+
+	return channel.m_keyFrames[left].m_transform;
+}
+
+double geo::Animation::GetLength() const
+{
+	return m_animation.front().m_keyFrames.back().m_time;
+}
+
 void geo::Animation::SerializeToMF(files::MemoryFile& mf)
 {
 	using namespace files;
@@ -426,6 +457,27 @@ void geo::Animation::DeserializeFromMF(files::MemoryFile& mf)
 			curFrame = *(kfPtr++);
 		}
 	}
+}
+
+const geo::Animation::AnimChannel* geo::Animation::GetAnimChannel(const std::string& name) const
+{
+	if (m_channelMap.empty())
+	{
+		std::map<std::string, const AnimChannel*>& channelMap = const_cast<std::map<std::string, const AnimChannel*>&>(m_channelMap);
+		for (auto it = m_animation.begin(); it != m_animation.end(); ++it)
+		{
+			const geo::Animation::AnimChannel& cur = *it;
+			channelMap[cur.m_name] = &cur;
+		}
+	}
+
+	auto it = m_channelMap.find(name);
+	if (it == m_channelMap.end())
+	{
+		return nullptr;
+	}
+
+	return it->second;
 }
 
 void geo::Animation::LoadData(jobs::Job* done)

@@ -54,6 +54,21 @@ void animation::AnimatorTypeDef::Construct(Value& value) const
     value.AssignObject(animator);
 }
 
+const math::Matrix& animation::Animator::SampleTransform(double time, const std::string& bone, const geo::Animation& animation)
+{
+    const geo::Animation::AnimChannel* animChannel = animation.GetAnimChannel(bone);
+
+    if (!animChannel)
+    {
+        runtime::Actor* actor = m_actor.GetValue<runtime::Actor*>();
+        geo::Skeleton* skeleton = actor->m_skeleton.GetValue<geo::Skeleton*>();
+
+        return skeleton->m_bindPose[skeleton->GetBoneIndex(bone)];
+    }
+
+    return animation.SampleChannel(time, *animChannel);
+}
+
 void animation::Animator::LoadData(jobs::Job* done)
 {
     jobs::Job* load = jobs::Job::CreateByLambda([=]() {
@@ -101,6 +116,8 @@ bool animation::Animator::IsTicking()
 
 void animation::Animator::Tick(double dt, jobs::Job* done)
 {
+    m_curTime += dt;
+
     runtime::Actor* actor = m_actor.GetValue<runtime::Actor*>();
     rendering::DXMutableBuffer* poseBuffer = actor->m_poseBuffer.GetValue<rendering::DXMutableBuffer*>();
     rendering::DXBuffer* uploadBuff = poseBuffer->m_uploadBuffer.GetValue<rendering::DXBuffer*>();
@@ -112,6 +129,8 @@ void animation::Animator::Tick(double dt, jobs::Job* done)
 
     math::Matrix* poseData = static_cast<math::Matrix*>(uploadBuff->Map());
 
+    geo::Animation* anim = m_idle.GetValue<geo::Animation*>();
+
     for (auto it = skinData.m_boneNames.begin(); it != skinData.m_boneNames.end(); ++it)
     {
         math::Matrix mat = math::Matrix::GetIdentityMatrix();
@@ -120,6 +139,17 @@ void animation::Animator::Tick(double dt, jobs::Job* done)
         while (curIndex >= 0)
         {
             mat = skeleton->m_bindPose[curIndex] * mat;
+
+#if false
+            if (true)
+            {
+                mat = skeleton->m_bindPose[curIndex] * mat;
+            }
+            else
+            {
+                mat = SampleTransform(m_curTime, *it, *anim) * mat;
+            }
+#endif
             curIndex = skeleton->m_boneParents[curIndex];
         }
 
