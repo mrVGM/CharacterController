@@ -124,21 +124,21 @@ void gc::ObjectRecordManager::UpdateObjectsState(std::queue<GCOperation>& operat
 		switch (cur.m_op)
 		{
 		case IncrementRefsOp:
-			GCLogger::m_log << "INC " << cur.m_id1 << std::endl;
+			GCLogger::m_log << "INC " << cur.m_id1 << '\n';
 			++m_records[cur.m_id1].m_refs;
 			break;
 		case AddLinkOp:
-			GCLogger::m_log << "ADD_LINK " << cur.m_id1 << ' ' << cur.m_id2 << std::endl;
+			GCLogger::m_log << "ADD_LINK " << cur.m_id1 << ' ' << cur.m_id2 << '\n';
 			m_records[cur.m_id1].m_links.push_back(cur.m_id2);
 			break;
 		case DecrementRefsOp:
-			GCLogger::m_log << "DEC " << cur.m_id1 << std::endl;
+			GCLogger::m_log << "DEC " << cur.m_id1 << '\n';
 			--m_records[cur.m_id1].m_refs;
 			toCheck.push_back(cur.m_id1);
 			break;
 		case RemoveLinkOp:
 		{
-			GCLogger::m_log << "REMOVE_LINK " << cur.m_id1 << ' ' << cur.m_id2 << std::endl;
+			GCLogger::m_log << "REMOVE_LINK " << cur.m_id1 << ' ' << cur.m_id2 << '\n';
 
 			ObjectRecord& rec1 = m_records[cur.m_id1];
 			for (auto it = rec1.m_links.begin(); it != rec1.m_links.end(); ++it)

@@ -99,7 +99,7 @@ namespace
 					delete *it;
 				}
 				toDelete.clear();
-				gc::GCLogger::m_log << std::endl;
+				gc::GCLogger::m_log << '\n';
 
 				HandleState(GCState::Idle);
 			}));

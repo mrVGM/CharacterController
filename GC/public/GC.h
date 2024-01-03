@@ -6,9 +6,24 @@
 
 namespace gc
 {
-	struct GCLogger
+	class GCLogger
 	{
-		static std::stringstream m_log;
+		static bool m_logGC;
+		std::stringstream m_ss;
+	public:
+		static GCLogger m_log;
+
+		template <typename T>
+		GCLogger& operator<<(T data)
+		{
+			if (!m_logGC)
+			{
+				return *this;
+			}
+
+			m_ss << data;
+			return *this;
+		}
 	};
 
 	class ManagedObject

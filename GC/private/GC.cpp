@@ -2,7 +2,8 @@
 
 #include "ObjectRecords.h"
 
-std::stringstream gc::GCLogger::m_log;
+gc::GCLogger gc::GCLogger::m_log;
+bool gc::GCLogger::m_logGC = false;
 
 size_t gc::ManagedObject::m_index = 1;
 
@@ -50,12 +51,12 @@ void gc::RemoveLink(size_t from, size_t to)
 
 void gc::GCTick(std::list<const ManagedObject*>& managedObjectsToDelete)
 {
-	gc::GCLogger::m_log << "START TICK" << std::endl;
+	gc::GCLogger::m_log << "START TICK" << '\n';
 
 	ObjectRecordManager& manager = ObjectRecordManager::GetManager();
 	manager.Tick(managedObjectsToDelete);
 
-	gc::GCLogger::m_log << "END TICK" << std::endl;
+	gc::GCLogger::m_log << "END TICK" << '\n';
 }
 
 void gc::SetGCActivatedListener(const GCActivatedListener& listener)
