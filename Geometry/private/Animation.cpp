@@ -16,6 +16,8 @@
 
 #include "AssetTypeDef.h"
 
+#include "Settings.h"
+
 #include <map>
 #include <string>
 #include <vector>
@@ -494,7 +496,7 @@ void geo::Animation::LoadData(jobs::Job* done)
 	std::string hash = crypto::HashString(colladaFile + contents);
 	std::string savedHash = m_hash.Get<std::string>();
 
-	if (hash == savedHash)
+	if (settings::UseBinFiles() && hash == savedHash)
 	{
 		files::MemoryFile mf;
 		std::string binFilePath = files::GetDataDir() + files::GetAssetsBinDir() + GetTypeDef().GetId() + ".bin";

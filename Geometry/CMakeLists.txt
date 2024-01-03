@@ -24,6 +24,7 @@ target_link_libraries(Geometry PUBLIC
 	Jobs
 	CommonTypeDefs
 	Math
+	Settings
 )
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)

@@ -8,6 +8,8 @@
 
 #include "Jobs.h"
 
+#include "Settings.h"
+
 #include <d3dcompiler.h>
 
 #define THROW_ERROR(hRes, error) \
@@ -190,7 +192,7 @@ void rendering::DXShader::LoadData(jobs::Job* done)
 		std::wstring shaderBinFileNameW(shaderBinFileName.begin(), shaderBinFileName.end());
 
 		std::string cachedHash = m_hash.Get<std::string>();
-		if (cachedHash == hash)
+		if (settings::UseBinFiles() && cachedHash == hash)
 		{
 			D3DReadFileToBlob(shaderBinFileNameW.c_str(), &m_shader);
 			jobs::RunSync(done);
