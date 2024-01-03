@@ -91,11 +91,15 @@ namespace
 			gc::GCTick(toDelete);
 
 			jobs::RunSync(jobs::Job::CreateByLambda([&]() {
+
+				gc::GCLogger::m_log << "DEL ";
 				for (auto it = toDelete.begin(); it != toDelete.end(); ++it)
 				{
-					delete* it;
+					gc::GCLogger::m_log << (*it)->GetId() << ' ';
+					delete *it;
 				}
 				toDelete.clear();
+				gc::GCLogger::m_log << std::endl;
 
 				HandleState(GCState::Idle);
 			}));

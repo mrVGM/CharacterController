@@ -5,7 +5,7 @@
 
 #include "ObjectValueContainer.h"
 
-ValueList::ValueList(const ListDef& typeDef, const CompositeValue* outer) :
+ValueList::ValueList(const ListDef& typeDef, size_t outer) :
 	CopyValue(typeDef, outer)
 {
 }

@@ -28,7 +28,7 @@ public:
 		void operator++();
 	};
 
-	ValueList(const ListDef& typeDef, const CompositeValue* outer);
+	ValueList(const ListDef& typeDef, size_t outer);
 	virtual ~ValueList();
 
 	virtual void Copy(const CopyValue& src) override;

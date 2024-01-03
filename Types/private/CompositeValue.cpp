@@ -7,20 +7,21 @@
 
 namespace
 {
-	const ObjectValue* GetOuterObject(const CompositeValue* outer)
+	size_t GetOuterObjectId(const CompositeValue* outer)
 	{
-		while (outer)
+		if (!outer)
 		{
-			if (TypeDef::IsA(outer->GetTypeDef(), ReferenceTypeDef::GetTypeDef()))
-			{
-				return static_cast<const ObjectValue*>(outer);
-			}
-
-			const CopyValue* copyValue = static_cast<const CopyValue*>(outer);
-			outer = copyValue->GetOuter();
+			return 0;
 		}
 
-		return nullptr;
+		if (TypeDef::IsA(outer->GetTypeDef(), ReferenceTypeDef::GetTypeDef()))
+		{
+			const ObjectValue* tmp = static_cast<const ObjectValue*>(outer);
+			return tmp->GetId();
+		}
+
+		const CopyValue* copyValue = static_cast<const CopyValue*>(outer);
+		return copyValue->GetOuter();
 	}
 }
 
@@ -38,7 +39,7 @@ CompositeValue::~CompositeValue()
 {
 }
 
-CopyValue::CopyValue(const ValueTypeDef& typeDef, const CompositeValue* outer) :
+CopyValue::CopyValue(const ValueTypeDef& typeDef, size_t outer) :
 	CompositeValue(typeDef),
 	m_outer(outer)
 {
@@ -48,7 +49,7 @@ CopyValue::~CopyValue()
 {
 }
 
-const CompositeValue* CopyValue::GetOuter() const
+size_t CopyValue::GetOuter() const
 {
 	return m_outer;
 }

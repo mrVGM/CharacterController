@@ -15,9 +15,8 @@ public:
 
 	ValuePayload m_payload;
 
-	const CompositeValue* m_outer = nullptr;
 	const TypeDef* m_type = nullptr;
-	size_t m_outerObject = 0;
+	size_t m_outer = 0;
 
 	Value(const TypeDef& type, const CompositeValue* outer);
 	Value(const Value& other) = delete;

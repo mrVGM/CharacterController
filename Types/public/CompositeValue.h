@@ -28,12 +28,12 @@ public:
 class CopyValue : public CompositeValue
 {
 private:
-	const CompositeValue* m_outer = nullptr;
+	size_t m_outer = 0;
 
 public:
-	CopyValue(const ValueTypeDef& typeDef, const CompositeValue* outer);
+	CopyValue(const ValueTypeDef& typeDef, size_t outer);
 	virtual ~CopyValue();
 
 	virtual void Copy(const CopyValue& src) = 0;
-	const CompositeValue* GetOuter() const;
+	size_t GetOuter() const;
 };

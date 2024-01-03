@@ -6,35 +6,28 @@
 
 namespace
 {
-	const ObjectValue* GetOuterObject(const CompositeValue* outer)
+	size_t GetOuterObjectId(const CompositeValue* outer)
 	{
-		while (outer)
+		if (!outer)
 		{
-			if (TypeDef::IsA(outer->GetTypeDef(), ReferenceTypeDef::GetTypeDef()))
-			{
-				return static_cast<const ObjectValue*>(outer);
-			}
-
-			const CopyValue* copyValue = static_cast<const CopyValue*>(outer);
-			outer = copyValue->GetOuter();
+			return 0;
 		}
 
-		return nullptr;
+		if (TypeDef::IsA(outer->GetTypeDef(), ReferenceTypeDef::GetTypeDef()))
+		{
+			const ObjectValue* tmp = static_cast<const ObjectValue*>(outer);
+			return tmp->GetId();
+		}
+
+		const CopyValue* copyValue = static_cast<const CopyValue*>(outer);
+		return copyValue->GetOuter();
 	}
 }
 
 void Value::Initialize(const TypeDef& type, const CompositeValue* outer)
 {
 	m_type = &type;
-	m_outer = outer;
-	if (outer)
-	{
-		const ObjectValue* tmp = GetOuterObject(outer);
-		if (tmp)
-		{
-			m_outerObject = tmp->GetId();
-		}
-	}
+	m_outer = GetOuterObjectId(outer);
 
 	if (TypeDef::IsA(*m_type, BoolTypeDef::GetTypeDef()))
 	{
@@ -134,15 +127,15 @@ void Value::AssignObject(ObjectValue* object)
 
 	const ObjectValue* cur = GetValue<ObjectValue*>();
 
-	if (m_outerObject)
+	if (m_outer)
 	{
 		if (object)
 		{
-			gc::AddLink(object->GetId(), m_outerObject);
+			gc::AddLink(object->GetId(), m_outer);
 		}
 		if (cur)
 		{
-			gc::RemoveLink(cur->GetId(), m_outerObject);
+			gc::RemoveLink(cur->GetId(), m_outer);
 		}
 	}
 	else
