@@ -2,6 +2,8 @@
 
 #include "ObjectRecords.h"
 
+std::stringstream gc::GCLogger::m_log;
+
 size_t gc::ManagedObject::m_index = 0;
 
 gc::ManagedObject::ManagedObject()

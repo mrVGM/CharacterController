@@ -2,8 +2,15 @@
 
 #include <list>
 
+#include <sstream>
+
 namespace gc
 {
+	struct GCLogger
+	{
+		static std::stringstream m_log;
+	};
+
 	class ManagedObject
 	{
 	private:

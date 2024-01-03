@@ -5,12 +5,17 @@
 #include "Job.h"
 #include "Jobs.h"
 
+#include <set>
+#include <sstream>
+
 namespace
 {
 	bool m_shouldContinue = true;
 
 	bool m_gcHasWorkToDo = true;
 	bool m_gcIdle = false;
+
+	std::set<const gc::ManagedObject*> m_deleted;
 
 	struct Context
 	{
@@ -42,9 +47,22 @@ namespace
 
 	void DeleteManagedObjects::Do()
 	{
+		gc::GCLogger::m_log << std::endl << "DEL ";
 		for (auto it = m_ctx.m_toDelete.begin(); it != m_ctx.m_toDelete.end(); ++it)
 		{
 			const gc::ManagedObject* tmp = *it;
+			gc::GCLogger::m_log << tmp->GetId() << ' ';
+		}
+		gc::GCLogger::m_log << std::endl;
+
+		for (auto it = m_ctx.m_toDelete.begin(); it != m_ctx.m_toDelete.end(); ++it)
+		{
+			const gc::ManagedObject* tmp = *it;
+			if (m_deleted.contains(tmp))
+			{
+				bool t = true;
+			}
+			m_deleted.insert(tmp);
 			delete tmp;
 		}
 
