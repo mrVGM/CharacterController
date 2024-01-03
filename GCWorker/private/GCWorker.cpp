@@ -7,106 +7,110 @@
 
 #include <set>
 #include <sstream>
+#include <mutex>
 
 namespace
 {
-	bool m_shouldContinue = true;
 
-	bool m_gcHasWorkToDo = true;
-	bool m_gcIdle = false;
-
-	std::set<const gc::ManagedObject*> m_deleted;
-
-	struct Context
+	enum GCState
 	{
-		std::list<const gc::ManagedObject*> m_toDelete;
+		Idle,
+		Running,
+		HasWorkToDo,
+		ShutDown
 	};
 
-	class DeleteManagedObjects : public jobs::Job
+	class GCHandler
 	{
-		Context m_ctx;
-	public:
-		DeleteManagedObjects(const Context& ctx) :
-			m_ctx(ctx)
-		{
-		}
-		void Do() override;
-	};
+	private:
+		std::mutex m_mutex;
+		GCState m_state = Idle;
 
-	class GCTick : public jobs::Job
-	{
-	public:
-		void Do() override
-		{
-			Context ctx;
-			gc::GCTick(ctx.m_toDelete);
+		void StartGCTick();
 
-			jobs::RunSync(new DeleteManagedObjects(ctx));
-		}
-	};
-
-	void DeleteManagedObjects::Do()
-	{
-		gc::GCLogger::m_log << std::endl << "DEL ";
-		for (auto it = m_ctx.m_toDelete.begin(); it != m_ctx.m_toDelete.end(); ++it)
+		void HandleState(GCState state)
 		{
-			const gc::ManagedObject* tmp = *it;
-			gc::GCLogger::m_log << tmp->GetId() << ' ';
-		}
-		gc::GCLogger::m_log << std::endl;
-
-		for (auto it = m_ctx.m_toDelete.begin(); it != m_ctx.m_toDelete.end(); ++it)
-		{
-			const gc::ManagedObject* tmp = *it;
-			if (m_deleted.contains(tmp))
+			if (m_state == GCState::ShutDown)
 			{
-				bool t = true;
+				return;
 			}
-			m_deleted.insert(tmp);
-			delete tmp;
+
+			if (state == GCState::ShutDown)
+			{
+				m_state = GCState::ShutDown;
+				return;
+			}
+
+			if (state == GCState::Running)
+			{
+				m_state = GCState::Running;
+				return;
+			}
+
+			if (state == GCState::HasWorkToDo)
+			{
+				if (m_state == GCState::Idle)
+				{
+					StartGCTick();
+					return;
+				}
+
+				m_state = GCState::HasWorkToDo;
+				return;
+			}
+
+			if (state == GCState::Idle)
+			{
+				if (m_state == GCState::HasWorkToDo)
+				{
+					StartGCTick();
+					return;
+				}
+				m_state = GCState::Idle;
+				return;
+			}
 		}
 
-		if (!m_shouldContinue)
+	public:
+		void SetState(GCState state)
 		{
-			return;
+			m_mutex.lock();
+			HandleState(state);
+			m_mutex.unlock();
 		}
+	};
 
-		if (m_gcHasWorkToDo)
-		{
-			jobs::RunAsync(new GCTick());
-			m_gcHasWorkToDo = false;
-			return;
-		}
+	void GCHandler::StartGCTick()
+	{
+		m_state = GCState::Running;
 
-		m_gcIdle = true;
+		static std::list<const gc::ManagedObject*> toDelete;
+
+		jobs::RunAsync(jobs::Job::CreateByLambda([&]() {
+			toDelete.clear();
+			gc::GCTick(toDelete);
+
+			jobs::RunSync(jobs::Job::CreateByLambda([&]() {
+				for (auto it = toDelete.begin(); it != toDelete.end(); ++it)
+				{
+					delete* it;
+				}
+				toDelete.clear();
+
+				HandleState(GCState::Idle);
+			}));
+		}));
 	}
+
+	GCHandler m_gcHandler;
 
 	class GCActivatedListener : public gc::GCActivatedListener
 	{
 	public:
+
 		void OnActivated() const override
 		{
-			class ActivateGC : public jobs::Job
-			{
-			public:
-				void Do() override
-				{
-					if (!m_shouldContinue)
-					{
-						return;
-					}
-
-					if (!m_gcIdle)
-					{
-						m_gcHasWorkToDo = true;
-						return;
-					}
-
-					jobs::RunAsync(new GCTick());
-				}
-			};
-
-			jobs::RunSync(new ActivateGC());
+			m_gcHandler.SetState(GCState::HasWorkToDo);
 		}
 	};
 
@@ -115,7 +119,7 @@ namespace
 	void BootGC()
 	{
 		gc::SetGCActivatedListener(m_listener);
-		jobs::RunAsync(new GCTick());
+		m_listener.OnActivated();
 	}
 }
 
@@ -126,5 +130,5 @@ void gc::Boot()
 
 void gc::Shutdown()
 {
-	m_shouldContinue = false;
+	m_gcHandler.SetState(GCState::ShutDown);
 }
