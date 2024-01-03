@@ -27,6 +27,14 @@ void Value::Initialize(const TypeDef& type, const CompositeValue* outer)
 {
 	m_type = &type;
 	m_outer = outer;
+	if (outer)
+	{
+		const ObjectValue* tmp = GetOuterObject(outer);
+		if (tmp)
+		{
+			m_outerObject = tmp->GetId();
+		}
+	}
 
 	if (TypeDef::IsA(*m_type, BoolTypeDef::GetTypeDef()))
 	{
@@ -124,18 +132,17 @@ void Value::AssignObject(ObjectValue* object)
 		throw "Can't Assign Object!";
 	}
 
-	const ObjectValue* outer = GetOuterObject(m_outer);
 	const ObjectValue* cur = GetValue<ObjectValue*>();
 
-	if (outer)
+	if (m_outerObject)
 	{
 		if (object)
 		{
-			gc::AddLink(object->GetId(), outer->GetId());
+			gc::AddLink(object->GetId(), m_outerObject);
 		}
 		if (cur)
 		{
-			gc::RemoveLink(cur->GetId(), outer->GetId());
+			gc::RemoveLink(cur->GetId(), m_outerObject);
 		}
 	}
 	else
