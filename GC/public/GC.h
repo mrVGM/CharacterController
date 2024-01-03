@@ -30,11 +30,11 @@ namespace gc
 		virtual void OnActivated() const = 0;
 	};
 
-	void IncrementRefs(const ManagedObject* object);
-	void DecrementRefs(const ManagedObject* object);
+	void IncrementRefs(size_t id);
+	void DecrementRefs(size_t id);
 
-	void AddLink(const ManagedObject* from, const ManagedObject* to);
-	void RemoveLink(const ManagedObject* from, const ManagedObject* to);
+	void AddLink(size_t from, size_t to);
+	void RemoveLink(size_t from, size_t to);
 
 	void GCTick(std::list<const ManagedObject*>& managedObjectsToDelete);
 

@@ -27,8 +27,10 @@ namespace gc
 	struct GCOperation
 	{
 		GCOp m_op;
-		const ManagedObject* m_object1 = nullptr;
-		const ManagedObject* m_object2 = nullptr;
+		size_t m_id1;
+		size_t m_id2;
+		const ManagedObject* m_object1_ = nullptr;
+		const ManagedObject* m_object2_ = nullptr;
 	};
 
 	class ObjectRecord
@@ -39,21 +41,22 @@ namespace gc
 		GCObjectState m_state = GCObjectState::Unchecked;
 
 		int m_refs = 0;
-		std::list<ObjectRecord*> m_links;
+		std::list<size_t> m_links;
 
 	};
 
 	class ObjectRecordManager
 	{
 	private:
-		std::map<size_t, ObjectRecord> m_records;
-		ObjectRecord& GetRecord(const ManagedObject* object);
 	public:
 		static ObjectRecordManager& GetManager();
 
+		std::map<size_t, ObjectRecord> m_records;
+		ObjectRecord& GetRecord(const ManagedObject* object);
+
 		void Tick(std::list<const ManagedObject*>& managedObjectsToDelete);
-		void UpdateObjectsState(std::queue<GCOperation>& operations, std::list<const ManagedObject*>& toCheck);
-		void UpdateVitality(std::list<const ManagedObject*> objects);
+		void UpdateObjectsState(std::queue<GCOperation>& operations, std::list<size_t>& toCheck);
+		void UpdateVitality(std::list<size_t>& objects);
 
 		void SetGCActivatedListener(const GCActivatedListener& listener);
 	};

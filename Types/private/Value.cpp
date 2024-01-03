@@ -131,22 +131,22 @@ void Value::AssignObject(ObjectValue* object)
 	{
 		if (object)
 		{
-			gc::AddLink(object, outer);
+			gc::AddLink(object->GetId(), outer->GetId());
 		}
 		if (cur)
 		{
-			gc::RemoveLink(cur, outer);
+			gc::RemoveLink(cur->GetId(), outer->GetId());
 		}
 	}
 	else
 	{
 		if (object)
 		{
-			gc::IncrementRefs(object);
+			gc::IncrementRefs(object->GetId());
 		}
 		if (cur)
 		{
-			gc::DecrementRefs(cur);
+			gc::DecrementRefs(cur->GetId());
 		}
 	}
 	m_payload = object;

@@ -9,6 +9,9 @@ size_t gc::ManagedObject::m_index = 0;
 gc::ManagedObject::ManagedObject()
 {
 	m_id = m_index++;
+
+	ObjectRecordManager& manager = ObjectRecordManager::GetManager();
+	manager.GetRecord(this);
 }
 
 gc::ManagedObject::~ManagedObject()
@@ -20,25 +23,25 @@ size_t gc::ManagedObject::GetId() const
 	return m_id;
 }
 
-void gc::IncrementRefs(const ManagedObject* object)
+void gc::IncrementRefs(size_t id)
 {
-	GCOperation op{ GCOp::IncrementRefsOp, object };
+	GCOperation op{ GCOp::IncrementRefsOp, id };
 	PushOp(op);
 }
 
-void gc::DecrementRefs(const ManagedObject* object)
+void gc::DecrementRefs(size_t id)
 {
-	GCOperation op{ GCOp::DecrementRefsOp, object };
+	GCOperation op{ GCOp::DecrementRefsOp, id };
 	PushOp(op);
 }
 
-void gc::AddLink(const ManagedObject* from, const ManagedObject* to)
+void gc::AddLink(size_t from, size_t to)
 {
 	GCOperation op{ GCOp::AddLinkOp, from, to };
 	PushOp(op);
 }
 
-void gc::RemoveLink(const ManagedObject* from, const ManagedObject* to)
+void gc::RemoveLink(size_t from, size_t to)
 {
 	GCOperation op{ GCOp::RemoveLinkOp, from, to };
 	PushOp(op);

@@ -84,7 +84,7 @@ void gc::ObjectRecordManager::Tick(std::list<const ManagedObject*>& managedObjec
 		it->second.m_state = Unchecked;
 	}
 
-	std::list<const ManagedObject*> toCheck;
+	std::list<size_t> toCheck;
 	UpdateObjectsState(GetSecondaryQueue(), toCheck);
 	UpdateVitality(toCheck);
 
@@ -114,7 +114,7 @@ void gc::ObjectRecordManager::Tick(std::list<const ManagedObject*>& managedObjec
 	}
 }
 
-void gc::ObjectRecordManager::UpdateObjectsState(std::queue<GCOperation>& operations, std::list<const ManagedObject*>& toCheck)
+void gc::ObjectRecordManager::UpdateObjectsState(std::queue<GCOperation>& operations, std::list<size_t>& toCheck)
 {
 	while (!operations.empty())
 	{
@@ -124,34 +124,32 @@ void gc::ObjectRecordManager::UpdateObjectsState(std::queue<GCOperation>& operat
 		switch (cur.m_op)
 		{
 		case IncrementRefsOp:
-			GCLogger::m_log << "INC " << cur.m_object1->GetId() << std::endl;
-			++GetRecord(cur.m_object1).m_refs;
+			GCLogger::m_log << "INC " << cur.m_id1 << std::endl;
+			++m_records[cur.m_id1].m_refs;
 			break;
 		case AddLinkOp:
-			GCLogger::m_log << "ADD_LINK " << cur.m_object1->GetId() << ' ' << cur.m_object2->GetId() << std::endl;
-			GetRecord(cur.m_object1).m_links.push_back(&GetRecord(cur.m_object2));
+			GCLogger::m_log << "ADD_LINK " << cur.m_id1 << ' ' << cur.m_id2 << std::endl;
+			m_records[cur.m_id1].m_links.push_back(cur.m_id2);
 			break;
 		case DecrementRefsOp:
-			GCLogger::m_log << "DEC " << cur.m_object1->GetId() << std::endl;
-			--GetRecord(cur.m_object1).m_refs;
-			toCheck.push_back(cur.m_object1);
+			GCLogger::m_log << "DEC " << cur.m_id1 << std::endl;
+			--m_records[cur.m_id1].m_refs;
+			toCheck.push_back(cur.m_id1);
 			break;
 		case RemoveLinkOp:
 		{
-			ObjectRecord& rec1 = GetRecord(cur.m_object1);
-			ObjectRecord& rec2 = GetRecord(cur.m_object2);
+			GCLogger::m_log << "REMOVE_LINK " << cur.m_id1 << ' ' << cur.m_id2 << std::endl;
 
-			GCLogger::m_log << "REMOVE_LINK " << cur.m_object1->GetId() << ' ' << cur.m_object2->GetId() << std::endl;
-
+			ObjectRecord& rec1 = m_records[cur.m_id1];
 			for (auto it = rec1.m_links.begin(); it != rec1.m_links.end(); ++it)
 			{
-				if (*it == &rec2)
+				if (*it == cur.m_id2)
 				{
 					rec1.m_links.erase(it);
 					break;
 				}
 			}
-			toCheck.push_back(cur.m_object1);
+			toCheck.push_back(cur.m_id1);
 			break;
 		}
 		}
@@ -164,13 +162,15 @@ namespace
 	struct VitalityCheckTask
 	{
 		std::stack<VitalityCheckTask*>& m_taskStack;
+		gc::ObjectRecordManager& m_manager;
 
 		gc::ObjectRecord* m_record;
 		std::list<VitalityCheckTask*> m_subTasks;
 		bool m_done = false;
 		bool m_createdSubtasks = false;
 
-		VitalityCheckTask(std::stack<VitalityCheckTask*>& taskStack, gc::ObjectRecord* record) :
+		VitalityCheckTask(gc::ObjectRecordManager& manager, std::stack<VitalityCheckTask*>& taskStack, gc::ObjectRecord* record) :
+			m_manager(manager),
 			m_taskStack(taskStack),
 			m_record(record)
 		{
@@ -205,8 +205,8 @@ namespace
 			{
 				for (auto it = m_record->m_links.begin(); it != m_record->m_links.end(); ++it)
 				{
-					ObjectRecord* cur = *it;
-					VitalityCheckTask* subTask = new VitalityCheckTask(m_taskStack, cur);
+					ObjectRecord* cur = &m_manager.m_records[*it];
+					VitalityCheckTask* subTask = new VitalityCheckTask(m_manager, m_taskStack, cur);
 					m_subTasks.push_back(subTask);
 					m_taskStack.push(subTask);
 				}
@@ -217,7 +217,7 @@ namespace
 
 			for (auto it = m_record->m_links.begin(); it != m_record->m_links.end(); ++it)
 			{
-				ObjectRecord* cur = *it;
+				ObjectRecord* cur = &m_manager.m_records[*it];
 				if (cur->m_state == GCObjectState::Alive)
 				{
 					m_record->m_state = GCObjectState::Alive;
@@ -232,15 +232,15 @@ namespace
 	};
 }
 
-void gc::ObjectRecordManager::UpdateVitality(std::list<const ManagedObject*> objects)
+void gc::ObjectRecordManager::UpdateVitality(std::list<size_t>& objects)
 {
 	std::stack<VitalityCheckTask*> workStack;
 	std::list<VitalityCheckTask*> initialTasks;
 
 	for (auto it = objects.begin(); it != objects.end(); ++it)
 	{
-		ObjectRecord& cur = GetRecord(*it);
-		VitalityCheckTask* task = new VitalityCheckTask(workStack, &cur);
+		ObjectRecord& cur = m_records[*it];
+		VitalityCheckTask* task = new VitalityCheckTask(*this, workStack, &cur);
 		initialTasks.push_back(task);
 		workStack.push(task);
 	}
