@@ -1,0 +1,38 @@
+{
+  "properties":{
+    "B6BFCE7E-3BCF-496A-9903-B6C86F8E372A":{
+      "type":{
+        "id":"D3B56C9E-8D0D-4065-9778-805D515D9EB6"
+      },
+      "name":"Y",
+      "id":"B6BFCE7E-3BCF-496A-9903-B6C86F8E372A",
+      "category":""
+    },
+    "827F53AD-67EF-4C69-B89B-7F595A2E6EEF":{
+      "type":{
+        "id":"D3B56C9E-8D0D-4065-9778-805D515D9EB6"
+      },
+      "name":"X",
+      "id":"827F53AD-67EF-4C69-B89B-7F595A2E6EEF",
+      "category":""
+    },
+    "13B05A9B-EAD9-4D63-92D6-429A97C6C902":{
+      "type":{
+        "id":"D3B56C9E-8D0D-4065-9778-805D515D9EB6"
+      },
+      "name":"Z",
+      "id":"13B05A9B-EAD9-4D63-92D6-429A97C6C902",
+      "category":""
+    }
+  },
+  "parent":{
+    "id":"43120139-ED19-4F10-8B14-703666C023AC"
+  },
+  "name":"Vector 3",
+  "isGenerated":0,
+  "id":{
+    "id":"46A3F7A0-33EA-495B-9716-36F225CDDBDB"
+  },
+  "hint":"value_type",
+  "category":"Math"
+}

@@ -21,7 +21,6 @@ add_library (Types
 	"private/ListDef.cpp"
 	"public/Value.h"
 	"private/Value.cpp"
-	"public/StructValue.h"
 	"public/ValueList.h"
 	"private/ValueList.cpp"
 )

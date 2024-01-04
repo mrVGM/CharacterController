@@ -3,16 +3,16 @@
 add_library (CommonTypeDefs
 	"public/AppEntry.h"
 	"private/AppEntryTypeDef.cpp"
-	
-	
 	"public/CommonTypeDefs.h"
 	"private/CommonTypeDefs.cpp"
+	"public/MathStructs.h"
+	"private/MathStructs.cpp"
 )
 
 target_include_directories(CommonTypeDefs INTERFACE PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/public")
 target_include_directories(CommonTypeDefs PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/private")
 
-target_link_libraries(CommonTypeDefs PUBLIC Types)
+target_link_libraries(CommonTypeDefs PUBLIC Types Math)
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET CommonTypeDefs PROPERTY CXX_STANDARD 20)

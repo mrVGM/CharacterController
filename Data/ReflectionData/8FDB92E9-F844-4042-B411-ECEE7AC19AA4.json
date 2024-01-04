@@ -1,0 +1,46 @@
+{
+  "properties":{
+    "A6C8E1A3-EE94-4E0D-A3C2-540240EA1B54":{
+      "type":{
+        "id":"D3B56C9E-8D0D-4065-9778-805D515D9EB6"
+      },
+      "name":"X",
+      "id":"A6C8E1A3-EE94-4E0D-A3C2-540240EA1B54",
+      "category":""
+    },
+    "9E079E83-1D3D-45B3-AC3A-0713420ABF55":{
+      "type":{
+        "id":"D3B56C9E-8D0D-4065-9778-805D515D9EB6"
+      },
+      "name":"W",
+      "id":"9E079E83-1D3D-45B3-AC3A-0713420ABF55",
+      "category":""
+    },
+    "49A0464B-0F5E-4A99-B256-BC3AC827B963":{
+      "type":{
+        "id":"D3B56C9E-8D0D-4065-9778-805D515D9EB6"
+      },
+      "name":"Y",
+      "id":"49A0464B-0F5E-4A99-B256-BC3AC827B963",
+      "category":""
+    },
+    "1EF6F184-66A2-4EA8-A7B3-C7E8F2E59C06":{
+      "type":{
+        "id":"D3B56C9E-8D0D-4065-9778-805D515D9EB6"
+      },
+      "name":"Z",
+      "id":"1EF6F184-66A2-4EA8-A7B3-C7E8F2E59C06",
+      "category":""
+    }
+  },
+  "parent":{
+    "id":"43120139-ED19-4F10-8B14-703666C023AC"
+  },
+  "name":"Vector 4",
+  "isGenerated":0,
+  "id":{
+    "id":"8FDB92E9-F844-4042-B411-ECEE7AC19AA4"
+  },
+  "hint":"value_type",
+  "category":"Math"
+}
