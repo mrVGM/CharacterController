@@ -46,6 +46,14 @@
       "name":"Skeleton",
       "id":"27391D76-9D4F-4490-B3F3-0DD453CE22A5",
       "category":"Setup"
+    },
+    "026B7713-812F-43B8-B0F7-AAD6F000B2A0":{
+      "type":{
+        "id":"22DEF19B-EA55-4795-9106-56200D6A1C49"
+      },
+      "name":"Mesh Transform",
+      "id":"026B7713-812F-43B8-B0F7-AAD6F000B2A0",
+      "category":"Setup"
     }
   },
   "parent":{

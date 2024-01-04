@@ -113,7 +113,10 @@ void ValueTypeDef::GetReflectionData(json_parser::JSONValue& outData) const
 	CompositeTypeDef::GetReflectionData(outData);
 	auto& map = outData.GetAsObj();
 
-	map["hint"] = JSONValue("value_type");
+	if (this == &ValueTypeDef::GetTypeDef())
+	{
+		map["hint"] = JSONValue("value_type");
+	}
 }
 
 ReferenceTypeDef::ReferenceTypeDef(const TypeDef* parent, const std::string& id) :

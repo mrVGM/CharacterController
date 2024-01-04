@@ -26,6 +26,7 @@ namespace runtime
 		TypeProperty m_animator;
 		TypeProperty m_skeleton;
 		TypeProperty m_materials;
+		TypeProperty m_meshTransform;
 
 		ActorTypeDef();
 		virtual ~ActorTypeDef();
@@ -49,6 +50,7 @@ namespace runtime
 		virtual void LoadData(jobs::Job* done) override;
 
 	public:
+		Value m_meshTransform;
 		Value m_meshDef;
 		Value m_skeletonDef;
 		Value m_materialDefs;

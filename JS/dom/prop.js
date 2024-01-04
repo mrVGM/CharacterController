@@ -212,6 +212,69 @@ function createTypeProp(type, name, accessors) {
 
     return typeProp;
 }
+
+function createStructProp(type, name, accessors) {
+    const structContainer = LoadEJSElement('structContainer.ejs');
+
+    if (!accessors.get()) {
+        accessors.set({});
+    }
+
+    {
+        const { name: structName, struct_header, content, expand_icon } = structContainer.tagged;
+        structName.innerHTML = name;
+
+        let expanded = true;
+        struct_header.addEventListener('click', event => {
+            expanded = !expanded;
+            content.style.display = expanded ? '' : 'none';
+
+            expand_icon.classList.remove(expanded ? 'expand-button-collapsed' : 'expand-button-expanded');
+            expand_icon.classList.add(expanded ? 'expand-button-expanded' : 'expand-button-collapsed');
+        });
+    }
+
+    const { create: createStructPanel } = require('./categorizedDataPanel');
+    const structPanel = createStructPanel();
+    const { search_box, contents_holder } = structPanel.tagged;
+
+    contents_holder.style.position = '';
+    search_box.style.display = 'none';
+
+    const { content } = structContainer.tagged;
+    content.appendChild(structPanel.element);
+
+    {
+        const typeDef = document.appData.defs[type.id];
+        const defaultsObj = accessors.get();
+
+        for (k in defaultsObj) {
+            if (typeof (typeDef.properties[k]) === 'undefined') {
+                delete defaultsObj[k];
+            }
+        }
+        
+        for (k in typeDef.properties) {
+            const curProp = typeDef.properties[k];
+            const slot = structPanel.data.addSlot(curProp.category);
+
+            function createAccessors(k) {
+                return {
+                    get: () => defaultsObj[k],
+                    set: value => {
+                        defaultsObj[k] = value;
+                    }
+                }
+            }
+
+            const subProp = createProp(curProp.type, curProp.name, createAccessors(k));
+            structPanel.data.addItem(subProp, curProp.name, slot.slotId);
+        }
+    }
+
+    return structContainer;
+}
+
 function createProp(propType, name, accessors) {
     const {
         bool,
@@ -246,6 +309,10 @@ function createProp(propType, name, accessors) {
 
     if (document.appData.isAssignable(propType.id, list.id.id)) {
         return createListProp(propType, name, accessors);
+    }
+
+    if (document.appData.isAssignable(propType.id, valueType.id.id)) {
+        return createStructProp(propType, name, accessors);
     }
 }
 

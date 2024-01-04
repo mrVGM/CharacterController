@@ -18,6 +18,8 @@
 
 #include "AssetTypeDef.h"
 
+#include "MathStructs.h"
+
 #include "CoreUtils.h"
 
 #define THROW_ERROR(hRes, error) \
@@ -45,7 +47,8 @@ runtime::ActorTypeDef::ActorTypeDef() :
 	m_mesh("6B501787-EFF6-4EDF-85A4-571428A47071", TypeTypeDef::GetTypeDef(geo::MeshTypeDef::GetTypeDef())),
 	m_animator("C2D55EEE-8279-4CA5-BDA9-699FA696EF19", TypeTypeDef::GetTypeDef(animation::AnimatorTypeDef::GetTypeDef())),
 	m_skeleton("27391D76-9D4F-4490-B3F3-0DD453CE22A5", TypeTypeDef::GetTypeDef(geo::SkeletonTypeDef::GetTypeDef())),
-	m_materials("2A8E8B5A-2CCD-4957-ABDB-6685AA5A8DBF", ListDef::GetTypeDef(TypeTypeDef::GetTypeDef(rendering::materials::MaterialTypeDef::GetTypeDef())))
+	m_materials("2A8E8B5A-2CCD-4957-ABDB-6685AA5A8DBF", ListDef::GetTypeDef(TypeTypeDef::GetTypeDef(rendering::materials::MaterialTypeDef::GetTypeDef()))),
+	m_meshTransform("026B7713-812F-43B8-B0F7-AAD6F000B2A0", common::TransformTypeDef::GetTypeDef())
 {
 	{
 		m_mesh.m_name = "Mesh";
@@ -87,6 +90,16 @@ runtime::ActorTypeDef::ActorTypeDef() :
 		m_properties[m_skeleton.GetId()] = &m_skeleton;
 	}
 
+	{
+		m_meshTransform.m_name = "Mesh Transform";
+		m_meshTransform.m_category = "Setup";
+		m_meshTransform.m_getValue = [](CompositeValue* obj) -> Value& {
+			Actor* actor = static_cast<Actor*>(obj);
+			return actor->m_meshTransform;
+		};
+		m_properties[m_meshTransform.GetId()] = &m_meshTransform;
+	}
+
 	m_name = "Actor";
 	m_category = "Scene";
 }
@@ -113,7 +126,8 @@ runtime::Actor::Actor(const ReferenceTypeDef& typeDef) :
 	m_transformBuffer(rendering::DXMutableBufferTypeDef::GetTypeDef(), this),
 	m_poseBuffer(rendering::DXMutableBufferTypeDef::GetTypeDef(), this),
 	m_animatorDef(ActorTypeDef::GetTypeDef().m_animator.GetType(), this),
-	m_animator(animation::AnimatorTypeDef::GetTypeDef(), this)
+	m_animator(animation::AnimatorTypeDef::GetTypeDef(), this),
+	m_meshTransform(ActorTypeDef::GetTypeDef().m_meshTransform.GetType(), this)
 {
 }
 
