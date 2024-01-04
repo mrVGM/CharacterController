@@ -7,22 +7,8 @@
         },
         "id":"B5883DED-257C-4E35-846C-DB5BB7E11289"
       },
-      "name":"Scene Actor List",
-      "id":"5E4B2953-2059-42F3-929E-312F74D77930",
-      "category":"Setup"
-    },
-    "267F2995-4E66-4D09-83B4-C9F021BE63FA":{
-      "type":{
-        "template":{
-          "template":{
-            "id":"9CFFA9B0-3542-4509-81CD-387C496ADAFF"
-          },
-          "id":"1D4363E5-BC6F-4B49-80F3-FAC358F5B296"
-        },
-        "id":"B5883DED-257C-4E35-846C-DB5BB7E11289"
-      },
       "name":"Actor List",
-      "id":"267F2995-4E66-4D09-83B4-C9F021BE63FA",
+      "id":"5E4B2953-2059-42F3-929E-312F74D77930",
       "category":"Setup"
     }
   },

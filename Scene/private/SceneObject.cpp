@@ -36,33 +36,18 @@ const scene::SceneObjectTypeDef& scene::SceneObjectTypeDef::GetTypeDef()
 scene::SceneObjectTypeDef::SceneObjectTypeDef() :
 	ReferenceTypeDef(&ReferenceTypeDef::GetTypeDef(), "F5D74F81-F245-4D04-8E56-763D88D5169D"),
 	m_actorList(
-		"267F2995-4E66-4D09-83B4-C9F021BE63FA",
-		ListDef::GetTypeDef(TypeTypeDef::GetTypeDef(runtime::ActorTypeDef::GetTypeDef()))),
-	m_sceneActorList(
 		"5E4B2953-2059-42F3-929E-312F74D77930",
 		ListDef::GetTypeDef(SceneActorTypeDef::GetTypeDef()))
 {
-	
 	{
 		m_actorList.m_name = "Actor List";
 		m_actorList.m_category = "Setup";
 		m_actorList.m_getValue = [](CompositeValue* obj) -> Value& {
 			scene::SceneObject* scene = static_cast<SceneObject*>(obj);
-			return scene->m_actorDefList;
+			return scene->m_actorList;
 		};
 
 		m_properties[m_actorList.GetId()] = &m_actorList;
-	}
-
-	{
-		m_sceneActorList.m_name = "Scene Actor List";
-		m_sceneActorList.m_category = "Setup";
-		m_sceneActorList.m_getValue = [](CompositeValue* obj) -> Value& {
-			scene::SceneObject* scene = static_cast<SceneObject*>(obj);
-			return scene->m_sceneActorList;
-		};
-
-		m_properties[m_sceneActorList.GetId()] = &m_sceneActorList;
 	}
 
 	m_name = "Scene Object";
@@ -82,8 +67,7 @@ void scene::SceneObjectTypeDef::Construct(Value& container) const
 scene::SceneObject::SceneObject(const ReferenceTypeDef& typeDef) :
 	ObjectValue(typeDef),
 	m_actors(ListDef::GetTypeDef(runtime::ActorTypeDef::GetTypeDef()), this),
-	m_actorDefList(SceneObjectTypeDef::GetTypeDef().m_actorList.GetType(), this),
-	m_sceneActorList(SceneObjectTypeDef::GetTypeDef().m_sceneActorList.GetType(), this)
+	m_actorList(SceneObjectTypeDef::GetTypeDef().m_actorList.GetType(), this)
 {
 }
 
@@ -93,7 +77,7 @@ scene::SceneObject::~SceneObject()
 
 void scene::SceneObject::Load(jobs::Job* done)
 {
-	ValueList* actorDefs = m_actorDefList.GetValue<ValueList*>();
+	ValueList* sceneActorList = m_actorList.GetValue<ValueList*>();
 	ValueList* actorList = m_actors.GetValue<ValueList*>();
 
 	struct Context
@@ -117,20 +101,41 @@ void scene::SceneObject::Load(jobs::Job* done)
 	auto loadActor = [=](runtime::Actor* actor) {
 		return jobs::Job::CreateByLambda([=]() {
 			actor->Load(jobs::Job::CreateByLambda(actorLoaded));
+			bool t = true;
 		});
 	};
 
 	jobs::Job* initActors = jobs::Job::CreateByLambda([=]() {
 
-		for (auto it = actorDefs->GetIterator(); it; ++it)
+		for (auto it = sceneActorList->GetIterator(); it; ++it)
 		{
 			const Value& cur = *it;
-			runtime::Actor* curActor = static_cast<runtime::Actor*>(ObjectValueContainer::GetObjectOfType(*cur.GetType<const TypeDef*>()));
+			const SceneActorValue* sceneActorValue = cur.GetValue<SceneActorValue*>();
 
 			Value& actorVal = actorList->EmplaceBack();
-			actorVal.AssignObject(curActor);
+			const AssetTypeDef* actorAsset = static_cast<const AssetTypeDef*>(sceneActorValue->m_actorDef.GetType<const TypeDef*>());
+			actorAsset->Construct(actorVal);
+
+			{
+				json_parser::JSONValue& json = const_cast<json_parser::JSONValue&>(actorAsset->GetJSONData());
+				auto& map = json.GetAsObj();
+				json_parser::JSONValue& defaults = map["defaults"];
+				actorAsset->DeserializeFromJSON(actorVal, defaults);
+			}
+
 
 			runtime::Actor* actor = actorVal.GetValue<runtime::Actor*>();
+
+			{
+				common::TransformValue* transform = sceneActorValue->m_transform.GetValue<common::TransformValue*>();
+				common::Vector3Value* position = transform->m_position.GetValue<common::Vector3Value*>();
+				common::Vector3Value* rotation = transform->m_rotation.GetValue<common::Vector3Value*>();
+				common::Vector3Value* scale = transform->m_scale.GetValue<common::Vector3Value*>();
+
+				actor->m_curTransform.m_position = math::Vector3{ position->m_x.Get<float>(), position->m_y.Get<float>(), position->m_z.Get<float>() };
+				actor->m_curTransform.m_rotation = math::Vector3{ rotation->m_x.Get<float>(), rotation->m_y.Get<float>(), rotation->m_z.Get<float>() };
+				actor->m_curTransform.m_scale = math::Vector3{ scale->m_x.Get<float>(), scale->m_y.Get<float>(), scale->m_z.Get<float>() };
+			}
 
 			++ctx->m_toLoad;
 			jobs::RunAsync(loadActor(actor));
