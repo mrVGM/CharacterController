@@ -1,5 +1,16 @@
 {
   "properties":{
+    "5E4B2953-2059-42F3-929E-312F74D77930":{
+      "type":{
+        "template":{
+          "id":"BD092EB2-905B-4C30-A9D8-7E96C644D2F3"
+        },
+        "id":"B5883DED-257C-4E35-846C-DB5BB7E11289"
+      },
+      "name":"Scene Actor List",
+      "id":"5E4B2953-2059-42F3-929E-312F74D77930",
+      "category":"Setup"
+    },
     "267F2995-4E66-4D09-83B4-C9F021BE63FA":{
       "type":{
         "template":{

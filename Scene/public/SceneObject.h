@@ -13,6 +13,7 @@ namespace scene
 
     public:
 		TypeProperty m_actorList;
+		TypeProperty m_sceneActorList;
 
 		SceneObjectTypeDef();
         virtual ~SceneObjectTypeDef();
@@ -27,6 +28,7 @@ namespace scene
 
 	public:
 		Value m_actorDefList;
+		Value m_sceneActorList;
 
 		SceneObject(const ReferenceTypeDef& typeDef);
 		virtual ~SceneObject();

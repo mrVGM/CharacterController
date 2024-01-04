@@ -1,5 +1,8 @@
 #include "SceneObject.h"
 
+#include "SceneActor.h"
+#include "AssetTypeDef.h"
+
 #include "ListDef.h"
 #include "PrimitiveTypes.h"
 #include "ValueList.h"
@@ -10,6 +13,8 @@
 #include "Actor.h"
 
 #include "Jobs.h"
+
+#include "MathStructs.h"
 
 #include "CoreUtils.h"
 
@@ -32,7 +37,10 @@ scene::SceneObjectTypeDef::SceneObjectTypeDef() :
 	ReferenceTypeDef(&ReferenceTypeDef::GetTypeDef(), "F5D74F81-F245-4D04-8E56-763D88D5169D"),
 	m_actorList(
 		"267F2995-4E66-4D09-83B4-C9F021BE63FA",
-		ListDef::GetTypeDef(TypeTypeDef::GetTypeDef(runtime::ActorTypeDef::GetTypeDef())))
+		ListDef::GetTypeDef(TypeTypeDef::GetTypeDef(runtime::ActorTypeDef::GetTypeDef()))),
+	m_sceneActorList(
+		"5E4B2953-2059-42F3-929E-312F74D77930",
+		ListDef::GetTypeDef(SceneActorTypeDef::GetTypeDef()))
 {
 	
 	{
@@ -44,6 +52,17 @@ scene::SceneObjectTypeDef::SceneObjectTypeDef() :
 		};
 
 		m_properties[m_actorList.GetId()] = &m_actorList;
+	}
+
+	{
+		m_sceneActorList.m_name = "Scene Actor List";
+		m_sceneActorList.m_category = "Setup";
+		m_sceneActorList.m_getValue = [](CompositeValue* obj) -> Value& {
+			scene::SceneObject* scene = static_cast<SceneObject*>(obj);
+			return scene->m_sceneActorList;
+		};
+
+		m_properties[m_sceneActorList.GetId()] = &m_sceneActorList;
 	}
 
 	m_name = "Scene Object";
@@ -63,7 +82,8 @@ void scene::SceneObjectTypeDef::Construct(Value& container) const
 scene::SceneObject::SceneObject(const ReferenceTypeDef& typeDef) :
 	ObjectValue(typeDef),
 	m_actors(ListDef::GetTypeDef(runtime::ActorTypeDef::GetTypeDef()), this),
-	m_actorDefList(SceneObjectTypeDef::GetTypeDef().m_actorList.GetType(), this)
+	m_actorDefList(SceneObjectTypeDef::GetTypeDef().m_actorList.GetType(), this),
+	m_sceneActorList(SceneObjectTypeDef::GetTypeDef().m_sceneActorList.GetType(), this)
 {
 }
 

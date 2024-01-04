@@ -1,0 +1,32 @@
+{
+  "properties":{
+    "833DE71F-3C95-41E1-BB02-F80DFEDFF36A":{
+      "type":{
+        "id":"22DEF19B-EA55-4795-9106-56200D6A1C49"
+      },
+      "name":"Transform",
+      "id":"833DE71F-3C95-41E1-BB02-F80DFEDFF36A",
+      "category":""
+    },
+    "59D36C1D-465C-4293-8F7D-F80CFBEF9DE3":{
+      "type":{
+        "template":{
+          "id":"9CFFA9B0-3542-4509-81CD-387C496ADAFF"
+        },
+        "id":"1D4363E5-BC6F-4B49-80F3-FAC358F5B296"
+      },
+      "name":"Actor",
+      "id":"59D36C1D-465C-4293-8F7D-F80CFBEF9DE3",
+      "category":""
+    }
+  },
+  "parent":{
+    "id":"43120139-ED19-4F10-8B14-703666C023AC"
+  },
+  "name":"Scene Actor",
+  "isGenerated":0,
+  "id":{
+    "id":"BD092EB2-905B-4C30-A9D8-7E96C644D2F3"
+  },
+  "category":"Scene"
+}
