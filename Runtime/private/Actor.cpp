@@ -129,6 +129,9 @@ runtime::Actor::Actor(const ReferenceTypeDef& typeDef) :
 	m_animator(animation::AnimatorTypeDef::GetTypeDef(), this),
 	m_meshTransform(ActorTypeDef::GetTypeDef().m_meshTransform.GetType(), this)
 {
+	m_curTransform.m_position = math::Vector3{ 0, 0, 0 };
+	m_curTransform.m_rotation = math::Vector3{ 0, 0, 0 };
+	m_curTransform.m_scale = math::Vector3{ 1, 1, 1 };
 }
 
 runtime::Actor::~Actor()
@@ -402,7 +405,7 @@ void runtime::Actor::UpdateTransformBuffer()
 
 	void* data = uploadBuffer->Map();
 	math::Matrix* matPtr = static_cast<math::Matrix*>(data);
-	*matPtr = tmp.ToMatrix().Transpose();
+	*matPtr = (m_curTransform.ToMatrix() * tmp.ToMatrix()).Transpose();
 
 	uploadBuffer->Unmap();
 
