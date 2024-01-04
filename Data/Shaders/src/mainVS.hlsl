@@ -5,6 +5,12 @@ cbuffer CamBuff : register(b0)
     CameraBuffer m_camBuff;
 };
 
+cbuffer ObjectTransform : register(b1)
+{
+    float4x4 m_transform;
+};
+
+
 struct PSInput
 {
     float4 position         : SV_POSITION;
@@ -17,12 +23,13 @@ PSInput VSMain(VertexInput3D vertexInput)
 {
     PSInput result;
 
-    float3 worldPos = vertexInput.position;
+    float4 worldPos = float4(vertexInput.position, 1);
+    worldPos = mul(m_transform, worldPos);
     float3 worldNormal = vertexInput.normal;
 
-    result.position = mul(m_camBuff.m_matrix, float4(worldPos, 1));
+    result.position = mul(m_camBuff.m_matrix, worldPos);
 
-    result.world_position = float4(worldPos, 1);
+    result.world_position = worldPos;
     result.normal = float4(worldNormal, 1);
     result.uv = vertexInput.uv;
 

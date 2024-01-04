@@ -118,8 +118,9 @@ void rendering::unlit_rp::UnlitMaterial::CreatePipelineStateAndRootSignatureForS
             D3D12_ROOT_SIGNATURE_FLAG_DENY_GEOMETRY_SHADER_ROOT_ACCESS;
 
         CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC rootSignatureDesc;
-        CD3DX12_ROOT_PARAMETER1 rootParameters[1];
+        CD3DX12_ROOT_PARAMETER1 rootParameters[2];
         rootParameters[0].InitAsConstantBufferView(0, 0);
+        rootParameters[1].InitAsConstantBufferView(1, 0);
 
         rootSignatureDesc.Init_1_1(_countof(rootParameters), rootParameters, 0, nullptr, rootSignatureFlags);
 
@@ -192,11 +193,12 @@ void rendering::unlit_rp::UnlitMaterial::CreatePipelineStateAndRootSignatureForS
             D3D12_ROOT_SIGNATURE_FLAG_DENY_GEOMETRY_SHADER_ROOT_ACCESS;
 
         CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC rootSignatureDesc;
-        CD3DX12_ROOT_PARAMETER1 rootParameters[4];
+        CD3DX12_ROOT_PARAMETER1 rootParameters[5];
         rootParameters[0].InitAsConstantBufferView(0, 0);
-        rootParameters[1].InitAsShaderResourceView(0, 0);
-        rootParameters[2].InitAsShaderResourceView(1, 0);
-        rootParameters[3].InitAsShaderResourceView(2, 0);
+        rootParameters[1].InitAsConstantBufferView(1, 0);
+        rootParameters[2].InitAsShaderResourceView(0, 0);
+        rootParameters[3].InitAsShaderResourceView(1, 0);
+        rootParameters[4].InitAsShaderResourceView(2, 0);
 
         rootSignatureDesc.Init_1_1(_countof(rootParameters), rootParameters, 0, nullptr, rootSignatureFlags);
 
@@ -263,6 +265,7 @@ void rendering::unlit_rp::UnlitMaterial::GenerateCommandList(
 
     commandList->SetGraphicsRootSignature(m_rootSignature.Get());
     commandList->SetGraphicsRootConstantBufferView(0, m_camBuffer.GetValue<DXMutableBuffer*>()->m_buffer.GetValue<DXBuffer*>()->GetBuffer()->GetGPUVirtualAddress());
+    commandList->SetGraphicsRootConstantBufferView(1, instanceBuffer.GetBuffer()->GetGPUVirtualAddress());
 
     commandList->RSSetViewports(1, &swapChain->GetViewport());
     commandList->RSSetScissorRects(1, &swapChain->GetScissorRect());
@@ -326,10 +329,11 @@ void rendering::unlit_rp::UnlitMaterial::GenerateCommandList(
 
     commandList->SetGraphicsRootSignature(m_rootSignatureSkeletalMesh.Get());
     commandList->SetGraphicsRootConstantBufferView(0, m_camBuffer.GetValue<DXMutableBuffer*>()->m_buffer.GetValue<DXBuffer*>()->GetBuffer()->GetGPUVirtualAddress());
+    commandList->SetGraphicsRootConstantBufferView(1, instanceBuffer.GetBuffer()->GetGPUVirtualAddress());
 
-    commandList->SetGraphicsRootShaderResourceView(1, weightsBuffer.GetBuffer()->GetGPUVirtualAddress());
-    commandList->SetGraphicsRootShaderResourceView(2, bindShapeBuffer.GetBuffer()->GetGPUVirtualAddress());
-    commandList->SetGraphicsRootShaderResourceView(3, poseBuffer.GetBuffer()->GetGPUVirtualAddress());
+    commandList->SetGraphicsRootShaderResourceView(2, weightsBuffer.GetBuffer()->GetGPUVirtualAddress());
+    commandList->SetGraphicsRootShaderResourceView(3, bindShapeBuffer.GetBuffer()->GetGPUVirtualAddress());
+    commandList->SetGraphicsRootShaderResourceView(4, poseBuffer.GetBuffer()->GetGPUVirtualAddress());
 
     commandList->RSSetViewports(1, &swapChain->GetViewport());
     commandList->RSSetScissorRects(1, &swapChain->GetScissorRect());

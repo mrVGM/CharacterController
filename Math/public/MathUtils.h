@@ -30,6 +30,15 @@ namespace math
 		Matrix FlipYZAxis() const;
 	};
 
+	struct Transform
+	{
+		Vector3 m_position;
+		Vector3 m_rotation;
+		Vector3 m_scale;
+
+		Matrix ToMatrix() const;
+	};
+
 	Matrix operator*(const Matrix& m1, const Matrix& m2);
 	Vector4 operator*(const Matrix& m, const Vector4& v);
 

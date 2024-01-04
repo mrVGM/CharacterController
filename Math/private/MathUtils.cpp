@@ -128,3 +128,24 @@ math::Vector3 math::operator+(const math::Vector3& v1, const math::Vector3& v2)
 	Vector3 res{ v1.m_coefs[0] + v2.m_coefs[0], v1.m_coefs[1] + v2.m_coefs[1], v1.m_coefs[2] + v2.m_coefs[2] };
 	return res;
 }
+
+
+math::Matrix math::Transform::ToMatrix() const
+{
+	Matrix scale = {
+		{
+			m_scale.m_coefs[0],	0,					0,					0,
+			0,					m_scale.m_coefs[1],	0,					0,
+			0,					0,					m_scale.m_coefs[2],	0,
+			0,					0,					0,					1
+		}
+	};
+
+	Matrix translate = Matrix::GetIdentityMatrix();
+
+	translate.GetCoef(0, 3) = m_position.m_coefs[0];
+	translate.GetCoef(1, 3) = m_position.m_coefs[1];
+	translate.GetCoef(2, 3) = m_position.m_coefs[2];
+
+	return translate * scale;
+}

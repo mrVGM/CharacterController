@@ -5,6 +5,11 @@ cbuffer CamBuff : register(b0)
     CameraBuffer m_camBuff;
 };
 
+cbuffer ObjectTransform : register(b1)
+{
+    float4x4 m_transform;
+};
+
 struct VertexWeights
 {
     int     m_jointIndex[8];
@@ -45,6 +50,8 @@ PSInput VSMain(SkMVertexInput3D vertexInput)
     }
     
     worldPos.w = 1;
+    worldPos = mul(m_transform, worldPos);
+    
     float3 worldNormal = vertexInput.normal;
     
     result.position = mul(m_camBuff.m_matrix, worldPos);

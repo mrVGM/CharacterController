@@ -68,5 +68,7 @@ namespace runtime
 		void SetMesh(geo::Mesh* mesh);
 
 		void GetCMDLists(const TypeDef* material, std::list<ID3D12CommandList*>& outLists);
+
+		void UpdateTransformBuffer();
 	};
 }

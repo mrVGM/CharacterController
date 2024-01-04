@@ -217,7 +217,10 @@ void runtime::Actor::LoadData(jobs::Job* done)
 		transformBuffer->SetSizeAndStride(256, 256);
 		++ctx->m_loading;
 		jobs::RunAsync(jobs::Job::CreateByLambda([=]() {
-			transformBuffer->Load(jobs::Job::CreateByLambda(itemLoaded));
+			transformBuffer->Load(jobs::Job::CreateByLambda([=]() {
+				UpdateTransformBuffer();
+				jobs::RunSync(jobs::Job::CreateByLambda(itemLoaded));
+			}));
 		}));
 
 		const TypeDef* skeletonDef = m_skeletonDef.GetType<const TypeDef*>();
@@ -316,13 +319,16 @@ void runtime::Actor::CacheCMDLists(jobs::Job* done)
 			rendering::DXBuffer* vertexBuffer = meshBuffers->m_vertexBuffer.GetValue<rendering::DXBuffer*>();
 			rendering::DXBuffer* indexBuffer = meshBuffers->m_indexBuffer.GetValue<rendering::DXBuffer*>();
 
+			rendering::DXMutableBuffer* transformMutBuffer = m_transformBuffer.GetValue<rendering::DXMutableBuffer*>();
+			rendering::DXBuffer* transformBuffer = transformMutBuffer->m_buffer.GetValue<rendering::DXBuffer*>();
+
 			if (!mesh->m_skinData.m_hasAnyData)
 			{
 			
 				material->GenerateCommandList(
 					*vertexBuffer,
 					*indexBuffer,
-					*vertexBuffer,
+					*transformBuffer,
 					range.m_start,
 					range.m_count,
 					m_commandAllocator.Get(),
@@ -340,7 +346,7 @@ void runtime::Actor::CacheCMDLists(jobs::Job* done)
 				material->GenerateCommandList(
 					*vertexBuffer,
 					*indexBuffer,
-					*vertexBuffer,
+					*transformBuffer,
 
 					*weightsIdBuffer,
 					*weightsBuffer,
@@ -372,6 +378,35 @@ void runtime::Actor::GetCMDLists(const TypeDef* material, std::list<ID3D12Comman
 	{
 		outLists.push_back((*listIt).Get());
 	}
+}
+
+void runtime::Actor::UpdateTransformBuffer()
+{
+	using namespace rendering;
+
+	math::Transform tmp;
+
+	{
+		common::TransformValue* trVal = m_meshTransform.GetValue<common::TransformValue*>();
+		common::Vector3Value* posVal = trVal->m_position.GetValue<common::Vector3Value*>();
+		common::Vector3Value* rotVal = trVal->m_rotation.GetValue<common::Vector3Value*>();
+		common::Vector3Value* scaleVal = trVal->m_scale.GetValue<common::Vector3Value*>();
+
+		tmp.m_position = math::Vector3{ posVal->m_x.Get<float>(), posVal->m_y.Get<float>(), posVal->m_z.Get<float>() };
+		tmp.m_rotation = math::Vector3{ rotVal->m_x.Get<float>(), rotVal->m_y.Get<float>(), rotVal->m_z.Get<float>() };
+		tmp.m_scale = math::Vector3{ scaleVal->m_x.Get<float>(), scaleVal->m_y.Get<float>(), scaleVal->m_z.Get<float>() };
+	}
+
+	DXMutableBuffer* transformBuff = m_transformBuffer.GetValue<DXMutableBuffer*>();
+	DXBuffer* uploadBuffer = transformBuff->m_uploadBuffer.GetValue<DXBuffer*>();
+
+	void* data = uploadBuffer->Map();
+	math::Matrix* matPtr = static_cast<math::Matrix*>(data);
+	*matPtr = tmp.ToMatrix().Transpose();
+
+	uploadBuffer->Unmap();
+
+	transformBuff->SetDirty(true);
 }
 
 #undef THROW_ERROR
