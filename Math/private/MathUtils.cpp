@@ -2,6 +2,8 @@
 
 #include <math.h>
 
+#include <sstream>
+
 const math::Matrix& math::Matrix::GetIdentityMatrix()
 {
 	static Matrix idMat{
@@ -129,6 +131,17 @@ math::Vector3 math::operator+(const math::Vector3& v1, const math::Vector3& v2)
 	return res;
 }
 
+math::Vector4 math::operator+(const math::Vector4& v1, const math::Vector4& v2)
+{
+	Vector4 res{ v1.m_coefs[0] + v2.m_coefs[0], v1.m_coefs[1] + v2.m_coefs[1], v1.m_coefs[2] + v2.m_coefs[2], v1.m_coefs[3] + v2.m_coefs[3] };
+	return res;
+}
+
+math::Vector4 math::operator*(float coef, const math::Vector4& v)
+{
+	Vector4 res{ coef * v.m_coefs[0], coef * v.m_coefs[1], coef * v.m_coefs[2], coef * v.m_coefs[3] };
+	return res;
+}
 
 math::Matrix math::Transform::ToMatrix() const
 {
@@ -148,4 +161,21 @@ math::Matrix math::Transform::ToMatrix() const
 	translate.GetCoef(2, 3) = m_position.m_coefs[2];
 
 	return translate * scale;
+}
+
+std::string math::Matrix::ToString() const
+{
+	std::stringstream ss;
+
+	int index = 0;
+	for (int i = 0; i < 4; ++i)
+	{
+		for (int j = 0; j < 4; ++j)
+		{
+			ss << m_coefs[index++] << '\t';
+		}
+		ss << '\n';
+	}
+
+	return ss.str();
 }

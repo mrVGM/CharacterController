@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+
 namespace math
 {
 	struct Vector2
@@ -28,6 +30,8 @@ namespace math
 
 		Matrix Transpose() const;
 		Matrix FlipYZAxis() const;
+
+		std::string ToString() const;
 	};
 
 	struct Transform
@@ -45,4 +49,7 @@ namespace math
 	Vector3 operator^(const Vector3& v1, const Vector3& v2);
 	Vector3 operator*(float coef, const Vector3& v);
 	Vector3 operator+(const Vector3& v1, const Vector3& v2);
+
+	Vector4 operator+(const Vector4& v1, const Vector4& v2);
+	Vector4 operator*(float coef, const Vector4& v);
 }

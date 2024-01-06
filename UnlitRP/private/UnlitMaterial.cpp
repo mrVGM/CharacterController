@@ -230,6 +230,8 @@ void rendering::unlit_rp::UnlitMaterial::CreatePipelineStateAndRootSignatureForS
         psoDesc.PS = CD3DX12_SHADER_BYTECODE(m_pixelShader.GetValue<DXShader*>()->GetCompiledShader());
         psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
 
+        //psoDesc.RasterizerState.FillMode = D3D12_FILL_MODE_WIREFRAME;
+
         psoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
 
         psoDesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
