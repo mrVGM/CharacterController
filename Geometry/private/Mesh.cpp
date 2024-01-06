@@ -46,6 +46,51 @@ namespace
 		{
 		}
 
+		bool EqualVertices(const geo::MeshVertex& v1, const geo::MeshVertex& v2)
+		{
+			using namespace math;
+			const float eps = 0.0000001;
+			
+			{
+				Vector3 tmp = v1.m_position + (-1 * v2.m_position);
+				if (Dot(tmp, tmp) >= eps)
+				{
+					return false;
+				}
+			}
+
+			{
+				Vector3 tmp = v1.m_normal + (-1 * v2.m_normal);
+				if (Dot(tmp, tmp) >= eps)
+				{
+					return false;
+				}
+			}
+
+			{
+				Vector2 tmp = v1.m_uv + (-1 * v2.m_uv);
+				if (Dot(tmp, tmp) >= eps)
+				{
+					return false;
+				}
+			}
+
+			return true;
+		}
+
+		int FindVertex(const geo::MeshVertex& vert)
+		{
+			for (int i = 0; i < m_verts.size(); ++i)
+			{
+				if (EqualVertices(vert, m_verts[i]))
+				{
+					return i;
+				}
+			}
+
+			return -1;
+		}
+
 		const xml_reader::Node* GetMeshNode()
 		{
 			using namespace xml_reader;
@@ -458,37 +503,25 @@ namespace
 						}
 					}
 
-					json_parser::JSONValue key(json_parser::ValueType::Object);
+					geo::MeshVertex vert
 					{
-						auto& map = key.GetAsObj();
-						map["position"] = json_parser::JSONValue(static_cast<float>(vertIndex));
-						map["normal"] = json_parser::JSONValue(static_cast<float>(normalIndex));
-						map["uv"] = json_parser::JSONValue(static_cast<float>(uvIndex));
-					}
-
-					std::string keyStr = key.ToString(false);
-
-					int meshVertexIndex = -1;
-					auto vertIt = m_vertexMap.find(keyStr);
-					if (vertIt == m_vertexMap.end())
+						m_positions[vertIndex],
+						m_normals[normalIndex],
+						m_uvs[uvIndex]
+					};
+					int meshVertexIndex = FindVertex(vert);
+					if (meshVertexIndex < 0)
 					{
-						geo::MeshVertex& vert = m_verts.emplace_back();
+						m_verts.push_back(vert);
 						m_vertexToPositionMap.push_back(vertIndex);
 
-						vert.m_position = m_positions[vertIndex];
-						vert.m_normal = m_normals[normalIndex] ;
-						vert.m_uv = m_uvs[uvIndex];
 						meshVertexIndex = m_verts.size() - 1;
-						m_vertexMap[keyStr] = meshVertexIndex;
-					}
-					else
-					{
-						meshVertexIndex = vertIt->second;
 					}
 
 					indices.push_back(meshVertexIndex);
 				}
 			}
+			bool t = true;
 		}
 
 		void ReadJointNames(const xml_reader::Node* skin, geo::Mesh::SkinData& skinData)

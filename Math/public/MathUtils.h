@@ -47,9 +47,32 @@ namespace math
 	Vector4 operator*(const Matrix& m, const Vector4& v);
 
 	Vector3 operator^(const Vector3& v1, const Vector3& v2);
-	Vector3 operator*(float coef, const Vector3& v);
-	Vector3 operator+(const Vector3& v1, const Vector3& v2);
 
-	Vector4 operator+(const Vector4& v1, const Vector4& v2);
-	Vector4 operator*(float coef, const Vector4& v);
+#define SUM_DEF(Type)\
+	Type operator+(const Type& v1, const Type& v2);\
+
+	SUM_DEF(Vector2)
+	SUM_DEF(Vector3)
+	SUM_DEF(Vector4)
+	
+#undef SUM_DEF
+
+#define MULT_DEF(Type)\
+	Type operator*(float coef, const Type& v);\
+
+	MULT_DEF(Vector2)
+	MULT_DEF(Vector3)
+	MULT_DEF(Vector4)
+
+#undef SUM_DEF
+
+
+#define DOT_DEF(Type)\
+	float Dot(const Type& v1, const Type& v2);\
+
+	DOT_DEF(Vector2)
+	DOT_DEF(Vector3)
+	DOT_DEF(Vector4)
+
+#undef DOT_DEF
 }

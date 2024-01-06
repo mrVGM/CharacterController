@@ -119,30 +119,6 @@ math::Vector3 math::Vector3::Normalize() const
 	return res;
 }
 
-math::Vector3 math::operator*(float coef, const math::Vector3& v)
-{
-	Vector3 res{ coef * v.m_coefs[0], coef * v.m_coefs[1], coef * v.m_coefs[2] };
-	return res;
-}
-
-math::Vector3 math::operator+(const math::Vector3& v1, const math::Vector3& v2)
-{
-	Vector3 res{ v1.m_coefs[0] + v2.m_coefs[0], v1.m_coefs[1] + v2.m_coefs[1], v1.m_coefs[2] + v2.m_coefs[2] };
-	return res;
-}
-
-math::Vector4 math::operator+(const math::Vector4& v1, const math::Vector4& v2)
-{
-	Vector4 res{ v1.m_coefs[0] + v2.m_coefs[0], v1.m_coefs[1] + v2.m_coefs[1], v1.m_coefs[2] + v2.m_coefs[2], v1.m_coefs[3] + v2.m_coefs[3] };
-	return res;
-}
-
-math::Vector4 math::operator*(float coef, const math::Vector4& v)
-{
-	Vector4 res{ coef * v.m_coefs[0], coef * v.m_coefs[1], coef * v.m_coefs[2], coef * v.m_coefs[3] };
-	return res;
-}
-
 math::Matrix math::Transform::ToMatrix() const
 {
 	Matrix scale = {
@@ -172,10 +148,61 @@ std::string math::Matrix::ToString() const
 	{
 		for (int j = 0; j < 4; ++j)
 		{
-			ss << m_coefs[index++] << '\t';
+			ss << m_coefs[index++] << "\t\t";
 		}
 		ss << '\n';
 	}
 
 	return ss.str();
 }
+
+#define DOT_IMPL(Type) \
+float math::Dot(const Type& v1, const Type& v2)\
+{\
+	float res = 0;\
+	for (int i = 0; i < _countof(v1.m_coefs); ++i)\
+	{\
+		res += v1.m_coefs[i] * v2.m_coefs[i];\
+	}\
+	return res;\
+}\
+
+DOT_IMPL(Vector2)
+DOT_IMPL(Vector3)
+DOT_IMPL(Vector4)
+
+#undef DOT_IMPL
+
+#define MULT_IMPL(Type) \
+math::Type math::operator*(float coef, const Type& v)\
+{\
+	Type res;\
+	for (int i = 0; i < _countof(v.m_coefs); ++i)\
+	{\
+		res.m_coefs[i] = coef * v.m_coefs[i];\
+	}\
+	return res;\
+}\
+
+MULT_IMPL(Vector2)
+MULT_IMPL(Vector3)
+MULT_IMPL(Vector4)
+
+#undef MULT_IMPL
+
+#define SUM_IMPL(Type) \
+math::Type math::operator+(const Type& v1, const Type& v2)\
+{\
+	Type res;\
+	for (int i = 0; i < _countof(v1.m_coefs); ++i)\
+	{\
+		res.m_coefs[i] = v1.m_coefs[i] + v2.m_coefs[i];\
+	}\
+	return res;\
+}\
+
+SUM_IMPL(Vector2)
+SUM_IMPL(Vector3)
+SUM_IMPL(Vector4)
+
+#undef SUM_IMPL

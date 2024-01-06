@@ -206,10 +206,20 @@ void runtime::MeshBuffers::Load(geo::Mesh& mesh, jobs::Job* done)
 				DXBuffer* upload = bindShapeBuffer->m_uploadBuffer.GetValue<DXBuffer*>();
 				void* data = upload->Map();
 				math::Matrix* bindShapePtr = reinterpret_cast<math::Matrix*>(data);
-				*(bindShapePtr++) = meshPtr->m_skinData.m_bindShapeMatrix.Transpose();
+
+				{
+					math::Matrix matTmp = meshPtr->m_skinData.m_bindShapeMatrix.Transpose();
+					std::string matStr = matTmp.ToString();
+
+					*(bindShapePtr++) = matTmp;
+				}
+
 				for (auto it = meshPtr->m_skinData.m_invBindMatrices.begin(); it != meshPtr->m_skinData.m_invBindMatrices.end(); ++it)
 				{
-					*(bindShapePtr++) = (*it).Transpose();
+					math::Matrix matTmp = (*it).Transpose();
+					std::string matStr = matTmp.ToString();
+
+					*(bindShapePtr++) = matTmp;
 				}
 				upload->Unmap();
 

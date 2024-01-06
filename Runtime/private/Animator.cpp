@@ -116,7 +116,7 @@ bool animation::Animator::IsTicking()
 
 void animation::Animator::Tick(double dt, jobs::Job* done)
 {
-    m_curTime += dt;
+    m_curTime = 0;
 
     runtime::Actor* actor = m_actor.GetValue<runtime::Actor*>();
     rendering::DXMutableBuffer* poseBuffer = actor->m_poseBuffer.GetValue<rendering::DXMutableBuffer*>();
@@ -150,7 +150,11 @@ void animation::Animator::Tick(double dt, jobs::Job* done)
             curIndex = skeleton->m_boneParents[curIndex];
         }
 
-        *(poseData++) = mat.Transpose();
+        math::Matrix tmp = mat.Transpose();
+
+        std::string str = tmp.ToString();
+
+        *(poseData++) = tmp;
     }
 
     uploadBuff->Unmap();
