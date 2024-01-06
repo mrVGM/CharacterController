@@ -521,7 +521,6 @@ namespace
 					indices.push_back(meshVertexIndex);
 				}
 			}
-			bool t = true;
 		}
 
 		void ReadJointNames(const xml_reader::Node* skin, geo::Mesh::SkinData& skinData)

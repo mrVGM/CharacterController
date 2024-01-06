@@ -48,30 +48,6 @@ void json_parser::Boot()
 	files::ReadTextFile("json_grammar.txt", grammarSrc);
 	
 	m_grammarContainer.Init(grammarSrc);
-	
-#if false
-	std::string testJson;
-	files::ReadTextFile("test_json.json", testJson);
-
-	scripting::CodeSource cs;
-	cs.m_code = testJson;
-	cs.Tokenize();
-	cs.TokenizeForJSONReader();
-
-	scripting::ISymbol* symbol = m_grammarContainer.m_parser->Parse(cs);
-	JSONValue val;
-	ValueBuilder vb(symbol);
-	vb.Build(val);
-
-	std::string str = val.ToString(true);
-
-	JSONValue obj(ValueType::Object);
-	auto& map = obj.GetAsObj();
-	map["dw"] = JSONValue("efewr");
-	str = obj.ToString(true);
-	bool t = true;
-#endif
-
 }
 
 scripting::ISymbol* json_parser::Parse(scripting::CodeSource& codeSource)

@@ -32,7 +32,7 @@ PSInput VSMain(SkMVertexInput3D vertexInput)
 {
     PSInput result;
 
-    float4 vertexPos = float4(vertexInput.position, 0);
+    float4 vertexPos = float4(vertexInput.position, 1);
     float4 worldPos = float4(0, 0, 0, 0);
     {
         VertexWeights weights = v_weights[vertexInput.weightsIndex];

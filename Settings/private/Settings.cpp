@@ -2,5 +2,5 @@
 
 bool settings::UseBinFiles()
 {
-	return false;
+	return true;
 }

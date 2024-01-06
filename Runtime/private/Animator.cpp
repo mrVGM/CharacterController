@@ -151,9 +151,6 @@ void animation::Animator::Tick(double dt, jobs::Job* done)
         }
 
         math::Matrix tmp = mat.Transpose();
-
-        std::string str = tmp.ToString();
-
         *(poseData++) = tmp;
     }
 

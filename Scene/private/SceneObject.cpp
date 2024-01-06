@@ -101,7 +101,6 @@ void scene::SceneObject::Load(jobs::Job* done)
 	auto loadActor = [=](runtime::Actor* actor) {
 		return jobs::Job::CreateByLambda([=]() {
 			actor->Load(jobs::Job::CreateByLambda(actorLoaded));
-			bool t = true;
 		});
 	};
 

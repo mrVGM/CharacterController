@@ -209,16 +209,12 @@ void runtime::MeshBuffers::Load(geo::Mesh& mesh, jobs::Job* done)
 
 				{
 					math::Matrix matTmp = meshPtr->m_skinData.m_bindShapeMatrix.Transpose();
-					std::string matStr = matTmp.ToString();
-
 					*(bindShapePtr++) = matTmp;
 				}
 
 				for (auto it = meshPtr->m_skinData.m_invBindMatrices.begin(); it != meshPtr->m_skinData.m_invBindMatrices.end(); ++it)
 				{
 					math::Matrix matTmp = (*it).Transpose();
-					std::string matStr = matTmp.ToString();
-
 					*(bindShapePtr++) = matTmp;
 				}
 				upload->Unmap();
