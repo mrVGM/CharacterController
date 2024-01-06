@@ -158,8 +158,6 @@ namespace
 				{
 					mat.m_coefs[j] = (*(floatIt++))->m_symbolData.m_number;
 				}
-
-				mat = mat.Transpose();
 			}
 		}
 

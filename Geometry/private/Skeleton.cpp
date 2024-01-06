@@ -321,8 +321,6 @@ void geo::Skeleton::LoadData(jobs::Job* done)
 		{
 			cur.m_coefs[i] = (*(symbolIt++))->m_symbolData.m_number;
 		}
-
-		cur = cur.Transpose();
 	}
 
 	if (m_zUp)
