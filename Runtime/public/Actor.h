@@ -62,7 +62,7 @@ namespace runtime
 		Value m_poseBuffer;
 		Value m_animator;
 
-		math::Transform m_curTransform;
+		math::TransformEuler m_curTransform;
 
 		Actor(const ReferenceTypeDef& typeDef);
 		virtual ~Actor();

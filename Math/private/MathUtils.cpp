@@ -119,7 +119,7 @@ math::Vector3 math::Vector3::Normalize() const
 	return res;
 }
 
-math::Matrix math::Transform::ToMatrix() const
+math::Matrix math::TransformEuler::ToMatrix() const
 {
 	Matrix scale = {
 		{

@@ -387,7 +387,7 @@ void runtime::Actor::UpdateTransformBuffer()
 {
 	using namespace rendering;
 
-	math::Transform tmp;
+	math::TransformEuler tmp;
 
 	{
 		common::TransformValue* trVal = m_meshTransform.GetValue<common::TransformValue*>();

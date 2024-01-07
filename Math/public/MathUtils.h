@@ -34,7 +34,7 @@ namespace math
 		std::string ToString() const;
 	};
 
-	struct Transform
+	struct TransformEuler
 	{
 		Vector3 m_position;
 		Vector3 m_rotation;
