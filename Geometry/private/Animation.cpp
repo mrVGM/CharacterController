@@ -343,7 +343,17 @@ const math::Matrix& geo::Animation::SampleChannel(double time, const AnimChannel
 		}
 	}
 
-	return channel.m_keyFrames[left].m_transform;
+	float alpha = 0;
+	if (time >= channel.m_keyFrames[left].m_time)
+	{
+		alpha = (time - channel.m_keyFrames[left].m_time) / (channel.m_keyFrames[right].m_time - channel.m_keyFrames[left].m_time);
+	}
+
+	math::Transform tLeft = channel.m_keyFrames[left].m_transform.ToTransform();
+	math::Transform tRight = channel.m_keyFrames[right].m_transform.ToTransform();
+
+	math::Transform tMid = math::Lerp(tLeft, tRight, alpha);
+	return tMid.ToMatrix();
 }
 
 double geo::Animation::GetLength() const

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <corecrt_math_defines.h>
 
 namespace math
 {
@@ -19,7 +20,13 @@ namespace math
 	struct Vector4
 	{
 		float m_coefs[4];
+
+		Vector4 Conjugate() const;
+		Vector3 Rotate(const Vector3& v) const;
 	};
+
+
+	struct Transform;
 
 	struct Matrix
 	{
@@ -32,6 +39,18 @@ namespace math
 		Matrix FlipYZAxis() const;
 
 		std::string ToString() const;
+
+		Transform ToTransform() const;
+	};
+
+	struct Transform
+	{
+		Vector3 m_position;
+		Vector4 m_rotation;
+		Vector3 m_scale;
+
+		Matrix ToMatrix() const;
+		Vector3 TransformPoint(const Vector3& p) const;
 	};
 
 	struct TransformEuler
@@ -47,6 +66,10 @@ namespace math
 	Vector4 operator*(const Matrix& m, const Vector4& v);
 
 	Vector3 operator^(const Vector3& v1, const Vector3& v2);
+	Vector4 operator^(const Vector4& v1, const Vector4& v2);
+
+	Transform Lerp(const Transform& t1, const Transform& t2, float alpha);
+	Vector4 SLerp(const Vector4& q1, const Vector4& q2, float alpha);
 
 #define SUM_DEF(Type)\
 	Type operator+(const Type& v1, const Type& v2);\
