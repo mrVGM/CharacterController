@@ -116,22 +116,42 @@ math::Vector3 math::Vector3::Normalize() const
 
 math::Matrix math::TransformEuler::ToMatrix() const
 {
-	Matrix scale = {
-		{
-			m_scale.m_coefs[0],	0,					0,					0,
-			0,					m_scale.m_coefs[1],	0,					0,
-			0,					0,					m_scale.m_coefs[2],	0,
-			0,					0,					0,					1
-		}
+	float angleX = M_PI * m_rotation.m_coefs[0] / 180;
+	float angleY = M_PI * m_rotation.m_coefs[1] / 180;
+	float angleZ = M_PI * m_rotation.m_coefs[2] / 180;
+
+	angleX /= 2;
+	angleY /= 2;
+	angleZ /= 2;
+
+	Vector4 xQ{
+		cos(angleX),
+		-sin(angleX),
+		0,
+		0,
 	};
 
-	Matrix translate = Matrix::GetIdentityMatrix();
+	Vector4 yQ{
+		cos(angleY),
+		0,
+		0,
+		-sin(angleY),
+	};
 
-	translate.GetCoef(0, 3) = m_position.m_coefs[0];
-	translate.GetCoef(1, 3) = m_position.m_coefs[1];
-	translate.GetCoef(2, 3) = m_position.m_coefs[2];
+	Vector4 zQ{
+		cos(angleZ),
+		0,
+		-sin(angleZ),
+		0,
+	};
 
-	return translate * scale;
+	Transform tr {
+		m_position,
+		zQ ^ yQ ^ xQ,
+		m_scale
+	};
+
+	return tr.ToMatrix();
 }
 
 math::Matrix math::Transform::ToMatrix() const
