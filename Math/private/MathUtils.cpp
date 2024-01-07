@@ -340,7 +340,7 @@ math::Vector4 math::SLerp(const Vector4& q1, const Vector4& q2, float alpha)
 	Vector3 pole{ mid.m_coefs[1], mid.m_coefs[2], mid.m_coefs[3] };
 	pole = pole.Normalize();
 	pole = -1 * pole;
-	
+
 	float c = mid.m_coefs[0];
 	if (c < -1)
 	{
@@ -350,16 +350,13 @@ math::Vector4 math::SLerp(const Vector4& q1, const Vector4& q2, float alpha)
 	{
 		c = 1;
 	}
-	float angle = 2 * acos(c);
+	float angle1 = 2 * acos(c);
+	float angle2 = 2 * M_PI - angle1;
 
-	if (angle > M_PI)
-	{
-		angle = 2 * M_PI - angle;
-		pole = -1 * pole;
-	}
+	float angle = angle1 > angle2 ? -angle2 : angle1;
+	angle /= 2;
 
 	angle *= alpha;
-	angle /= 2;
 	
 	return q1 ^ Vector4 {
 		cos(angle),

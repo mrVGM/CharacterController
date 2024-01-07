@@ -116,7 +116,7 @@ bool animation::Animator::IsTicking()
 
 void animation::Animator::Tick(double dt, jobs::Job* done)
 {
-    m_curTime += 0.1 * dt;
+    m_curTime += 0.05 * dt;
 
     runtime::Actor* actor = m_actor.GetValue<runtime::Actor*>();
     rendering::DXMutableBuffer* poseBuffer = actor->m_poseBuffer.GetValue<rendering::DXMutableBuffer*>();
