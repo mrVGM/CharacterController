@@ -89,7 +89,7 @@ namespace geo
 		Mesh(const ReferenceTypeDef& type);
 		virtual ~Mesh();
 
-		void InitVertexBuffer(void* dataPtr);
-		void InitIndexBuffer(void* dataPtr);
+		void InitVertexBuffer(void* dataPtr) const;
+		void InitIndexBuffer(void* dataPtr) const;
 	};
 }

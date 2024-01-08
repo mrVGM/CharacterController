@@ -245,7 +245,7 @@ void rendering::unlit_rp::UnlitRP::Load(jobs::Job* done)
 {
 	struct Context
 	{
-		int m_loading = 3;
+		int m_loading = 0;
 	};
 	Context* ctx = new Context();
 
@@ -262,11 +262,6 @@ void rendering::unlit_rp::UnlitRP::Load(jobs::Job* done)
 
 	jobs::Job* loadDisplayTextureMat = jobs::Job::CreateByLambda([=]() {
 		materials::Material* mat = m_displayTextureMat.GetValue<materials::Material*>();
-		mat->Load(jobs::Job::CreateByLambda(itemLoaded));
-	});
-
-	jobs::Job* loadUnlitMat = jobs::Job::CreateByLambda([=]() {
-		materials::Material* mat = m_unlitMaterial.GetValue<materials::Material*>();
 		mat->Load(jobs::Job::CreateByLambda(itemLoaded));
 	});
 
@@ -297,8 +292,9 @@ void rendering::unlit_rp::UnlitRP::Load(jobs::Job* done)
 		m_quadMesh.AssignObject(ObjectValueContainer::GetObjectOfType(*m_quadMeshDef.GetType<const TypeDef*>()));
 
 		Create();
-		jobs::RunAsync(loadUnlitMat);
+		++ctx->m_loading;
 		jobs::RunAsync(loadDisplayTextureMat);
+		++ctx->m_loading;
 		jobs::RunAsync(loadQuadMesh);
 	});
 

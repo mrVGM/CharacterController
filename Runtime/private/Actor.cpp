@@ -174,8 +174,13 @@ void runtime::Actor::LoadData(jobs::Job* done)
 
 	jobs::Job* initMeshBuffers = jobs::Job::CreateByLambda([=]() {
 		geo::Mesh* mesh = m_mesh.GetValue<geo::Mesh*>();
-		MeshBuffersTypeDef::GetTypeDef().Construct(mesh->m_buffers);
 		MeshBuffers* meshBuffers = mesh->m_buffers.GetValue<MeshBuffers*>();
+
+		if (!meshBuffers)
+		{
+			MeshBuffersTypeDef::GetTypeDef().Construct(mesh->m_buffers);
+			meshBuffers = mesh->m_buffers.GetValue<MeshBuffers*>();
+		}
 
 		jobs::RunAsync(jobs::Job::CreateByLambda([=]() {
 			meshBuffers->Load(*mesh, jobs::Job::CreateByLambda([=]() {

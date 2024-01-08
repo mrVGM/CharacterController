@@ -1359,7 +1359,7 @@ void geo::Mesh::SkinData::ReadFromMF(files::MemoryFileReader& reader)
 }
 
 
-void geo::Mesh::InitVertexBuffer(void* dataPtr)
+void geo::Mesh::InitVertexBuffer(void* dataPtr) const
 {
 	MeshVertex* vertPtr = reinterpret_cast<MeshVertex*>(dataPtr);
 	for (auto it = m_vertices.begin(); it != m_vertices.end(); ++it)
@@ -1368,7 +1368,7 @@ void geo::Mesh::InitVertexBuffer(void* dataPtr)
 	}
 }
 
-void geo::Mesh::InitIndexBuffer(void* dataPtr)
+void geo::Mesh::InitIndexBuffer(void* dataPtr) const
 {
 	int* indexPtr = reinterpret_cast<int*>(dataPtr);
 	for (auto it = m_indices.begin(); it != m_indices.end(); ++it)

@@ -57,6 +57,26 @@ runtime::MeshBuffers::~MeshBuffers()
 
 void runtime::MeshBuffers::Load(geo::Mesh& mesh, jobs::Job* done)
 {
+	geo::Mesh* meshPtr = &mesh;
+
+	jobs::Job* setMesh = jobs::Job::CreateByLambda([=]() {
+		if (this->m_mesh)
+		{
+			jobs::RunSync(done);
+			return;
+		}
+
+		m_mesh = meshPtr;
+		jobs::RunAsync(jobs::Job::CreateByLambda([=]() {
+			LoadData(done);
+		}));
+	});
+
+	jobs::RunSync(setMesh);
+}
+
+void runtime::MeshBuffers::LoadData(jobs::Job* done)
+{
 	struct Context
 	{
 		Value m_vMutBuffer;
@@ -79,8 +99,6 @@ void runtime::MeshBuffers::Load(geo::Mesh& mesh, jobs::Job* done)
 	};
 	Context* ctx = new Context();
 
-	geo::Mesh* meshPtr = &mesh;
-
 	auto buffLoaded = [=]() {
 		using namespace rendering;
 
@@ -93,7 +111,7 @@ void runtime::MeshBuffers::Load(geo::Mesh& mesh, jobs::Job* done)
 		m_vertexBuffer = ctx->m_vMutBuffer.GetValue<DXMutableBuffer*>()->m_buffer;
 		m_indexBuffer = ctx->m_iMutBuffer.GetValue<DXMutableBuffer*>()->m_buffer;
 
-		if (meshPtr->m_skinData.m_hasAnyData)
+		if (m_mesh->m_skinData.m_hasAnyData)
 		{
 			m_vertexWeightsMapBuffer = ctx->m_weightsMapBuffer.GetValue<DXMutableBuffer*>()->m_buffer;
 			m_vertexWeightsBuffer = ctx->m_weightsBuffer.GetValue<DXMutableBuffer*>()->m_buffer;
@@ -114,8 +132,8 @@ void runtime::MeshBuffers::Load(geo::Mesh& mesh, jobs::Job* done)
 		DXMutableBuffer* vBuff = ctx->m_vMutBuffer.GetValue<rendering::DXMutableBuffer*>();
 		DXMutableBuffer* iBuff = ctx->m_iMutBuffer.GetValue<rendering::DXMutableBuffer*>();
 		
-		vBuff->SetSizeAndStride(meshPtr->m_vertices.size() * sizeof(geo::MeshVertex), sizeof(geo::MeshVertex));
-		iBuff->SetSizeAndStride(meshPtr->m_indices.size() * sizeof(int), sizeof(int));
+		vBuff->SetSizeAndStride(m_mesh->m_vertices.size() * sizeof(geo::MeshVertex), sizeof(geo::MeshVertex));
+		iBuff->SetSizeAndStride(m_mesh->m_indices.size() * sizeof(int), sizeof(int));
 
 		++ctx->m_toLoad;
 		jobs::RunAsync(jobs::Job::CreateByLambda([=]() {
@@ -123,7 +141,7 @@ void runtime::MeshBuffers::Load(geo::Mesh& mesh, jobs::Job* done)
 			vBuff->Load(jobs::Job::CreateByLambda([=]() {
 				DXBuffer* upload = vBuff->m_uploadBuffer.GetValue<DXBuffer*>();
 				void* data = upload->Map();
-				meshPtr->InitVertexBuffer(data);
+				m_mesh->InitVertexBuffer(data);
 				upload->Unmap();
 
 				vBuff->Upload(jobs::Job::CreateByLambda(buffLoaded));
@@ -137,7 +155,7 @@ void runtime::MeshBuffers::Load(geo::Mesh& mesh, jobs::Job* done)
 			iBuff->Load(jobs::Job::CreateByLambda([=]() {
 				DXBuffer* upload = iBuff->m_uploadBuffer.GetValue<DXBuffer*>();
 				void* data = upload->Map();
-				meshPtr->InitIndexBuffer(data);
+				m_mesh->InitIndexBuffer(data);
 				upload->Unmap();
 
 				iBuff->Upload(jobs::Job::CreateByLambda(buffLoaded));
@@ -145,7 +163,7 @@ void runtime::MeshBuffers::Load(geo::Mesh& mesh, jobs::Job* done)
 
 		}));
 
-		if (!meshPtr->m_skinData.m_hasAnyData)
+		if (!m_mesh->m_skinData.m_hasAnyData)
 		{
 			return;
 		}
@@ -155,13 +173,13 @@ void runtime::MeshBuffers::Load(geo::Mesh& mesh, jobs::Job* done)
 		DXMutableBufferTypeDef::GetTypeDef().Construct(ctx->m_bindShapeBuffer);
 
 		DXMutableBuffer* weightsBuff = ctx->m_weightsBuffer.GetValue<rendering::DXMutableBuffer*>();
-		weightsBuff->SetSizeAndStride(meshPtr->m_skinData.m_vertexWeights.size() * sizeof(geo::Mesh::SkinData::VertexWeights), sizeof(geo::Mesh::SkinData::VertexWeights));
+		weightsBuff->SetSizeAndStride(m_mesh->m_skinData.m_vertexWeights.size() * sizeof(geo::Mesh::SkinData::VertexWeights), sizeof(geo::Mesh::SkinData::VertexWeights));
 
 		DXMutableBuffer* weightsMapBuff = ctx->m_weightsMapBuffer.GetValue<rendering::DXMutableBuffer*>();
-		weightsMapBuff->SetSizeAndStride(meshPtr->m_skinData.m_vertexToWeightsMap.size() * sizeof(int), sizeof(int));
+		weightsMapBuff->SetSizeAndStride(m_mesh->m_skinData.m_vertexToWeightsMap.size() * sizeof(int), sizeof(int));
 
 		DXMutableBuffer* bindShapeBuffer = ctx->m_bindShapeBuffer.GetValue<DXMutableBuffer*>();
-		bindShapeBuffer->SetSizeAndStride((meshPtr->m_skinData.m_invBindMatrices.size() + 1) * sizeof(math::Matrix), sizeof(math::Matrix));
+		bindShapeBuffer->SetSizeAndStride((m_mesh->m_skinData.m_invBindMatrices.size() + 1) * sizeof(math::Matrix), sizeof(math::Matrix));
 
 		++ctx->m_toLoad;
 		jobs::RunAsync(jobs::Job::CreateByLambda([=]() {
@@ -170,7 +188,7 @@ void runtime::MeshBuffers::Load(geo::Mesh& mesh, jobs::Job* done)
 				DXBuffer* upload = weightsBuff->m_uploadBuffer.GetValue<DXBuffer*>();
 				void* data = upload->Map();
 				geo::Mesh::SkinData::VertexWeights* weightsPtr = reinterpret_cast<geo::Mesh::SkinData::VertexWeights*>(data);
-				for (auto it = meshPtr->m_skinData.m_vertexWeights.begin(); it != meshPtr->m_skinData.m_vertexWeights.end(); ++it)
+				for (auto it = m_mesh->m_skinData.m_vertexWeights.begin(); it != m_mesh->m_skinData.m_vertexWeights.end(); ++it)
 				{
 					*(weightsPtr++) = *it;
 				}
@@ -188,7 +206,7 @@ void runtime::MeshBuffers::Load(geo::Mesh& mesh, jobs::Job* done)
 				DXBuffer* upload = weightsMapBuff->m_uploadBuffer.GetValue<DXBuffer*>();
 				void* data = upload->Map();
 				int* weightsMapPtr = reinterpret_cast<int*>(data);
-				for (auto it = meshPtr->m_skinData.m_vertexToWeightsMap.begin(); it != meshPtr->m_skinData.m_vertexToWeightsMap.end(); ++it)
+				for (auto it = m_mesh->m_skinData.m_vertexToWeightsMap.begin(); it != m_mesh->m_skinData.m_vertexToWeightsMap.end(); ++it)
 				{
 					*(weightsMapPtr++) = *it;
 				}
@@ -208,11 +226,11 @@ void runtime::MeshBuffers::Load(geo::Mesh& mesh, jobs::Job* done)
 				math::Matrix* bindShapePtr = reinterpret_cast<math::Matrix*>(data);
 
 				{
-					math::Matrix matTmp = meshPtr->m_skinData.m_bindShapeMatrix.Transpose();
+					math::Matrix matTmp = m_mesh->m_skinData.m_bindShapeMatrix.Transpose();
 					*(bindShapePtr++) = matTmp;
 				}
 
-				for (auto it = meshPtr->m_skinData.m_invBindMatrices.begin(); it != meshPtr->m_skinData.m_invBindMatrices.end(); ++it)
+				for (auto it = m_mesh->m_skinData.m_invBindMatrices.begin(); it != m_mesh->m_skinData.m_invBindMatrices.end(); ++it)
 				{
 					math::Matrix matTmp = (*it).Transpose();
 					*(bindShapePtr++) = matTmp;
@@ -226,7 +244,7 @@ void runtime::MeshBuffers::Load(geo::Mesh& mesh, jobs::Job* done)
 	});
 
 	jobs::Job* loadMesh = jobs::Job::CreateByLambda([=]() {
-		meshPtr->Load(initMutBuffers);
+		m_mesh->Load(initMutBuffers);
 	});
 
 	jobs::RunAsync(loadMesh);

@@ -5,6 +5,8 @@
 
 #include "Mesh.h"
 
+#include "MultiLoader.h"
+
 #include "Job.h"
 
 namespace runtime
@@ -20,8 +22,13 @@ namespace runtime
 		void Construct(Value& container) const override;
 	};
 
-	class MeshBuffers : public ObjectValue
+	class MeshBuffers : public ObjectValue, public jobs::LoadingClass
 	{
+		geo::Mesh* m_mesh = nullptr;
+
+	protected:
+		void LoadData(jobs::Job* done) override;
+
 	public:
 		Value m_vertexBuffer;
 		Value m_indexBuffer;
