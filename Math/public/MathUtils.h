@@ -5,6 +5,8 @@
 
 namespace math
 {
+	const float GetFloatEPS();
+
 	struct Vector2
 	{
 		float m_coefs[2];

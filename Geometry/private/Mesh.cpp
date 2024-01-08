@@ -49,11 +49,10 @@ namespace
 		bool EqualVertices(const geo::MeshVertex& v1, const geo::MeshVertex& v2)
 		{
 			using namespace math;
-			const float eps = 0.0000001;
 			
 			{
 				Vector3 tmp = v1.m_position + (-1 * v2.m_position);
-				if (Dot(tmp, tmp) >= eps)
+				if (Dot(tmp, tmp) >= GetFloatEPS())
 				{
 					return false;
 				}
@@ -61,7 +60,7 @@ namespace
 
 			{
 				Vector3 tmp = v1.m_normal + (-1 * v2.m_normal);
-				if (Dot(tmp, tmp) >= eps)
+				if (Dot(tmp, tmp) >= GetFloatEPS())
 				{
 					return false;
 				}
@@ -69,7 +68,7 @@ namespace
 
 			{
 				Vector2 tmp = v1.m_uv + (-1 * v2.m_uv);
-				if (Dot(tmp, tmp) >= eps)
+				if (Dot(tmp, tmp) >= GetFloatEPS())
 				{
 					return false;
 				}

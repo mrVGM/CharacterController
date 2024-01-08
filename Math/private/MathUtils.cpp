@@ -4,6 +4,11 @@
 
 #include <sstream>
 
+const float math::GetFloatEPS()
+{
+	return 0.0000000001f;
+}
+
 const math::Matrix& math::Matrix::GetIdentityMatrix()
 {
 	static Matrix idMat{
@@ -104,7 +109,7 @@ math::Vector3 math::Vector3::Normalize() const
 {
 	float l = Dot(*this, *this);
 
-	if (l < 0.00001)
+	if (l < GetFloatEPS())
 	{
 		return Vector3{ 0, 0, 0 };
 	}
