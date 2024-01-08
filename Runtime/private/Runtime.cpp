@@ -4,6 +4,7 @@
 #include "Actor.h"
 #include "MeshBuffers.h"
 #include "Animator.h"
+#include "PlayerController.h"
 
 void runtime::Boot()
 {
@@ -11,4 +12,5 @@ void runtime::Boot()
 	ActorTypeDef::GetTypeDef();
 	MeshBuffersTypeDef::GetTypeDef();
 	animation::AnimatorTypeDef::GetTypeDef();
+	PlayerControllerTypeDef::GetTypeDef();
 }
