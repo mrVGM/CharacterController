@@ -12,6 +12,8 @@
 
 #include "CoreUtils.h"
 
+#include "Input.h"
+
 namespace
 {
 	BasicObjectContainer<rendering::RendererAppEntryTypeDef> m_rendererAppEntry;
@@ -44,11 +46,29 @@ void rendering::RendererAppEntryTypeDef::Construct(Value& container) const
 	container.AssignObject(entry);
 }
 
+#include <sstream>
+
 void rendering::RendererAppEntryObj::Tick()
 {
-	static int m_running;;
+	static int m_running;
 	m_running = 2;
 
+
+	rendering::InputInfo inputInfo;
+	WindowObj* wnd = m_window.GetValue<WindowObj*>();
+	wnd->GetInputInfo(inputInfo);
+	if (m_firstTick)
+	{
+		inputInfo.m_mouseAxis[0] = 0;
+		inputInfo.m_mouseAxis[1] = 0;
+	}
+	m_firstTick = false;
+
+	runtime::m_input.m_mouseAxis[0] = inputInfo.m_mouseAxis[0];
+	runtime::m_input.m_mouseAxis[1] = inputInfo.m_mouseAxis[1];
+	runtime::m_input.m_keysDown = inputInfo.m_keysDown;
+	runtime::m_input.m_lbmDown = inputInfo.m_leftMouseButtonDown;
+	runtime::m_input.m_rbmDown = inputInfo.m_rightMouseButtonDown;
 
 	auto jobDone = [=]() {
 		--m_running;
@@ -187,7 +207,8 @@ void rendering::RendererAppEntryObj::RunTickUpdaters(double dt, jobs::Job* done)
 rendering::RendererAppEntryObj::RendererAppEntryObj(const ReferenceTypeDef& typeDef) :
 	AppEntryObj(typeDef),
 	m_renderer(renderer::RendererTypeDef::GetTypeDef(), this),
-	m_copyBuffers(DXCopyBuffersTypeDef::GetTypeDef(), this)
+	m_copyBuffers(DXCopyBuffersTypeDef::GetTypeDef(), this),
+	m_window(WindowTypeDef::GetTypeDef(), this)
 {
 }
 
@@ -220,6 +241,9 @@ void rendering::RendererAppEntryObj::Boot()
 		ObjectValue* copyBuffers = ObjectValueContainer::GetObjectOfType(DXCopyBuffersTypeDef::GetTypeDef());
 		m_copyBuffers.AssignObject(copyBuffers);
 
+		ObjectValue* wnd = ObjectValueContainer::GetObjectOfType(WindowTypeDef::GetTypeDef());
+		m_window.AssignObject(wnd);
+
 		jobs::RunAsync(load);
  	});
 
@@ -244,81 +268,3 @@ double rendering::RendererAppEntryObj::TimeStamp()
 
 	return dt;
 }
-
-#if false
-
-void rendering::RendererAppEntryObj::Boot()
-{
-	struct Context
-	{
-		RendererAppEntryObj* m_self = nullptr;
-	};
-
-	Context ctx{ this };
-
-	class RenderFrame : public jobs::Job
-	{
-	private:
-		Context m_ctx;
-
-	public:
-		RenderFrame(const Context& ctx) :
-			m_ctx(ctx)
-		{
-		}
-
-		void Do() override
-		{
-			renderer::RendererObj* renderer = m_ctx.m_self->m_renderer.GetValue<renderer::RendererObj*>();
-			renderer->RenderFrame();
-			jobs::RunAsync(new RenderFrame(m_ctx));
-		}
-	};
-
-	class RendererLoaded : public jobs::Job
-	{
-	private:
-		Context m_ctx;
-
-	public:
-		RendererLoaded(const Context& ctx) :
-			m_ctx(ctx)
-		{
-		}
-
-		void Do() override
-		{
-			renderer::RendererObj* renderer = m_ctx.m_self->m_renderer.GetValue<renderer::RendererObj*>();
-			jobs::RunAsync(new RenderFrame(m_ctx));
-		}
-	};
-
-	class LoadRenderer : public jobs::Job
-	{
-	private:
-		Context m_ctx;
-
-	public:
-		LoadRenderer(const Context& ctx) :
-			m_ctx(ctx)
-		{
-		}
-
-		void Do() override
-		{
-			std::list<ObjectValue*> tmp;
-			ObjectValueContainer& container = ObjectValueContainer::GetContainer();
-			container.GetObjectsOfType(renderer::RendererTypeDef::GetTypeDef(), tmp);
-
-			renderer::RendererObj* renderer = static_cast<renderer::RendererObj*>(tmp.front());
-			m_ctx.m_self->m_renderer.AssignObject(renderer);
-
-			renderer->Load(new RendererLoaded(m_ctx));
-		}
-	};
-
-	jobs::RunSync(new LoadRenderer(ctx));
-
-}
-
-#endif

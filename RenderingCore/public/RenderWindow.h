@@ -8,6 +8,7 @@
 #include <Windows.h>
 
 #include <set>
+#include <mutex>
 
 namespace rendering
 {
@@ -36,6 +37,8 @@ namespace rendering
 		bool m_leftMouseButtonDown = false;
 		bool m_rightMouseButtonDown = false;
 		long m_mouseMovement[2];
+
+		double m_mouseAxis[2];
 	};
 
 	class WindowObj : public ObjectValue
@@ -49,6 +52,8 @@ namespace rendering
 
 		void RegisterRawInputDevice();
 	public:
+		std::mutex m_inputMutex;
+
 		Value m_width;
 		Value m_height;
 		Value m_windowUpdateJobSystem;
@@ -65,6 +70,6 @@ namespace rendering
 
 		void WindowTick();
 
-		const InputInfo& GetInputInfo();
+		void GetInputInfo(InputInfo& outInputInfo);
 	};
 }

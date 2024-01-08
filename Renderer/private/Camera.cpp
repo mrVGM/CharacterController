@@ -97,8 +97,9 @@ void rendering::renderer::Camera::HandleInput(double dt)
 {
 	using namespace math;
 
+	InputInfo inputInfo;
 	WindowObj* wnd = m_window.GetValue<WindowObj*>();
-	InputInfo inputInfo = wnd->GetInputInfo();
+	wnd->GetInputInfo(inputInfo);
 
 	float right = 0;
 	float forward = 0;

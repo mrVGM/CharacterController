@@ -26,8 +26,11 @@ namespace rendering
 	class RendererAppEntryObj : public app::AppEntryObj
 	{
 	private:
+		bool m_firstTick = true;
+
 		Value m_renderer;
 		Value m_copyBuffers;
+		Value m_window;
 
 		int m_copyListsSize = 0;
 		ID3D12CommandList** m_copyCommandLists = nullptr;

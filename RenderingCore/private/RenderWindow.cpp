@@ -243,6 +243,8 @@ void rendering::WindowObj::Destroy()
 
 LRESULT rendering::WindowObj::WndProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
+	m_inputMutex.lock();
+
 	switch (uMsg)
 	{
 	case WM_CLOSE:
@@ -255,35 +257,35 @@ LRESULT rendering::WindowObj::WndProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
 	case WM_KEYDOWN:
 	{
 		m_inputInfo.m_keysDown.insert(wParam);
-		return 0;
+		break;
 	}
 
 	case WM_KEYUP:
 	{
 		m_inputInfo.m_keysDown.erase(wParam);
-		return 0;
+		break;
 	}
 
 	case WM_LBUTTONDOWN:
 	{
 		m_inputInfo.m_leftMouseButtonDown = true;
-		return 0;
+		break;
 	}
 	case WM_LBUTTONUP:
 	{
 		m_inputInfo.m_leftMouseButtonDown = false;
-		return 0;
+		break;
 	}
 
 	case WM_RBUTTONDOWN:
 	{
 		m_inputInfo.m_rightMouseButtonDown = true;
-		return 0;
+		break;
 	}
 	case WM_RBUTTONUP:
 	{
 		m_inputInfo.m_rightMouseButtonDown = false;
-		return 0;
+		break;
 	}
 
 	case WM_INPUT:
@@ -298,16 +300,24 @@ LRESULT rendering::WindowObj::WndProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
 			if (raw->data.mouse.usFlags == MOUSE_MOVE_RELATIVE) {
 				m_inputInfo.m_mouseMovement[0] += raw->data.mouse.lLastX;
 				m_inputInfo.m_mouseMovement[1] += raw->data.mouse.lLastY;
+
+				m_inputInfo.m_mouseAxis[0] += raw->data.mouse.lLastX / 10.0;
+				m_inputInfo.m_mouseAxis[1] += raw->data.mouse.lLastY / 10.0;
 			}
 			else if (raw->data.mouse.usFlags == MOUSE_MOVE_ABSOLUTE) {
+				m_inputInfo.m_mouseAxis[0] += (raw->data.mouse.lLastX - m_inputInfo.m_mouseMovement[0]) / 10.0;
+				m_inputInfo.m_mouseAxis[1] += (raw->data.mouse.lLastY - m_inputInfo.m_mouseMovement[1]) / 10.0;
+
 				m_inputInfo.m_mouseMovement[0] = raw->data.mouse.lLastX;
 				m_inputInfo.m_mouseMovement[1] = raw->data.mouse.lLastY;
 			}
 		}
-		return 0;
+		break;
 	}
 
 	}
+
+	m_inputMutex.unlock();
 
 	return static_cast<LRESULT>(DefWindowProc(m_hwnd, uMsg, wParam, lParam));
 }
@@ -334,7 +344,13 @@ void rendering::WindowObj::RegisterRawInputDevice()
 	RegisterRawInputDevices(rid, _countof(rid), sizeof(RAWINPUTDEVICE));
 }
 
-const rendering::InputInfo& rendering::WindowObj::GetInputInfo()
+void rendering::WindowObj::GetInputInfo(InputInfo& outInputInfo)
 {
-	return m_inputInfo;
+	m_inputMutex.lock();
+
+	outInputInfo = m_inputInfo;
+	m_inputInfo.m_mouseAxis[0] = 0;
+	m_inputInfo.m_mouseAxis[1] = 0;
+
+	m_inputMutex.unlock();
 }

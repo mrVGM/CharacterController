@@ -13,6 +13,8 @@ add_library (Runtime
 	"public/Animator.h"
 	"public/PlayerController.h"
 	"private/PlayerController.cpp"
+	"public/Input.h"
+	"private/Input.cpp"
 )
 
 target_include_directories(Runtime INTERFACE PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/public")
