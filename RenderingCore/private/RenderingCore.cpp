@@ -1,7 +1,6 @@
 #include "RenderingCore.h"
 
 #include "RenderWindow.h"
-#include "RenderingEntryTypeDef.h"
 #include "DXShader.h"
 #include "DXDevice.h"
 #include "DXSwapChain.h"
@@ -155,7 +154,6 @@ namespace
 void rendering::core::Boot()
 {
 	WindowTypeDef::GetTypeDef();
-	RenderingEntryTypeDef::GetTypeDef();
 
 	DXShaderTypeDef::GetTypeDef();
 	DXVertexShaderTypeDef::GetTypeDef();

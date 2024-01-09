@@ -5,8 +5,6 @@ add_library (Geometry
 	"private/Mesh.cpp"
 	"public/Geometry.h"
 	"private/Geometry.cpp"
-	"public/GeometryAppEntry.h"
-	"private/GeometryAppEntry.cpp"
 	"public/Skeleton.h"
 	"private/Skeleton.cpp"
 	"public/Animation.h"
