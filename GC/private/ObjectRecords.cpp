@@ -75,12 +75,6 @@ void gc::ObjectRecordManager::Tick(std::list<const ManagedObject*>& managedObjec
 
 	for (auto it = m_records.begin(); it != m_records.end(); ++it)
 	{
-		if (it->second.m_state == GCObjectState::Dead)
-		{
-			++it->second.m_age;
-			continue;
-		}
-
 		it->second.m_state = Unchecked;
 	}
 
@@ -95,17 +89,8 @@ void gc::ObjectRecordManager::Tick(std::list<const ManagedObject*>& managedObjec
 		{
 			continue;
 		}
-
-		if (it->second.m_age == 0)
-		{
-			managedObjectsToDelete.push_back(it->second.m_object);
-			continue;
-		}
-
-		if (it->second.m_age > 0)
-		{
-			toDelete.push_back(it->first);
-		}
+		toDelete.push_back(it->first);
+		managedObjectsToDelete.push_back(it->second.m_object);
 	}
 
 	for (auto it = toDelete.begin(); it != toDelete.end(); ++it)
@@ -203,6 +188,20 @@ namespace
 
 			if (!m_createdSubtasks)
 			{
+				{
+					auto it = m_record->m_links.begin();
+					while (it != m_record->m_links.end())
+					{
+						auto curIt = it++;
+
+						auto tmp = m_manager.m_records.find(*curIt);
+						if (tmp == m_manager.m_records.end())
+						{
+							m_record->m_links.erase(curIt);
+						}
+					}
+				}
+
 				for (auto it = m_record->m_links.begin(); it != m_record->m_links.end(); ++it)
 				{
 					ObjectRecord* cur = &m_manager.m_records[*it];
@@ -239,7 +238,13 @@ void gc::ObjectRecordManager::UpdateVitality(std::list<size_t>& objects)
 
 	for (auto it = objects.begin(); it != objects.end(); ++it)
 	{
-		ObjectRecord& cur = m_records[*it];
+		auto objIt = m_records.find(*it);
+		if (objIt == m_records.end())
+		{
+			continue;
+		}
+
+		ObjectRecord& cur = objIt->second;
 		VitalityCheckTask* task = new VitalityCheckTask(*this, workStack, &cur);
 		initialTasks.push_back(task);
 		workStack.push(task);

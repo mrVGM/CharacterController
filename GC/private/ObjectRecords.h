@@ -37,7 +37,6 @@ namespace gc
 	{
 	public:
 		const ManagedObject* m_object = nullptr;
-		int m_age = 0;
 		GCObjectState m_state = GCObjectState::Unchecked;
 
 		int m_refs = 0;
