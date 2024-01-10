@@ -11,9 +11,13 @@
 
 #include "DXShader.h"
 
-#include "ObjectValueContainer.h"
+#include "DXDescriptorHeap.h"
+#include "DXDevice.h"
+#include "DXSwapChain.h"
 
-#include "CoreUtils.h"
+#include "VertexLayouts.h"
+
+#include "ObjectValueContainer.h"
 
 #define THROW_ERROR(hRes, error) \
 if (FAILED(hRes)) {\
@@ -139,7 +143,7 @@ void rendering::render_pass::DisplayTextureMaterial::CreatePipelineStateAndRootS
         const D3D12_INPUT_ELEMENT_DESC* inputElementDescs = nullptr;
         unsigned int inputElementsCount = 0;
 
-        core::utils::Get3DMaterialInputLayout(inputElementDescs, inputElementsCount);
+        materials::Get3DMaterialInputLayout(inputElementDescs, inputElementsCount);
 
         // Describe and create the graphics pipeline state object (PSO).
         D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};

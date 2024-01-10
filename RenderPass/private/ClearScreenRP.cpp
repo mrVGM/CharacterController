@@ -5,7 +5,12 @@
 
 #include "Jobs.h"
 
-#include "CoreUtils.h"
+#include "DXDevice.h"
+#include "DXSwapChain.h"
+#include "DXCommandQueue.h"
+
+#include "ObjectValueContainer.h"
+#include "DXDescriptorHeap.h"
 
 namespace
 {
@@ -49,12 +54,10 @@ void rendering::render_pass::ClearScreenRP::Create()
 {
 	using Microsoft::WRL::ComPtr;
 
-	DXDevice* device = rendering::core::utils::GetDevice();
-
-	DXSwapChain* swapChain = rendering::core::utils::GetSwapChain();
-	DXCommandQueue* commandQueue = rendering::core::utils::GetCommandQueue();
-
-	DXDescriptorHeap* dsDescriptorHeap = core::utils::GetDepthStencilDescriptorHeap();
+	DXDevice* device = static_cast<DXDevice*>(ObjectValueContainer::GetObjectOfType(DXDeviceTypeDef::GetTypeDef()));
+	DXSwapChain* swapChain = static_cast<DXSwapChain*>(ObjectValueContainer::GetObjectOfType(DXSwapChainTypeDef::GetTypeDef()));
+	DXCommandQueue* commandQueue = static_cast<DXCommandQueue*>(ObjectValueContainer::GetObjectOfType(DXCommandQueueTypeDef::GetTypeDef()));
+	DXDescriptorHeap* dsDescriptorHeap = static_cast<DXDescriptorHeap*>(ObjectValueContainer::GetObjectOfType(DepthStencilDescriptorHeapTypeDef::GetTypeDef()));
 
 	m_swapChain.AssignObject(swapChain);
 	m_commandQueue.AssignObject(commandQueue);

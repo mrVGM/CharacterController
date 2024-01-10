@@ -18,7 +18,10 @@
 
 #include "ValueList.h"
 
-#include "CoreUtils.h"
+#include "DXDevice.h"
+#include "DXSwapChain.h"
+#include "DXCommandQueue.h"
+#include "DXDescriptorHeap.h"
 
 #include <set>
 
@@ -112,8 +115,8 @@ void rendering::unlit_rp::UnlitRP::Create()
 
 	DXDevice* device = m_device.GetValue<DXDevice*>();
 
-	DXSwapChain* swapChain = rendering::core::utils::GetSwapChain();
-	DXCommandQueue* commandQueue = rendering::core::utils::GetCommandQueue();
+	DXSwapChain* swapChain = static_cast<DXSwapChain*>(ObjectValueContainer::GetObjectOfType(DXSwapChainTypeDef::GetTypeDef()));
+	DXCommandQueue* commandQueue = static_cast<DXCommandQueue*>(ObjectValueContainer::GetObjectOfType(DXCommandQueueTypeDef::GetTypeDef()));
 
 	m_swapChain.AssignObject(swapChain);
 	m_commandQueue.AssignObject(commandQueue);
@@ -281,9 +284,9 @@ void rendering::unlit_rp::UnlitRP::Load(jobs::Job* done)
 	});
 
 	jobs::Job* init = jobs::Job::CreateByLambda([=]() {
-		m_device.AssignObject(core::utils::GetDevice());
-		m_swapChain.AssignObject(core::utils::GetSwapChain());
-		m_commandQueue.AssignObject(core::utils::GetCommandQueue());
+		m_device.AssignObject(static_cast<DXDevice*>(ObjectValueContainer::GetObjectOfType(DXDeviceTypeDef::GetTypeDef())));
+		m_swapChain.AssignObject(static_cast<DXSwapChain*>(ObjectValueContainer::GetObjectOfType(DXSwapChainTypeDef::GetTypeDef())));
+		m_commandQueue.AssignObject(static_cast<DXCommandQueue*>(ObjectValueContainer::GetObjectOfType(DXCommandQueueTypeDef::GetTypeDef())));
 
 		m_scene.AssignObject(ObjectValueContainer::GetObjectOfType(scene::SceneObjectTypeDef::GetTypeDef()));
 

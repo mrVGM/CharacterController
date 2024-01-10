@@ -6,7 +6,11 @@
 #include "Jobs.h"
 #include "WaitFence.h"
 
-#include "CoreUtils.h"
+#include "DXDevice.h"
+#include "DXCommandQueue.h"
+#include "DXFence.h"
+
+#include "ObjectValueContainer.h"
 
 #define THROW_ERROR(hRes, error) \
 if (FAILED(hRes)) {\
@@ -271,10 +275,10 @@ void rendering::DXCopyBuffers::Execute(ID3D12CommandList* const* lists, UINT64 n
 
 void rendering::DXCopyBuffers::Load(jobs::Job* done)
 {
-    DXDevice* device = core::utils::GetDevice();
+    DXDevice* device = static_cast<DXDevice*>(ObjectValueContainer::GetObjectOfType(DXDeviceTypeDef::GetTypeDef()));
     m_device.AssignObject(device);
 
-    DXCommandQueue* commandQueue = core::utils::GetCommandQueue();
+    DXCommandQueue* commandQueue = static_cast<DXCommandQueue*>(ObjectValueContainer::GetObjectOfType(DXCommandQueueTypeDef::GetTypeDef()));
     m_commandQueue.AssignObject(commandQueue);
     
     jobs::JobSystem* copyJS =

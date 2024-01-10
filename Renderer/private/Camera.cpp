@@ -9,7 +9,9 @@
 
 #include "Jobs.h"
 
-#include "CoreUtils.h"
+#include "RenderWindow.h"
+
+#include "ObjectValueContainer.h"
 
 #include <corecrt_math_defines.h>
 
@@ -245,7 +247,7 @@ void rendering::renderer::Camera::Load(jobs::Job* done)
 	});
 
 	jobs::Job* init = jobs::Job::CreateByLambda([=]() {
-		m_window.AssignObject(core::utils::GetWindow());
+		m_window.AssignObject(static_cast<WindowObj*>(ObjectValueContainer::GetObjectOfType(WindowTypeDef::GetTypeDef())));
 
 		ObjectValue* camBuffer = ObjectValueContainer::GetObjectOfType(render_pass::CameraBufferTypeDef::GetTypeDef());
 		m_cameraBuffer.AssignObject(camBuffer);

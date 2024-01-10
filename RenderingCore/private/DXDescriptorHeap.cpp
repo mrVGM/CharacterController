@@ -8,7 +8,9 @@
 #include "ValueList.h"
 #include "ObjectValueContainer.h"
 
-#include "CoreUtils.h"
+#include "DXDevice.h"
+
+#include "DXTexture.h"
 
 #define THROW_ERROR(hRes, error) \
 if (FAILED(hRes)) {\
@@ -119,7 +121,7 @@ void rendering::DXDescriptorHeap::LoadData(jobs::Job* done)
 	};
 
 	jobs::Job* init = jobs::Job::CreateByLambda([=]() {
-		m_device.AssignObject(core::utils::GetDevice());
+		m_device.AssignObject(ObjectValueContainer::GetObjectOfType(DXDeviceTypeDef::GetTypeDef()));
 
 		ValueList* defs = m_textureDefs.GetValue<ValueList*>();
 		ValueList* tex = m_textures.GetValue<ValueList*>();

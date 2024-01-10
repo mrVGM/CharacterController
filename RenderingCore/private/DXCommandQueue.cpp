@@ -1,8 +1,10 @@
 #include "DXCommandQueue.h"
 
+#include "DXDevice.h"
+
 #include "Jobs.h"
 
-#include "CoreUtils.h"
+#include "ObjectValueContainer.h"
 
 namespace
 {
@@ -45,7 +47,7 @@ void rendering::DXCommandQueue::Create()
 {
     using Microsoft::WRL::ComPtr;
 
-    DXDevice* dxDevice = core::utils::GetDevice();
+    rendering::DXDevice* dxDevice = static_cast<rendering::DXDevice*>(ObjectValueContainer::GetObjectOfType(rendering::DXDeviceTypeDef::GetTypeDef()));
     if (!dxDevice)
     {
         throw "No device found!";

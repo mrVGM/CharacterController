@@ -20,9 +20,12 @@
 
 #include "TickUpdater.h"
 
-#include "Camera.h"
+#include "DXSwapChain.h"
+#include "DXCommandQueue.h"
+#include "DXFence.h"
+#include "RenderFence.h"
 
-#include "CoreUtils.h"
+#include "Camera.h"
 
 namespace
 {
@@ -150,13 +153,13 @@ void rendering::renderer::RendererObj::Load(jobs::Job* done)
 	});
 
 	jobs::Job* init = jobs::Job::CreateByLambda([=]() {
-		DXCommandQueue* commandQueue = core::utils::GetCommandQueue();
+		DXCommandQueue* commandQueue = static_cast<DXCommandQueue*>(ObjectValueContainer::GetObjectOfType(DXCommandQueueTypeDef::GetTypeDef()));
 		m_commandQueue.AssignObject(commandQueue);
 
-		DXSwapChain* swapChain = core::utils::GetSwapChain();
+		DXSwapChain* swapChain = static_cast<DXSwapChain*>(ObjectValueContainer::GetObjectOfType(DXSwapChainTypeDef::GetTypeDef()));
 		m_swapChain.AssignObject(swapChain);
 
-		DXFence* fence = core::utils::GetRenderFence();
+		DXFence* fence = static_cast<DXFence*>(ObjectValueContainer::GetObjectOfType(RenderFenceTypeDef::GetTypeDef()));
 		m_renderFence.AssignObject(fence);
 
 		jobs::RunSync(loadCamera);

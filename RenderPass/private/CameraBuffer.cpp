@@ -2,8 +2,6 @@
 
 #include "DXMutableBuffer.h"
 
-#include "CoreUtils.h"
-
 namespace
 {
 	BasicObjectContainer<rendering::render_pass::CameraBufferTypeDef> m_cameraBuffer;

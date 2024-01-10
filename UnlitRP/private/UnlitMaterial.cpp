@@ -1,21 +1,19 @@
 #include "UnlitMaterial.h"
 
 #include "PrimitiveTypes.h"
-#include "ObjectValueContainer.h"
 
 #include "Jobs.h"
 
 #include "DXMutableBuffer.h"
-
 #include "CameraBuffer.h"
-
 #include "DXShader.h"
+#include "DXDescriptorHeap.h"
+#include "DXDevice.h"
+#include "DXSwapChain.h"
+
+#include "VertexLayouts.h"
 
 #include "ObjectValueContainer.h"
-
-#include "DXDescriptorHeap.h"
-
-#include "CoreUtils.h"
 
 #define THROW_ERROR(hRes, error) \
 if (FAILED(hRes)) {\
@@ -142,7 +140,7 @@ void rendering::unlit_rp::UnlitMaterial::CreatePipelineStateAndRootSignatureForS
         const D3D12_INPUT_ELEMENT_DESC* inputElementDescs = nullptr;
         unsigned int inputElementsCount = 0;
 
-        core::utils::Get3DMaterialInputLayout(inputElementDescs, inputElementsCount);
+        materials::Get3DMaterialInputLayout(inputElementDescs, inputElementsCount);
 
         // Describe and create the graphics pipeline state object (PSO).
         D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
@@ -220,7 +218,7 @@ void rendering::unlit_rp::UnlitMaterial::CreatePipelineStateAndRootSignatureForS
         const D3D12_INPUT_ELEMENT_DESC* inputElementDescs = nullptr;
         unsigned int inputElementsCount = 0;
 
-        core::utils::Get3DSkeletalMeshMaterialInputLayout(inputElementDescs, inputElementsCount);
+        materials::Get3DSkeletalMeshMaterialInputLayout(inputElementDescs, inputElementsCount);
 
         // Describe and create the graphics pipeline state object (PSO).
         D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
@@ -436,7 +434,7 @@ void rendering::unlit_rp::UnlitMaterial::LoadData(jobs::Job* done)
         ObjectValue* camBuff = ObjectValueContainer::GetObjectOfType(render_pass::CameraBufferTypeDef::GetTypeDef());
         m_camBuffer.AssignObject(camBuff);
 
-        DXDescriptorHeap* dsDescriptorHeap = core::utils::GetDepthStencilDescriptorHeap();
+        DXDescriptorHeap* dsDescriptorHeap = static_cast<DXDescriptorHeap*>(ObjectValueContainer::GetObjectOfType(DepthStencilDescriptorHeapTypeDef::GetTypeDef()));
         m_dsDescriptorHeap.AssignObject(dsDescriptorHeap);
         
         m_rtDescHeap.AssignObject(

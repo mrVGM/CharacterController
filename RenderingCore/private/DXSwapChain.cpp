@@ -4,7 +4,11 @@
 
 #include "Jobs.h"
 
-#include "CoreUtils.h"
+#include "DXDevice.h"
+#include "RenderWindow.h"
+#include "DXCommandQueue.h"
+
+#include "ObjectValueContainer.h"
 
 #define THROW_ERROR(hRes, error) \
 if (FAILED(hRes)) {\
@@ -48,19 +52,19 @@ void rendering::DXSwapChain::Create()
 {
     using Microsoft::WRL::ComPtr;
 
-    WindowObj* window = core::utils::GetWindow();
+    WindowObj* window = static_cast<WindowObj*>(ObjectValueContainer::GetObjectOfType(WindowTypeDef::GetTypeDef()));
     if (!window)
     {
         throw "No Window found!";
     }
 
-    DXDevice* device = core::utils::GetDevice();
+    DXDevice* device = static_cast<DXDevice*>(ObjectValueContainer::GetObjectOfType(DXDeviceTypeDef::GetTypeDef()));
     if (!device)
     {
         throw "No Device found!";
     }
 
-    DXCommandQueue* commandQueue = core::utils::GetCommandQueue();
+    DXCommandQueue* commandQueue = static_cast<DXCommandQueue*>(ObjectValueContainer::GetObjectOfType(DXCommandQueueTypeDef::GetTypeDef()));
     if (!commandQueue)
     {
         throw "No Command Queue found!";

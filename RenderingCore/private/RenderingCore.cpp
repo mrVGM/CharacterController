@@ -18,9 +18,10 @@
 #include "DXCopyBuffers.h"
 #include "DXMutableBuffer.h"
 
-#include "ObjectValueContainer.h"
+#include "RenderWindow.h"
+#include "RenderFence.h"
 
-#include "CoreUtils.h"
+#include "ObjectValueContainer.h"
 
 namespace
 {
@@ -70,15 +71,15 @@ namespace
 			{
 				using namespace rendering;
 
-				WindowObj* window = core::utils::GetWindow();
+				WindowObj* window = static_cast<WindowObj*>(ObjectValueContainer::GetObjectOfType(WindowTypeDef::GetTypeDef()));
 				window->Start();
 
 				jobs::JobSystem* residentHeapJobSystem = static_cast<jobs::JobSystem*>(ObjectValueContainer::GetObjectOfType(ResidentHeapJobSystemTypeDef::GetTypeDef()));
 				residentHeapJobSystem->Start();
 
-				DXCommandQueue* commandQueue = core::utils::GetCommandQueue();
-				DXFence* renderFence = core::utils::GetRenderFence();
-				DXFence* residentHeapFence = core::utils::GetResidentHeapFence();
+				DXCommandQueue* commandQueue = static_cast<DXCommandQueue*>(ObjectValueContainer::GetObjectOfType(DXCommandQueueTypeDef::GetTypeDef()));
+				DXFence* renderFence = static_cast<DXFence*>(ObjectValueContainer::GetObjectOfType(RenderFenceTypeDef::GetTypeDef()));
+				DXFence* residentHeapFence = static_cast<DXFence*>(ObjectValueContainer::GetObjectOfType(ResidentHeapFenceTypeDef::GetTypeDef()));
 
 				m_ctx.m_loading = 3;
 
@@ -137,9 +138,9 @@ namespace
 			{
 				using namespace rendering;
 
-				DXSwapChain* swapChain = core::utils::GetSwapChain();
-				DXCopyBuffers* copyBuffers = core::utils::GetCopyBuffers();
+				DXSwapChain* swapChain = static_cast<DXSwapChain*>(ObjectValueContainer::GetObjectOfType(DXSwapChainTypeDef::GetTypeDef()));
 
+				DXCopyBuffers* copyBuffers = static_cast<DXCopyBuffers*>(ObjectValueContainer::GetObjectOfType(DXCopyBuffersTypeDef::GetTypeDef()));
 				m_ctx.m_loading = 2;
 
 				swapChain->Load(new ItemLoaded(m_ctx));

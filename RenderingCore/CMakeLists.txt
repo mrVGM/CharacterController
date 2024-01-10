@@ -12,8 +12,8 @@ add_library (RenderingCore
 	"private/DXDevice.cpp"
 	"public/DXSwapChain.h"
 	"private/DXSwapChain.cpp"
-	"public/CoreUtils.h"
-	"private/CoreUtils.cpp"
+	
+	
 	"private/DXCommandQueue.cpp"
 	"public/DXCommandQueue.h"
 	"public/DXFence.h"
@@ -26,7 +26,7 @@ add_library (RenderingCore
 	"private/ResidentHeapFence.cpp"
 	"private/ResidentHeapJobSystem.h"
 	"private/ResidentHeapJobSystem.cpp"
-	"private/RenderFence.h"
+	"public/RenderFence.h"
 	"private/RenderFence.cpp"
 	"public/DXBuffer.h"
 	"private/DXBuffer.cpp"
@@ -40,7 +40,7 @@ add_library (RenderingCore
 	"private/DXDepthStencilTexture.cpp"
 	"public/DXDescriptorHeap.h"
 	"private/DXDescriptorHeap.cpp"
-)
+ )
 
 target_include_directories(RenderingCore INTERFACE PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/public")
 target_include_directories(RenderingCore PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/private")

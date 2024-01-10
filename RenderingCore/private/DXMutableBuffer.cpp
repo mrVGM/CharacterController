@@ -3,8 +3,10 @@
 #include "Jobs.h"
 
 #include "DXHeap.h"
+#include "DXBuffer.h"
+#include "DXDevice.h"
 
-#include "CoreUtils.h"
+#include "ObjectValueContainer.h"
 
 #define THROW_ERROR(hRes, error) \
 if (FAILED(hRes)) {\
@@ -175,7 +177,7 @@ bool rendering::DXMutableBuffer::IsDirty()
 
 void rendering::DXMutableBuffer::CreateCommandList()
 {
-	DXDevice* device = core::utils::GetDevice();
+	DXDevice* device = static_cast<DXDevice*>(ObjectValueContainer::GetObjectOfType(DXDeviceTypeDef::GetTypeDef()));
 
 	THROW_ERROR(
 		device->GetDevice().CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_COPY, IID_PPV_ARGS(&m_commandAllocator)),

@@ -1,8 +1,10 @@
 #include "DXFence.h"
 
+#include "DXDevice.h"
+
 #include "Jobs.h"
 
-#include "CoreUtils.h"
+#include "ObjectValueContainer.h"
 
 namespace
 {
@@ -38,7 +40,7 @@ void rendering::DXFenceTypeDef::Construct(Value& container) const
 
 void rendering::DXFence::Create()
 {
-	DXDevice* device = core::utils::GetDevice();
+	DXDevice* device = static_cast<DXDevice*>(ObjectValueContainer::GetObjectOfType(DXDeviceTypeDef::GetTypeDef()));
 	if (!device)
 	{
 		throw "No Device found!";

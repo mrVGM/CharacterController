@@ -7,7 +7,8 @@
 
 #include "DXShader.h"
 
-#include "CoreUtils.h"
+#include "DXDevice.h"
+#include "DXSwapChain.h"
 
 namespace
 {
@@ -142,8 +143,8 @@ void rendering::materials::Material::LoadData(jobs::Job* done)
     };
 
     jobs::Job* init = jobs::Job::CreateByLambda([=]() {
-        m_device.AssignObject(core::utils::GetDevice());
-        m_swapChain.AssignObject(core::utils::GetSwapChain());
+		m_device.AssignObject(ObjectValueContainer::GetObjectOfType(DXDeviceTypeDef::GetTypeDef()));
+		m_swapChain.AssignObject(ObjectValueContainer::GetObjectOfType(DXSwapChainTypeDef::GetTypeDef()));
         m_vertexShader.AssignObject(ObjectValueContainer::GetObjectOfType(*m_vertexShaderDef.GetType<const TypeDef*>()));
         m_pixelShader.AssignObject(ObjectValueContainer::GetObjectOfType(*m_pixelShaderDef.GetType<const TypeDef*>()));
 

@@ -10,9 +10,11 @@
 
 #include "TickUpdater.h"
 
-#include "CoreUtils.h"
-
 #include "Input.h"
+
+#include "RenderWindow.h"
+
+#include "DXCopyBuffers.h"
 
 namespace
 {
@@ -46,13 +48,10 @@ void rendering::RendererAppEntryTypeDef::Construct(Value& container) const
 	container.AssignObject(entry);
 }
 
-#include <sstream>
-
 void rendering::RendererAppEntryObj::Tick()
 {
 	static int m_running;
 	m_running = 2;
-
 
 	rendering::InputInfo inputInfo;
 	WindowObj* wnd = m_window.GetValue<WindowObj*>();

@@ -5,7 +5,13 @@
 
 #include "WaitFence.h"
 
-#include "CoreUtils.h"
+#include "DXDevice.h"
+#include "ResidentHeapFence.h"
+#include "ResidentHeapJobSystem.h"
+
+#include "DXFence.h"
+
+#include "ObjectValueContainer.h"
 
 namespace
 {
@@ -149,9 +155,9 @@ void rendering::DXHeap::MakeResident(jobs::Job* done)
 
 		void Do() override
 		{
-			m_ctx.m_device = core::utils::GetDevice();
-			m_ctx.m_residentHeapJS = core::utils::GetResidentHeapJobSystem();
-			m_ctx.m_residentHeapFence = core::utils::GetResidentHeapFence();
+			m_ctx.m_device = static_cast<DXDevice*>(ObjectValueContainer::GetObjectOfType(DXDeviceTypeDef::GetTypeDef()));
+			m_ctx.m_residentHeapJS = static_cast<jobs::JobSystem*>(ObjectValueContainer::GetObjectOfType(ResidentHeapJobSystemTypeDef::GetTypeDef()));
+			m_ctx.m_residentHeapFence = static_cast<DXFence*>(ObjectValueContainer::GetObjectOfType(DXFenceTypeDef::GetTypeDef()));
 
 			m_ctx.m_self->Create();
 			m_ctx.m_residentHeapJS->ScheduleJob(new EnqueJob(m_ctx));
@@ -167,7 +173,7 @@ void rendering::DXHeap::Evict()
 		throw "The heap is not Resident yet!";
 	}
 
-	DXDevice* device = core::utils::GetDevice();
+	DXDevice* device = static_cast<DXDevice*>(ObjectValueContainer::GetObjectOfType(DXDeviceTypeDef::GetTypeDef()));
 	ID3D12Device3* device3;
 	HRESULT hr = device->GetDevice().QueryInterface(IID_PPV_ARGS(&device3));
 	if (FAILED(hr)) {
@@ -206,7 +212,7 @@ void rendering::DXHeap::SetHeapFlags(D3D12_HEAP_FLAGS flags)
 
 void rendering::DXHeap::Create()
 {
-	DXDevice* device = core::utils::GetDevice();
+	DXDevice* device = static_cast<DXDevice*>(ObjectValueContainer::GetObjectOfType(DXDeviceTypeDef::GetTypeDef()));
 	HRESULT hr = device->GetDevice().CreateHeap(&m_heapDescription, IID_PPV_ARGS(&m_heap));
 	if (FAILED(hr))
 	{

@@ -4,7 +4,10 @@
 
 #include "Jobs.h"
 
-#include "CoreUtils.h"
+#include "DXDevice.h"
+#include "DXCopyBuffers.h"
+
+#include "ObjectValueContainer.h"
 
 namespace
 {
@@ -79,8 +82,7 @@ void rendering::DXBuffer::CopyData(void* data, int dataSize)
 
 void rendering::DXBuffer::Place(DXHeap* heap, UINT64 heapOffset)
 {
-	DXDevice* device = core::utils::GetDevice();
-
+	DXDevice* device = static_cast<DXDevice*>(ObjectValueContainer::GetObjectOfType(DXDeviceTypeDef::GetTypeDef()));
 	D3D12_HEAP_TYPE heapType = heap->GetDescription().Properties.Type;
 
 	D3D12_RESOURCE_STATES initialState = D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_PRESENT;
@@ -149,7 +151,7 @@ void rendering::DXBuffer::CopyBuffer(
 
 		void Do() override
 		{
-			DXCopyBuffers* copyBuffers = core::utils::GetCopyBuffers();
+			DXCopyBuffers* copyBuffers = static_cast<DXCopyBuffers*>(ObjectValueContainer::GetObjectOfType(DXCopyBuffersTypeDef::GetTypeDef()));
 			copyBuffers->Execute(*m_ctx.m_dst, *m_ctx.m_self, m_ctx.m_done);
 		}
 	};

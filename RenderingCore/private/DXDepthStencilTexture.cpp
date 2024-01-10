@@ -2,7 +2,9 @@
 
 #include "Jobs.h"
 
-#include "CoreUtils.h"
+#include "RenderWindow.h"
+
+#include "ObjectValueContainer.h"
 
 namespace
 {
@@ -39,7 +41,7 @@ void rendering::DXDepthStencilTextureTypeDef::Construct(Value& container) const
 void rendering::DXDepthStencilTexture::LoadData(jobs::Job* done)
 {
 	jobs::Job* init = jobs::Job::CreateByLambda([=]() {
-		WindowObj* wnd = core::utils::GetWindow();
+		WindowObj* wnd = static_cast<WindowObj*>(ObjectValueContainer::GetObjectOfType(WindowTypeDef::GetTypeDef()));
 		UINT w = wnd->m_width.Get<int>();
 		UINT h = wnd->m_height.Get<int>();
 

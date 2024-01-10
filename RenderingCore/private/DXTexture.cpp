@@ -4,7 +4,9 @@
 
 #include "Jobs.h"
 
-#include "CoreUtils.h"
+#include "DXDevice.h"
+
+#include "ObjectValueContainer.h"
 
 #define THROW_ERROR(hRes, error) \
 if (FAILED(hRes)) {\
@@ -99,7 +101,7 @@ void rendering::DXTexture::LoadData(jobs::Job* done)
 	});
 
 	jobs::Job* init = jobs::Job::CreateByLambda([=]() {
-		m_device.AssignObject(core::utils::GetDevice());
+		m_device.AssignObject(ObjectValueContainer::GetObjectOfType(DXDeviceTypeDef::GetTypeDef()));
 		DXHeapTypeDef::GetTypeDef().Construct(m_heap);
 
 		jobs::RunAsync(loadHeap);

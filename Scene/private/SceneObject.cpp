@@ -16,8 +16,6 @@
 
 #include "MathStructs.h"
 
-#include "CoreUtils.h"
-
 namespace
 {
 	BasicObjectContainer<scene::SceneObjectTypeDef> m_sceneObject;

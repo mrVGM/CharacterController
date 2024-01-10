@@ -20,7 +20,9 @@
 
 #include "MathStructs.h"
 
-#include "CoreUtils.h"
+#include "DXDevice.h"
+
+#include "ObjectValueContainer.h"
 
 #define THROW_ERROR(hRes, error) \
 if (FAILED(hRes)) {\
@@ -210,7 +212,7 @@ void runtime::Actor::LoadData(jobs::Job* done)
 	};
 
 	jobs::Job* init = jobs::Job::CreateByLambda([=]() {
-		m_device.AssignObject(rendering::core::utils::GetDevice());
+		m_device.AssignObject(ObjectValueContainer::GetObjectOfType(rendering::DXDeviceTypeDef::GetTypeDef()));
 
 		m_mesh.AssignObject(ObjectValueContainer::GetObjectOfType(*m_meshDef.GetType<const TypeDef*>()));
 		geo::Mesh* mesh = m_mesh.GetValue<geo::Mesh*>();

@@ -3,7 +3,7 @@
 add_library (Materials
 	"public/Material.h"
 	"private/Material.cpp"
- "public/Materials.h" "private/Materials.cpp")
+ "public/Materials.h" "private/Materials.cpp" "public/VertexLayouts.h" "private/VertexLayouts.cpp")
 
 target_include_directories(Materials INTERFACE PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/public")
 target_include_directories(Materials PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/private")
