@@ -57,6 +57,10 @@ namespace rendering::unlit_rp
 		void Create();
 		const CMDListCache& GetCachedLists();
 		void ResizeCommandLists(int size);
+
+	protected:
+		void LoadData(jobs::Job* done) override;
+
 	public:
 		Value m_quadMeshDef;
 		Value m_displayTextureMatDef;
@@ -66,7 +70,6 @@ namespace rendering::unlit_rp
 
 		void Prepare() override;
 		void Execute() override;
-		void Load(jobs::Job* done) override;
 	};
 
 	void Boot();

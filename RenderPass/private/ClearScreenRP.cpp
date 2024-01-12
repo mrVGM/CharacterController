@@ -145,7 +145,7 @@ void rendering::render_pass::ClearScreenRP::Execute()
 	commandQueue->GetGraphicsCommandQueue()->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
 }
 
-void rendering::render_pass::ClearScreenRP::Load(jobs::Job* done)
+void rendering::render_pass::ClearScreenRP::LoadData(jobs::Job* done)
 {
 	struct Context
 	{

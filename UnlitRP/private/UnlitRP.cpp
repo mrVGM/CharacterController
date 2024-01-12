@@ -244,7 +244,7 @@ void rendering::unlit_rp::UnlitRP::Execute()
 	}
 }
 
-void rendering::unlit_rp::UnlitRP::Load(jobs::Job* done)
+void rendering::unlit_rp::UnlitRP::LoadData(jobs::Job* done)
 {
 	struct Context
 	{

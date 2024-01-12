@@ -32,6 +32,10 @@ namespace rendering::render_pass
 		Value m_commandQueue;
 
 		void Create();
+
+	protected:
+		void LoadData(jobs::Job* done) override;
+
 	public:
 
 		ClearScreenRP(const ReferenceTypeDef& typeDef);
@@ -39,6 +43,5 @@ namespace rendering::render_pass
 
 		void Prepare() override;
 		void Execute() override;
-		void Load(jobs::Job* done) override;
 	};
 }
