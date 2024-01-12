@@ -67,7 +67,7 @@ rendering::DXFence::~DXFence()
 {
 }
 
-void rendering::DXFence::Load(jobs::Job* done)
+void rendering::DXFence::LoadData(jobs::Job* done)
 {
 	struct Context
 	{

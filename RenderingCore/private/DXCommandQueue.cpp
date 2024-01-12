@@ -95,7 +95,7 @@ rendering::DXCommandQueue::~DXCommandQueue()
 {
 }
 
-void rendering::DXCommandQueue::Load(jobs::Job* done)
+void rendering::DXCommandQueue::LoadData(jobs::Job* done)
 {
     struct Context
     {

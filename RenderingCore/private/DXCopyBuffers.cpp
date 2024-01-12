@@ -273,25 +273,26 @@ void rendering::DXCopyBuffers::Execute(ID3D12CommandList* const* lists, UINT64 n
 }
 
 
-void rendering::DXCopyBuffers::Load(jobs::Job* done)
+void rendering::DXCopyBuffers::LoadData(jobs::Job* done)
 {
-    DXDevice* device = static_cast<DXDevice*>(ObjectValueContainer::GetObjectOfType(DXDeviceTypeDef::GetTypeDef()));
-    m_device.AssignObject(device);
+    jobs::Job* load = jobs::Job::CreateByLambda([=]() {
+        DXFence* copyFence = m_copyFence.GetValue<DXFence*>();
+        copyFence->Load(done);
+    });
 
-    DXCommandQueue* commandQueue = static_cast<DXCommandQueue*>(ObjectValueContainer::GetObjectOfType(DXCommandQueueTypeDef::GetTypeDef()));
-    m_commandQueue.AssignObject(commandQueue);
-    
-    jobs::JobSystem* copyJS =
-        static_cast<jobs::JobSystem*>(ObjectValueContainer::GetObjectOfType(*m_copyJobSystemDef.GetType<const TypeDef*>()));
-    copyJS->Start();
-    m_copyJobSytem.AssignObject(copyJS);
+    jobs::Job* init = jobs::Job::CreateByLambda([=]() {
+        ObjectValueContainer::GetObjectOfType(DXDeviceTypeDef::GetTypeDef(), m_device);
+        ObjectValueContainer::GetObjectOfType(DXCommandQueueTypeDef::GetTypeDef(), m_commandQueue);
+        ObjectValueContainer::GetObjectOfType(*m_copyJobSystemDef.GetType<const TypeDef*>(), m_copyJobSytem);
+        ObjectValueContainer::GetObjectOfType(*m_copyFenceDef.GetType<const TypeDef*>(), m_copyFence);
 
-    DXFence* copyFence =
-        static_cast<DXFence*>(ObjectValueContainer::GetObjectOfType(*m_copyFenceDef.GetType<const TypeDef*>()));
+        jobs::JobSystem* copyJS = m_copyJobSytem.GetValue<jobs::JobSystem*>();
+        copyJS->Start();
 
-    m_copyFence.AssignObject(copyFence);
+        jobs::RunAsync(load);
+    });
 
-    copyFence->Load(done);
+    jobs::RunSync(init);
 }
 
 

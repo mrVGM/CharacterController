@@ -37,6 +37,12 @@ ObjectValue* ObjectValueContainer::GetObjectOfType(const TypeDef& typeDef)
 	return tmp.front();
 }
 
+void ObjectValueContainer::GetObjectOfType(const TypeDef& typeDef, Value& container)
+{
+	ObjectValue* obj = GetObjectOfType(typeDef);
+	container.AssignObject(obj);
+}
+
 void ObjectValueContainer::Register(ObjectValue* value)
 {
 	CheckAccess();

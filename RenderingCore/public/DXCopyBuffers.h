@@ -7,6 +7,8 @@
 
 #include "Job.h"
 
+#include "MultiLoader.h"
+
 #include <d3d12.h>
 #include <wrl.h>
 
@@ -26,7 +28,7 @@ namespace rendering
 		void Construct(Value& container) const override;
 	};
 
-	class DXCopyBuffers : public ObjectValue
+	class DXCopyBuffers : public ObjectValue, public jobs::LoadingClass
 	{
 		Value m_device;
 		Value m_commandQueue;
@@ -35,14 +37,15 @@ namespace rendering
 
 		UINT64 m_copyCounter = 1;
 
+	protected:
+		void LoadData(jobs::Job* done);
+
 	public:
 		Value m_copyJobSystemDef;
 		Value m_copyFenceDef;
 
 		DXCopyBuffers(const ReferenceTypeDef& typeDef);
 		virtual ~DXCopyBuffers();
-
-		void Load(jobs::Job* done);
 
 		void Execute(
 			DXBuffer& dst,

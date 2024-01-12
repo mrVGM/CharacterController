@@ -5,6 +5,8 @@
 
 #include "Job.h"
 
+#include "MultiLoader.h"
+
 #include "d3dx12.h"
 #include <d3d12.h>
 #include <dxgi1_6.h>
@@ -24,18 +26,19 @@ namespace rendering
         void Construct(Value& value) const override;
     };
 
-	class DXFence : public ObjectValue
+	class DXFence : public ObjectValue, public jobs::LoadingClass
 	{
 	private:
 		int m_eventCounter = 0;
 		Microsoft::WRL::ComPtr<ID3D12Fence> m_fence;
 		void Create();
 
+	protected:
+		void LoadData(jobs::Job* done);
+
 	public:
 		DXFence(const ReferenceTypeDef& typeDef);
 		virtual ~DXFence();
-
-		void Load(jobs::Job* done);
 
 		ID3D12Fence* GetFence() const;
 	};

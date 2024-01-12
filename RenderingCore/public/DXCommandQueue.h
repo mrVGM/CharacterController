@@ -5,6 +5,8 @@
 
 #include "Job.h"
 
+#include "MultiLoader.h"
+
 #include <d3d12.h>
 #include <wrl.h>
 #include <string>
@@ -22,16 +24,18 @@ namespace rendering
 		void Construct(Value& value) const override;
 	};
 
-	class DXCommandQueue : public ObjectValue
+	class DXCommandQueue : public ObjectValue, public jobs::LoadingClass
 	{
 		Microsoft::WRL::ComPtr<ID3D12CommandQueue> m_graphicsCommandQueue;
 		Microsoft::WRL::ComPtr<ID3D12CommandQueue> m_copyCommandQueue;
 		void Create();
+
+	protected:
+		void LoadData(jobs::Job* done);
+
 	public:
 		DXCommandQueue(const ReferenceTypeDef& typeDef);
 		virtual ~DXCommandQueue();
-
-		void Load(jobs::Job* done);
 
 		ID3D12CommandQueue* GetGraphicsCommandQueue();
 		ID3D12CommandQueue* GetCopyCommandQueue();
