@@ -4,6 +4,7 @@
 
 #include <mutex>
 #include <stack>
+#include <set>
 
 namespace
 {
@@ -78,7 +79,7 @@ void gc::ObjectRecordManager::Tick(std::list<const ManagedObject*>& managedObjec
 		it->second.m_state = Unchecked;
 	}
 
-	std::list<size_t> toCheck;
+	std::set<size_t> toCheck;
 	UpdateObjectsState(GetSecondaryQueue(), toCheck);
 	UpdateVitality(toCheck);
 
@@ -99,7 +100,7 @@ void gc::ObjectRecordManager::Tick(std::list<const ManagedObject*>& managedObjec
 	}
 }
 
-void gc::ObjectRecordManager::UpdateObjectsState(std::queue<GCOperation>& operations, std::list<size_t>& toCheck)
+void gc::ObjectRecordManager::UpdateObjectsState(std::queue<GCOperation>& operations, std::set<size_t>& toCheck)
 {
 	while (!operations.empty())
 	{
@@ -119,7 +120,7 @@ void gc::ObjectRecordManager::UpdateObjectsState(std::queue<GCOperation>& operat
 		case DecrementRefsOp:
 			GCLogger::m_log << "DEC " << cur.m_id1 << '\n';
 			--m_records[cur.m_id1].m_refs;
-			toCheck.push_back(cur.m_id1);
+			toCheck.insert(cur.m_id1);
 			break;
 		case RemoveLinkOp:
 		{
@@ -134,7 +135,7 @@ void gc::ObjectRecordManager::UpdateObjectsState(std::queue<GCOperation>& operat
 					break;
 				}
 			}
-			toCheck.push_back(cur.m_id1);
+			toCheck.insert(cur.m_id1);
 			break;
 		}
 		}
@@ -173,7 +174,7 @@ namespace
 		{
 			using namespace gc;
 
-			if (m_record->m_state != GCObjectState::Unchecked)
+			if (m_record->m_state == GCObjectState::Alive || m_record->m_state == GCObjectState::Dead)
 			{
 				m_done = true;
 				return;
@@ -188,6 +189,7 @@ namespace
 
 			if (!m_createdSubtasks)
 			{
+				m_record->m_state = BeingChecked;
 				{
 					auto it = m_record->m_links.begin();
 					while (it != m_record->m_links.end())
@@ -205,6 +207,11 @@ namespace
 				for (auto it = m_record->m_links.begin(); it != m_record->m_links.end(); ++it)
 				{
 					ObjectRecord* cur = &m_manager.m_records[*it];
+					if (cur->m_state == BeingChecked)
+					{
+						continue;
+					}
+
 					VitalityCheckTask* subTask = new VitalityCheckTask(m_manager, m_taskStack, cur);
 					m_subTasks.push_back(subTask);
 					m_taskStack.push(subTask);
@@ -231,7 +238,7 @@ namespace
 	};
 }
 
-void gc::ObjectRecordManager::UpdateVitality(std::list<size_t>& objects)
+void gc::ObjectRecordManager::UpdateVitality(std::set<size_t>& objects)
 {
 	std::stack<VitalityCheckTask*> workStack;
 	std::list<VitalityCheckTask*> initialTasks;

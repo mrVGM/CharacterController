@@ -6,6 +6,7 @@
 #include <map>
 
 #include <queue>
+#include <set>
 
 namespace gc
 {
@@ -20,6 +21,7 @@ namespace gc
 	enum GCObjectState
 	{
 		Unchecked,
+		BeingChecked,
 		Dead,
 		Alive,
 	};
@@ -54,8 +56,8 @@ namespace gc
 		ObjectRecord& GetRecord(const ManagedObject* object);
 
 		void Tick(std::list<const ManagedObject*>& managedObjectsToDelete);
-		void UpdateObjectsState(std::queue<GCOperation>& operations, std::list<size_t>& toCheck);
-		void UpdateVitality(std::list<size_t>& objects);
+		void UpdateObjectsState(std::queue<GCOperation>& operations, std::set<size_t>& toCheck);
+		void UpdateVitality(std::set<size_t>& objects);
 
 		void SetGCActivatedListener(const GCActivatedListener& listener);
 	};
