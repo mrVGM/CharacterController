@@ -16,7 +16,7 @@
 namespace
 {
 	BasicObjectContainer<rendering::DXHeapTypeDef> m_heap;
-	int m_fenceProgress = 1;
+	UINT64 m_fenceProgress = 1;
 }
 
 const rendering::DXHeapTypeDef& rendering::DXHeapTypeDef::GetTypeDef()
@@ -47,7 +47,10 @@ void rendering::DXHeapTypeDef::Construct(Value& container) const
 }
 
 rendering::DXHeap::DXHeap(const ReferenceTypeDef& typeDef) :
-	ObjectValue(typeDef)
+	ObjectValue(typeDef),
+	m_device(DXDeviceTypeDef::GetTypeDef(), this),
+	m_residentHeapJS(jobs::JobSystemDef::GetTypeDef(), this),
+	m_residentHeapFence(DXFenceTypeDef::GetTypeDef(), this)
 {
 	m_heapDescription.SizeInBytes = 256;
 	m_heapDescription.Properties.Type = D3D12_HEAP_TYPE::D3D12_HEAP_TYPE_DEFAULT;
@@ -75,96 +78,45 @@ void rendering::DXHeap::MakeResident(jobs::Job* done)
 		throw "The heap is already Resident!";
 	}
 
-	struct Context
-	{
-		jobs::JobSystem* m_residentHeapJS = nullptr;
-		DXFence* m_residentHeapFence = nullptr;
-		DXDevice* m_device = nullptr;
-		int m_signal = 0;
+	auto createWaitJob = [=](UINT64 signal) {
+		return jobs::Job::CreateByLambda([=]() {
+			DXFence* fence = m_residentHeapFence.GetValue<DXFence*>();
+			WaitFence waitFence(*fence);
+			waitFence.Wait(signal);
+			m_resident = true;
 
-		DXHeap* m_self = nullptr;
-		jobs::Job* m_done = nullptr;
+			jobs::RunSync(done);
+		});
 	};
 
-	Context ctx;
-	ctx.m_self = this;
-	ctx.m_done = done;
-
-
-	class WaitJob : public jobs::Job
-	{
-	private:
-		Context m_ctx;
-	public:
-		WaitJob(const Context& ctx) :
-			m_ctx(ctx)
+	jobs::Job* enqueJob = jobs::Job::CreateByLambda([=]() {
+		ID3D12Device3* device3;
+		HRESULT hr = m_device.GetValue<DXDevice*>()->GetDevice().QueryInterface(IID_PPV_ARGS(&device3));
+		if (FAILED(hr))
 		{
+			throw "Can't Query ID3D12Device3!";
+		}
+		const UINT64 signal = m_fenceProgress++;
+		ID3D12Pageable* tmp = GetHeap();
+		hr = device3->EnqueueMakeResident(D3D12_RESIDENCY_FLAGS::D3D12_RESIDENCY_FLAG_DENY_OVERBUDGET, 1, &tmp, m_residentHeapFence.GetValue<DXFence*>()->GetFence(), signal);
+		if (FAILED(hr))
+		{
+			throw "Can't make the heap resident!";
 		}
 
-		void Do() override
-		{
-			WaitFence waitFence(*m_ctx.m_residentHeapFence);
-			waitFence.Wait(m_ctx.m_signal);
-			m_ctx.m_self->m_resident = true;
+		jobs::RunAsync(createWaitJob(signal));
+	});
 
-			jobs::RunSync(m_ctx.m_done);
-		}
-	};
+	jobs::Job* init = jobs::Job::CreateByLambda([=]() {
+		ObjectValueContainer::GetObjectOfType(DXDeviceTypeDef::GetTypeDef(), m_device);
+		ObjectValueContainer::GetObjectOfType(ResidentHeapJobSystemTypeDef::GetTypeDef(), m_residentHeapJS);
+		ObjectValueContainer::GetObjectOfType(ResidentHeapFenceTypeDef::GetTypeDef(), m_residentHeapFence);
 
-	class EnqueJob : public jobs::Job
-	{
-	private:
-		Context m_ctx;
-	public:
-		EnqueJob(const Context& jobContext) :
-			m_ctx(jobContext)
-		{
-		}
+		Create();
+		m_residentHeapJS.GetValue<jobs::JobSystem*>()->ScheduleJob(enqueJob);
+	});
 
-		void Do() override
-		{
-			ID3D12Device3* device3;
-			HRESULT hr = m_ctx.m_device->GetDevice().QueryInterface(IID_PPV_ARGS(&device3));
-			if (FAILED(hr))
-			{
-				throw "Can't Query ID3D12Device3!";
-			}
-			const UINT64 signal = m_fenceProgress++;
-			ID3D12Pageable* tmp = m_ctx.m_self->GetHeap();
-			hr = device3->EnqueueMakeResident(D3D12_RESIDENCY_FLAGS::D3D12_RESIDENCY_FLAG_DENY_OVERBUDGET, 1, &tmp, m_ctx.m_residentHeapFence->GetFence(), signal);
-			if (FAILED(hr))
-			{
-				throw "Can't make the heap resident!";
-			}
-
-			m_ctx.m_signal = signal;
-			WaitJob* waitJob = new WaitJob(m_ctx);
-			jobs::RunAsync(waitJob);
-		}
-	};
-	
-	class CacheObjects : public jobs::Job
-	{
-	private:
-		Context m_ctx;
-	public:
-		CacheObjects(const Context& ctx) :
-			m_ctx(ctx)
-		{
-		}
-
-		void Do() override
-		{
-			m_ctx.m_device = static_cast<DXDevice*>(ObjectValueContainer::GetObjectOfType(DXDeviceTypeDef::GetTypeDef()));
-			m_ctx.m_residentHeapJS = static_cast<jobs::JobSystem*>(ObjectValueContainer::GetObjectOfType(ResidentHeapJobSystemTypeDef::GetTypeDef()));
-			m_ctx.m_residentHeapFence = static_cast<DXFence*>(ObjectValueContainer::GetObjectOfType(DXFenceTypeDef::GetTypeDef()));
-
-			m_ctx.m_self->Create();
-			m_ctx.m_residentHeapJS->ScheduleJob(new EnqueJob(m_ctx));
-		}
-	};
-
-	jobs::RunSync(new CacheObjects(ctx));
+	jobs::RunSync(init);
 }
 
 void rendering::DXHeap::Evict()
@@ -172,8 +124,8 @@ void rendering::DXHeap::Evict()
 	if (!m_resident) {
 		throw "The heap is not Resident yet!";
 	}
+	DXDevice* device = m_device.GetValue<DXDevice*>();
 
-	DXDevice* device = static_cast<DXDevice*>(ObjectValueContainer::GetObjectOfType(DXDeviceTypeDef::GetTypeDef()));
 	ID3D12Device3* device3;
 	HRESULT hr = device->GetDevice().QueryInterface(IID_PPV_ARGS(&device3));
 	if (FAILED(hr)) {
@@ -212,7 +164,8 @@ void rendering::DXHeap::SetHeapFlags(D3D12_HEAP_FLAGS flags)
 
 void rendering::DXHeap::Create()
 {
-	DXDevice* device = static_cast<DXDevice*>(ObjectValueContainer::GetObjectOfType(DXDeviceTypeDef::GetTypeDef()));
+	DXDevice* device = m_device.GetValue<DXDevice*>();
+
 	HRESULT hr = device->GetDevice().CreateHeap(&m_heapDescription, IID_PPV_ARGS(&m_heap));
 	if (FAILED(hr))
 	{

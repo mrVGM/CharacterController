@@ -101,7 +101,7 @@ void rendering::DXTexture::LoadData(jobs::Job* done)
 	});
 
 	jobs::Job* init = jobs::Job::CreateByLambda([=]() {
-		m_device.AssignObject(ObjectValueContainer::GetObjectOfType(DXDeviceTypeDef::GetTypeDef()));
+		ObjectValueContainer::GetObjectOfType(DXDeviceTypeDef::GetTypeDef(), m_device);
 		DXHeapTypeDef::GetTypeDef().Construct(m_heap);
 
 		jobs::RunAsync(loadHeap);

@@ -247,10 +247,8 @@ void rendering::renderer::Camera::Load(jobs::Job* done)
 	});
 
 	jobs::Job* init = jobs::Job::CreateByLambda([=]() {
-		m_window.AssignObject(static_cast<WindowObj*>(ObjectValueContainer::GetObjectOfType(WindowTypeDef::GetTypeDef())));
-
-		ObjectValue* camBuffer = ObjectValueContainer::GetObjectOfType(render_pass::CameraBufferTypeDef::GetTypeDef());
-		m_cameraBuffer.AssignObject(camBuffer);
+		ObjectValueContainer::GetObjectOfType(WindowTypeDef::GetTypeDef(), m_window);
+		ObjectValueContainer::GetObjectOfType(render_pass::CameraBufferTypeDef::GetTypeDef(), m_cameraBuffer);
 
 		jobs::RunAsync(loadCamBuffer);
 	});

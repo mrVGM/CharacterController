@@ -275,7 +275,7 @@ void rendering::render_pass::DisplayTextureMaterial::LoadData(jobs::Job* done)
     });
 
     jobs::Job* init = jobs::Job::CreateByLambda([=]() {
-        m_texDescriptorHeap.AssignObject(ObjectValueContainer::GetObjectOfType(*m_texDescriptorHeapDef.GetType<const TypeDef*>()));
+        ObjectValueContainer::GetObjectOfType(*m_texDescriptorHeapDef.GetType<const TypeDef*>(), m_texDescriptorHeap);
 
         ctx->m_loading = 2;
         jobs::RunAsync(loadParent);

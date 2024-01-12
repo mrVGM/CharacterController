@@ -52,19 +52,26 @@ void rendering::DXSwapChain::Create()
 {
     using Microsoft::WRL::ComPtr;
 
-    WindowObj* window = static_cast<WindowObj*>(ObjectValueContainer::GetObjectOfType(WindowTypeDef::GetTypeDef()));
+    Value wndVal(WindowTypeDef::GetTypeDef(), nullptr);
+    ObjectValueContainer::GetObjectOfType(WindowTypeDef::GetTypeDef(), wndVal);
+    WindowObj* window = wndVal.GetValue<WindowObj*>();
+
     if (!window)
     {
         throw "No Window found!";
     }
 
-    DXDevice* device = static_cast<DXDevice*>(ObjectValueContainer::GetObjectOfType(DXDeviceTypeDef::GetTypeDef()));
+    Value deviceVal(DXDeviceTypeDef::GetTypeDef(), nullptr);
+    ObjectValueContainer::GetObjectOfType(DXDeviceTypeDef::GetTypeDef(), deviceVal);
+    DXDevice* device = deviceVal.GetValue<DXDevice*>();
     if (!device)
     {
         throw "No Device found!";
     }
 
-    DXCommandQueue* commandQueue = static_cast<DXCommandQueue*>(ObjectValueContainer::GetObjectOfType(DXCommandQueueTypeDef::GetTypeDef()));
+    Value commandQueueVal(DXCommandQueueTypeDef::GetTypeDef(), nullptr);
+    ObjectValueContainer::GetObjectOfType(DXCommandQueueTypeDef::GetTypeDef(), commandQueueVal);
+    DXCommandQueue* commandQueue = commandQueueVal.GetValue<DXCommandQueue*>();
     if (!commandQueue)
     {
         throw "No Command Queue found!";

@@ -121,7 +121,7 @@ void rendering::DXDescriptorHeap::LoadData(jobs::Job* done)
 	};
 
 	jobs::Job* init = jobs::Job::CreateByLambda([=]() {
-		m_device.AssignObject(ObjectValueContainer::GetObjectOfType(DXDeviceTypeDef::GetTypeDef()));
+		ObjectValueContainer::GetObjectOfType(DXDeviceTypeDef::GetTypeDef(), m_device);
 
 		ValueList* defs = m_textureDefs.GetValue<ValueList*>();
 		ValueList* tex = m_textures.GetValue<ValueList*>();
@@ -132,10 +132,9 @@ void rendering::DXDescriptorHeap::LoadData(jobs::Job* done)
 			Value& cur = tex->EmplaceBack();
 			++m_size;
 
-			ObjectValue* texObject = ObjectValueContainer::GetObjectOfType(*curDef);
-			DXTexture* t = static_cast<DXTexture*>(texObject);
-			cur.AssignObject(t);
-
+			ObjectValueContainer::GetObjectOfType(*curDef, cur);
+			DXTexture* t = cur.GetValue<DXTexture*>();
+			
 			++ctx->m_loading;
 			jobs::RunAsync(loadTexJob(t));
 		}

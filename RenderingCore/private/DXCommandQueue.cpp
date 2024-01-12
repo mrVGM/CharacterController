@@ -47,7 +47,8 @@ void rendering::DXCommandQueue::Create()
 {
     using Microsoft::WRL::ComPtr;
 
-    rendering::DXDevice* dxDevice = static_cast<rendering::DXDevice*>(ObjectValueContainer::GetObjectOfType(rendering::DXDeviceTypeDef::GetTypeDef()));
+    ObjectValueContainer::GetObjectOfType(rendering::DXDeviceTypeDef::GetTypeDef(), m_device);
+    rendering::DXDevice* dxDevice = m_device.GetValue<rendering::DXDevice*>();
     if (!dxDevice)
     {
         throw "No device found!";
@@ -87,7 +88,8 @@ ID3D12CommandQueue* rendering::DXCommandQueue::GetCopyCommandQueue()
 }
 
 rendering::DXCommandQueue::DXCommandQueue(const ReferenceTypeDef& typeDef) :
-    ObjectValue(typeDef)
+    ObjectValue(typeDef),
+    m_device(DXDeviceTypeDef::GetTypeDef(), this)
 {
 }
 

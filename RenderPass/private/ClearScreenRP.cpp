@@ -54,14 +54,13 @@ void rendering::render_pass::ClearScreenRP::Create()
 {
 	using Microsoft::WRL::ComPtr;
 
-	DXDevice* device = static_cast<DXDevice*>(ObjectValueContainer::GetObjectOfType(DXDeviceTypeDef::GetTypeDef()));
-	DXSwapChain* swapChain = static_cast<DXSwapChain*>(ObjectValueContainer::GetObjectOfType(DXSwapChainTypeDef::GetTypeDef()));
-	DXCommandQueue* commandQueue = static_cast<DXCommandQueue*>(ObjectValueContainer::GetObjectOfType(DXCommandQueueTypeDef::GetTypeDef()));
-	DXDescriptorHeap* dsDescriptorHeap = static_cast<DXDescriptorHeap*>(ObjectValueContainer::GetObjectOfType(DepthStencilDescriptorHeapTypeDef::GetTypeDef()));
-
-	m_swapChain.AssignObject(swapChain);
-	m_commandQueue.AssignObject(commandQueue);
-	m_dsDescriptorHeap.AssignObject(dsDescriptorHeap);
+	Value deviceVal(DXDeviceTypeDef::GetTypeDef(), nullptr);
+	ObjectValueContainer::GetObjectOfType(DXDeviceTypeDef::GetTypeDef(), deviceVal);
+	DXDevice* device = deviceVal.GetValue<DXDevice*>();
+	
+	ObjectValueContainer::GetObjectOfType(DXSwapChainTypeDef::GetTypeDef(), m_swapChain);
+	ObjectValueContainer::GetObjectOfType(DXCommandQueueTypeDef::GetTypeDef(), m_commandQueue);
+	ObjectValueContainer::GetObjectOfType(DepthStencilDescriptorHeapTypeDef::GetTypeDef(), m_dsDescriptorHeap);
 
 	THROW_ERROR(
 		device->GetDevice().CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&m_commandAllocator)),

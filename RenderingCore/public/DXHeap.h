@@ -30,6 +30,10 @@ namespace rendering
 		void Evict();
 		void Create();
 
+		Value m_device;
+		Value m_residentHeapJS;
+		Value m_residentHeapFence;
+
 	public:
 		DXHeap(const ReferenceTypeDef& typeDef);
 		virtual ~DXHeap();

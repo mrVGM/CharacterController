@@ -177,7 +177,9 @@ bool rendering::DXMutableBuffer::IsDirty()
 
 void rendering::DXMutableBuffer::CreateCommandList()
 {
-	DXDevice* device = static_cast<DXDevice*>(ObjectValueContainer::GetObjectOfType(DXDeviceTypeDef::GetTypeDef()));
+	Value deviceVal(DXDeviceTypeDef::GetTypeDef(), nullptr);
+	ObjectValueContainer::GetObjectOfType(DXDeviceTypeDef::GetTypeDef(), deviceVal);
+	DXDevice* device = deviceVal.GetValue<DXDevice*>();
 
 	THROW_ERROR(
 		device->GetDevice().CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_COPY, IID_PPV_ARGS(&m_commandAllocator)),

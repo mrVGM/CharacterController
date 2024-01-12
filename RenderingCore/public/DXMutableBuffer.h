@@ -34,6 +34,7 @@ namespace rendering
 		UINT64 m_stride;
 
 		void CreateCommandList();
+
 	public:
 		Value m_buffer;
 		Value m_uploadBuffer;

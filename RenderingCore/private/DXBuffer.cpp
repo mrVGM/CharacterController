@@ -55,6 +55,8 @@ void rendering::DXBuffer::SetBufferStride(UINT64 stride)
 
 rendering::DXBuffer::DXBuffer(const ReferenceTypeDef& typeDef) :
 	ObjectValue(typeDef),
+	m_device(DXDeviceTypeDef::GetTypeDef(), this),
+	m_copyBuffers(DXCopyBuffersTypeDef::GetTypeDef(), this),
 	m_heap(DXHeapTypeDef::GetTypeDef(), this)
 {
 }
@@ -82,7 +84,8 @@ void rendering::DXBuffer::CopyData(void* data, int dataSize)
 
 void rendering::DXBuffer::Place(DXHeap* heap, UINT64 heapOffset)
 {
-	DXDevice* device = static_cast<DXDevice*>(ObjectValueContainer::GetObjectOfType(DXDeviceTypeDef::GetTypeDef()));
+	ObjectValueContainer::GetObjectOfType(DXDeviceTypeDef::GetTypeDef(), m_device);
+	DXDevice* device = m_device.GetValue<DXDevice*>();
 	D3D12_HEAP_TYPE heapType = heap->GetDescription().Properties.Type;
 
 	D3D12_RESOURCE_STATES initialState = D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_PRESENT;
@@ -129,34 +132,21 @@ void rendering::DXBuffer::CopyBuffer(
 	rendering::DXBuffer& destination,
 	jobs::Job* done) const
 {
-	struct Context
-	{
-		const DXBuffer* m_self = nullptr;
-		DXBuffer* m_dst = nullptr;
-		jobs::Job* m_done = nullptr;
-	};
-
-	Context ctx{ this, &destination, done };
-
-	class CopyJob : public jobs::Job
-	{
-	private:
-		Context m_ctx;
-
-	public:
-		CopyJob(const Context& ctx) :
-			m_ctx(ctx)
+	DXBuffer* destBuff = &destination;
+	
+	jobs::Job* init = jobs::Job::CreateByLambda([=]() {
+		DXBuffer* self = const_cast<DXBuffer*>(this);
+		DXCopyBuffers* copyBuffers = m_copyBuffers.GetValue<DXCopyBuffers*>();
+		if (!copyBuffers)
 		{
+			ObjectValueContainer::GetObjectOfType(DXCopyBuffersTypeDef::GetTypeDef(), self->m_copyBuffers);
+			copyBuffers = m_copyBuffers.GetValue<DXCopyBuffers*>();
 		}
 
-		void Do() override
-		{
-			DXCopyBuffers* copyBuffers = static_cast<DXCopyBuffers*>(ObjectValueContainer::GetObjectOfType(DXCopyBuffersTypeDef::GetTypeDef()));
-			copyBuffers->Execute(*m_ctx.m_dst, *m_ctx.m_self, m_ctx.m_done);
-		}
-	};
+		copyBuffers->Execute(*destBuff, *this, done);
+	});
 
-	jobs::RunSync(new CopyJob(ctx));
+	jobs::RunSync(init);
 }
 
 void* rendering::DXBuffer::Map()

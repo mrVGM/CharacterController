@@ -115,8 +115,13 @@ void rendering::unlit_rp::UnlitRP::Create()
 
 	DXDevice* device = m_device.GetValue<DXDevice*>();
 
-	DXSwapChain* swapChain = static_cast<DXSwapChain*>(ObjectValueContainer::GetObjectOfType(DXSwapChainTypeDef::GetTypeDef()));
-	DXCommandQueue* commandQueue = static_cast<DXCommandQueue*>(ObjectValueContainer::GetObjectOfType(DXCommandQueueTypeDef::GetTypeDef()));
+	Value swapChainVal(DXSwapChainTypeDef::GetTypeDef(), nullptr);
+	Value commandQueueVal(DXCommandQueueTypeDef::GetTypeDef(), nullptr);
+	ObjectValueContainer::GetObjectOfType(DXSwapChainTypeDef::GetTypeDef(), swapChainVal);
+	ObjectValueContainer::GetObjectOfType(DXCommandQueueTypeDef::GetTypeDef(), commandQueueVal);
+
+	DXSwapChain* swapChain = swapChainVal.GetValue<DXSwapChain*>();
+	DXCommandQueue* commandQueue = commandQueueVal.GetValue<DXCommandQueue*>();
 
 	m_swapChain.AssignObject(swapChain);
 	m_commandQueue.AssignObject(commandQueue);
@@ -284,15 +289,15 @@ void rendering::unlit_rp::UnlitRP::LoadData(jobs::Job* done)
 	});
 
 	jobs::Job* init = jobs::Job::CreateByLambda([=]() {
-		m_device.AssignObject(static_cast<DXDevice*>(ObjectValueContainer::GetObjectOfType(DXDeviceTypeDef::GetTypeDef())));
-		m_swapChain.AssignObject(static_cast<DXSwapChain*>(ObjectValueContainer::GetObjectOfType(DXSwapChainTypeDef::GetTypeDef())));
-		m_commandQueue.AssignObject(static_cast<DXCommandQueue*>(ObjectValueContainer::GetObjectOfType(DXCommandQueueTypeDef::GetTypeDef())));
+		ObjectValueContainer::GetObjectOfType(DXDeviceTypeDef::GetTypeDef(), m_device);
+		ObjectValueContainer::GetObjectOfType(DXSwapChainTypeDef::GetTypeDef(), m_swapChain);
+		ObjectValueContainer::GetObjectOfType(DXCommandQueueTypeDef::GetTypeDef(), m_commandQueue);
 
-		m_scene.AssignObject(ObjectValueContainer::GetObjectOfType(scene::SceneObjectTypeDef::GetTypeDef()));
+		ObjectValueContainer::GetObjectOfType(scene::SceneObjectTypeDef::GetTypeDef(), m_scene);
 
-		m_unlitMaterial.AssignObject(ObjectValueContainer::GetObjectOfType(UnlitMaterialTypeDef::GetTypeDef()));
-		m_displayTextureMat.AssignObject(ObjectValueContainer::GetObjectOfType(*m_displayTextureMatDef.GetType<const TypeDef*>()));
-		m_quadMesh.AssignObject(ObjectValueContainer::GetObjectOfType(*m_quadMeshDef.GetType<const TypeDef*>()));
+		ObjectValueContainer::GetObjectOfType(UnlitMaterialTypeDef::GetTypeDef(), m_unlitMaterial);
+		ObjectValueContainer::GetObjectOfType(*m_displayTextureMatDef.GetType<const TypeDef*>(), m_displayTextureMat);
+		ObjectValueContainer::GetObjectOfType(*m_quadMeshDef.GetType<const TypeDef*>(), m_quadMesh);
 
 		Create();
 		++ctx->m_loading;

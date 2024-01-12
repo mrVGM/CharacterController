@@ -24,7 +24,10 @@ namespace rendering
 
 	class DXBuffer : public ObjectValue
 	{
+		Value m_device;
+		Value m_copyBuffers;
 		Value m_heap;
+
 		CD3DX12_RESOURCE_DESC m_bufferDescription = {};
 		Microsoft::WRL::ComPtr<ID3D12Resource> m_buffer;
 

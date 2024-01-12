@@ -30,6 +30,8 @@ namespace rendering
 		Microsoft::WRL::ComPtr<ID3D12CommandQueue> m_copyCommandQueue;
 		void Create();
 
+		Value m_device;
+
 	protected:
 		void LoadData(jobs::Job* done);
 

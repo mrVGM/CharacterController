@@ -431,17 +431,10 @@ void rendering::unlit_rp::UnlitMaterial::LoadData(jobs::Job* done)
     });
 
     jobs::Job* init = jobs::Job::CreateByLambda([=]() {
-        ObjectValue* camBuff = ObjectValueContainer::GetObjectOfType(render_pass::CameraBufferTypeDef::GetTypeDef());
-        m_camBuffer.AssignObject(camBuff);
-
-        DXDescriptorHeap* dsDescriptorHeap = static_cast<DXDescriptorHeap*>(ObjectValueContainer::GetObjectOfType(DepthStencilDescriptorHeapTypeDef::GetTypeDef()));
-        m_dsDescriptorHeap.AssignObject(dsDescriptorHeap);
-        
-        m_rtDescHeap.AssignObject(
-            ObjectValueContainer::GetObjectOfType(*m_rtDescHeapDef.GetType<const TypeDef*>()));
-
-        m_skeletalMeshVertexShader.AssignObject(
-            ObjectValueContainer::GetObjectOfType(*m_skeletalMeshVertexShaderDef.GetType<const TypeDef*>()));
+        ObjectValueContainer::GetObjectOfType(render_pass::CameraBufferTypeDef::GetTypeDef(), m_camBuffer);
+        ObjectValueContainer::GetObjectOfType(DepthStencilDescriptorHeapTypeDef::GetTypeDef(), m_dsDescriptorHeap);
+        ObjectValueContainer::GetObjectOfType(*m_rtDescHeapDef.GetType<const TypeDef*>(), m_rtDescHeap);
+        ObjectValueContainer::GetObjectOfType(*m_skeletalMeshVertexShaderDef.GetType<const TypeDef*>(), m_skeletalMeshVertexShader);
 
         jobs::RunAsync(loadParent);
     });

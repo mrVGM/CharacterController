@@ -143,10 +143,10 @@ void rendering::materials::Material::LoadData(jobs::Job* done)
     };
 
     jobs::Job* init = jobs::Job::CreateByLambda([=]() {
-		m_device.AssignObject(ObjectValueContainer::GetObjectOfType(DXDeviceTypeDef::GetTypeDef()));
-		m_swapChain.AssignObject(ObjectValueContainer::GetObjectOfType(DXSwapChainTypeDef::GetTypeDef()));
-        m_vertexShader.AssignObject(ObjectValueContainer::GetObjectOfType(*m_vertexShaderDef.GetType<const TypeDef*>()));
-        m_pixelShader.AssignObject(ObjectValueContainer::GetObjectOfType(*m_pixelShaderDef.GetType<const TypeDef*>()));
+		ObjectValueContainer::GetObjectOfType(DXDeviceTypeDef::GetTypeDef(), m_device);
+		ObjectValueContainer::GetObjectOfType(DXSwapChainTypeDef::GetTypeDef(), m_swapChain);
+        ObjectValueContainer::GetObjectOfType(*m_vertexShaderDef.GetType<const TypeDef*>(), m_vertexShader);
+        ObjectValueContainer::GetObjectOfType(*m_pixelShaderDef.GetType<const TypeDef*>(), m_pixelShader);
 
         jobs::RunAsync(jobs::Job::CreateByLambda([=]() {
             getVS()->Load(jobs::Job::CreateByLambda([=]() {

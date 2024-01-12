@@ -24,23 +24,23 @@ ObjectValueContainer& ObjectValueContainer::GetContainer()
 	return m_container;
 }
 
-ObjectValue* ObjectValueContainer::GetObjectOfType(const TypeDef& typeDef)
-{
-	ObjectValueContainer& container = ObjectValueContainer::GetContainer();
-	std::list<ObjectValue*> tmp;
-	container.GetObjectsOfType(typeDef, tmp);
-	if (tmp.empty())
-	{
-		return nullptr;
-	}
-
-	return tmp.front();
-}
-
 void ObjectValueContainer::GetObjectOfType(const TypeDef& typeDef, Value& container)
 {
-	ObjectValue* obj = GetObjectOfType(typeDef);
-	container.AssignObject(obj);
+	ObjectValueContainer& inst = GetContainer();
+	inst.CheckAccess();
+	
+	for (auto it = inst.m_typedValues.begin(); it != inst.m_typedValues.end(); ++it)
+	{
+		if (!TypeDef::IsA(*it->first, typeDef))
+		{
+			continue;
+		}
+
+		for (auto setIt = it->second.begin(); setIt != it->second.end(); ++setIt) {
+			container.AssignObject(*setIt);
+			return;
+		}
+	}
 }
 
 void ObjectValueContainer::Register(ObjectValue* value)

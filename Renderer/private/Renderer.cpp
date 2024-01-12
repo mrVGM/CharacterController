@@ -79,7 +79,9 @@ rendering::renderer::RendererObj::RendererObj(const ReferenceTypeDef& typeDef) :
 	m_renderPasses(ListDef::GetTypeDef(render_pass::RenderPassTypeDef::GetTypeDef()), this),
 	m_renderFence(DXFenceTypeDef::GetTypeDef(), this),
 	m_swapChain(DXSwapChainTypeDef::GetTypeDef(), this),
-	m_commandQueue(DXCommandQueueTypeDef::GetTypeDef(), this)
+	m_commandQueue(DXCommandQueueTypeDef::GetTypeDef(), this),
+	m_scene(scene::SceneObjectTypeDef::GetTypeDef(), this),
+	m_camera(CameraTypeDef::GetTypeDef(), this)
 {
 }
 
@@ -122,10 +124,10 @@ void rendering::renderer::RendererObj::Load(jobs::Job* done)
 		for (auto it = prDefs->GetIterator(); it; ++it)
 		{
 			const render_pass::RenderPassTypeDef* curRPDef = (*it).GetType<const render_pass::RenderPassTypeDef*>();
-			render_pass::RenderPass* rp = static_cast<render_pass::RenderPass*>(ObjectValueContainer::GetObjectOfType(*curRPDef));
-
 			Value& val = prs->EmplaceBack();
-			val.AssignObject(rp);
+			ObjectValueContainer::GetObjectOfType(*curRPDef, val);
+			render_pass::RenderPass* rp = val.GetValue<render_pass::RenderPass*>();
+
 			++ctx->m_loading;
 
 			jobs::RunAsync(loadRP(rp));
@@ -133,8 +135,8 @@ void rendering::renderer::RendererObj::Load(jobs::Job* done)
 	});
 
 	jobs::Job* loadScene = jobs::Job::CreateByLambda([=]() {
-		scene::SceneObject* mainScene =
-			static_cast<scene::SceneObject*>(ObjectValueContainer::GetObjectOfType(scene::SceneObjectTypeDef::GetTypeDef()));
+		
+		scene::SceneObject* mainScene = m_scene.GetValue<scene::SceneObject*>();
 
 		jobs::Job* loadJob = jobs::Job::CreateByLambda([=]() {
 			mainScene->Load(loadRPs);
@@ -144,8 +146,7 @@ void rendering::renderer::RendererObj::Load(jobs::Job* done)
 	});
 
 	jobs::Job* loadCamera = jobs::Job::CreateByLambda([=]() {
-		ObjectValue* camObj = ObjectValueContainer::GetObjectOfType(CameraTypeDef::GetTypeDef());
-		Camera* cam = static_cast<Camera*>(camObj);
+		Camera* cam = m_camera.GetValue<Camera*>();
 
 		jobs::RunAsync(jobs::Job::CreateByLambda([=]() {
 			cam->Load(loadScene);
@@ -153,14 +154,12 @@ void rendering::renderer::RendererObj::Load(jobs::Job* done)
 	});
 
 	jobs::Job* init = jobs::Job::CreateByLambda([=]() {
-		DXCommandQueue* commandQueue = static_cast<DXCommandQueue*>(ObjectValueContainer::GetObjectOfType(DXCommandQueueTypeDef::GetTypeDef()));
-		m_commandQueue.AssignObject(commandQueue);
+		ObjectValueContainer::GetObjectOfType(DXCommandQueueTypeDef::GetTypeDef(), m_commandQueue);
+		ObjectValueContainer::GetObjectOfType(DXSwapChainTypeDef::GetTypeDef(), m_swapChain);		
+		ObjectValueContainer::GetObjectOfType(RenderFenceTypeDef::GetTypeDef(), m_renderFence);
 
-		DXSwapChain* swapChain = static_cast<DXSwapChain*>(ObjectValueContainer::GetObjectOfType(DXSwapChainTypeDef::GetTypeDef()));
-		m_swapChain.AssignObject(swapChain);
-
-		DXFence* fence = static_cast<DXFence*>(ObjectValueContainer::GetObjectOfType(RenderFenceTypeDef::GetTypeDef()));
-		m_renderFence.AssignObject(fence);
+		ObjectValueContainer::GetObjectOfType(scene::SceneObjectTypeDef::GetTypeDef(), m_scene);
+		ObjectValueContainer::GetObjectOfType(CameraTypeDef::GetTypeDef(), m_camera);
 
 		jobs::RunSync(loadCamera);
 	});

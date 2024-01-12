@@ -40,7 +40,10 @@ void rendering::DXFenceTypeDef::Construct(Value& container) const
 
 void rendering::DXFence::Create()
 {
-	DXDevice* device = static_cast<DXDevice*>(ObjectValueContainer::GetObjectOfType(DXDeviceTypeDef::GetTypeDef()));
+	Value deviceVal(DXDeviceTypeDef::GetTypeDef(), nullptr);
+	ObjectValueContainer::GetObjectOfType(DXDeviceTypeDef::GetTypeDef(), deviceVal);
+
+	DXDevice* device = deviceVal.GetValue<DXDevice*>();
 	if (!device)
 	{
 		throw "No Device found!";

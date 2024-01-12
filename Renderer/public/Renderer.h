@@ -31,6 +31,9 @@ namespace rendering::renderer
 		Value m_swapChain;
 		Value m_commandQueue;
 		Value m_renderFence;
+
+		Value m_scene;
+		Value m_camera;
 	public:
 		Value m_renderPassesDefs;
 

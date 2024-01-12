@@ -86,7 +86,7 @@ void animation::Animator::LoadData(jobs::Job* done)
         const TypeDef* idleDef = m_idleDef.GetType<const TypeDef*>();
         if (idleDef)
         {
-            m_idle.AssignObject(ObjectValueContainer::GetObjectOfType(*idleDef));
+            ObjectValueContainer::GetObjectOfType(*idleDef, m_idle);
         }
         jobs::RunAsync(load);
     });

@@ -41,7 +41,9 @@ void rendering::DXDepthStencilTextureTypeDef::Construct(Value& container) const
 void rendering::DXDepthStencilTexture::LoadData(jobs::Job* done)
 {
 	jobs::Job* init = jobs::Job::CreateByLambda([=]() {
-		WindowObj* wnd = static_cast<WindowObj*>(ObjectValueContainer::GetObjectOfType(WindowTypeDef::GetTypeDef()));
+		Value wndVal(WindowTypeDef::GetTypeDef(), nullptr);
+		ObjectValueContainer::GetObjectOfType(WindowTypeDef::GetTypeDef(), wndVal);
+		WindowObj* wnd = wndVal.GetValue<WindowObj*>();
 		UINT w = wnd->m_width.Get<int>();
 		UINT h = wnd->m_height.Get<int>();
 

@@ -234,15 +234,10 @@ void rendering::RendererAppEntryObj::Boot()
 	});
 
 	jobs::Job* init = jobs::Job::CreateByLambda([=]() {
-		ObjectValue* rend = ObjectValueContainer::GetObjectOfType(renderer::RendererTypeDef::GetTypeDef());
-		m_renderer.AssignObject(rend);
-
-		ObjectValue* copyBuffers = ObjectValueContainer::GetObjectOfType(DXCopyBuffersTypeDef::GetTypeDef());
-		m_copyBuffers.AssignObject(copyBuffers);
-
-		ObjectValue* wnd = ObjectValueContainer::GetObjectOfType(WindowTypeDef::GetTypeDef());
-		m_window.AssignObject(wnd);
-
+		ObjectValueContainer::GetObjectOfType(renderer::RendererTypeDef::GetTypeDef(), m_renderer);
+		ObjectValueContainer::GetObjectOfType(DXCopyBuffersTypeDef::GetTypeDef(), m_copyBuffers);
+		ObjectValueContainer::GetObjectOfType(WindowTypeDef::GetTypeDef(), m_window);
+		
 		jobs::RunAsync(load);
  	});
 

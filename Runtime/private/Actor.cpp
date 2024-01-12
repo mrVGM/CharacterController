@@ -212,9 +212,8 @@ void runtime::Actor::LoadData(jobs::Job* done)
 	};
 
 	jobs::Job* init = jobs::Job::CreateByLambda([=]() {
-		m_device.AssignObject(ObjectValueContainer::GetObjectOfType(rendering::DXDeviceTypeDef::GetTypeDef()));
-
-		m_mesh.AssignObject(ObjectValueContainer::GetObjectOfType(*m_meshDef.GetType<const TypeDef*>()));
+		ObjectValueContainer::GetObjectOfType(rendering::DXDeviceTypeDef::GetTypeDef(), m_device);
+		ObjectValueContainer::GetObjectOfType(*m_meshDef.GetType<const TypeDef*>(), m_mesh);
 		geo::Mesh* mesh = m_mesh.GetValue<geo::Mesh*>();
 
 		++ctx->m_loading;
@@ -236,7 +235,7 @@ void runtime::Actor::LoadData(jobs::Job* done)
 		const TypeDef* skeletonDef = m_skeletonDef.GetType<const TypeDef*>();
 		if (skeletonDef)
 		{
-			m_skeleton.AssignObject(ObjectValueContainer::GetObjectOfType(*skeletonDef));
+			ObjectValueContainer::GetObjectOfType(*skeletonDef, m_skeleton);
 		}
 		geo::Skeleton* skeleton = m_skeleton.GetValue<geo::Skeleton*>();
 
@@ -276,7 +275,7 @@ void runtime::Actor::LoadData(jobs::Job* done)
 			const Value& cur = *it;
 
 			Value& mat = mats->EmplaceBack();
-			mat.AssignObject(ObjectValueContainer::GetObjectOfType(*cur.GetType<const TypeDef*>()));
+			ObjectValueContainer::GetObjectOfType(*cur.GetType<const TypeDef*>(), mat);
 
 			rendering::materials::Material* material = mat.GetValue<rendering::materials::Material*>();
 
