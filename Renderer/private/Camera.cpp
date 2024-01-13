@@ -119,7 +119,6 @@ void rendering::renderer::Camera::LoadData(jobs::Job* done)
 	jobs::Job* loadCamBuffer = jobs::Job::CreateByLambda([=]() {
 		DXMutableBuffer* camBuff = getCamBuffer();
 		camBuff->Load(jobs::Job::CreateByLambda([=]() {
-			m_isLoaded = true;
 			jobs::RunSync(done);
 		}));
 	});
