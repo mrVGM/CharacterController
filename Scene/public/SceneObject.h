@@ -3,6 +3,8 @@
 #include "CompositeTypeDef.h"
 #include "CompositeValue.h"
 
+#include "MultiLoader.h"
+
 #include "Job.h"
 
 namespace scene
@@ -20,10 +22,13 @@ namespace scene
         void Construct(Value& container) const override;
     };
 
-	class SceneObject : public ObjectValue
+	class SceneObject : public ObjectValue, public jobs::LoadingClass
 	{
 	private:
 		Value m_actors;
+
+	protected:
+		void LoadData(jobs::Job* done) override;
 
 	public:
 		Value m_actorList;
@@ -31,7 +36,6 @@ namespace scene
 		SceneObject(const ReferenceTypeDef& typeDef);
 		virtual ~SceneObject();
 
-		void Load(jobs::Job* done);
 		Value& GetActors();
 	};
 }

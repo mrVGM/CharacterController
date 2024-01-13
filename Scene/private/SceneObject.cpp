@@ -73,7 +73,7 @@ scene::SceneObject::~SceneObject()
 {
 }
 
-void scene::SceneObject::Load(jobs::Job* done)
+void scene::SceneObject::LoadData(jobs::Job* done)
 {
 	ValueList* sceneActorList = m_actorList.GetValue<ValueList*>();
 	ValueList* actorList = m_actors.GetValue<ValueList*>();

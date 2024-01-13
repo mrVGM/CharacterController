@@ -84,18 +84,14 @@ void gc::ObjectRecordManager::Tick(std::list<const ManagedObject*>& managedObjec
 	UpdateVitality(toCheck);
 
 	std::list<size_t> toDelete;
-	for (auto it = m_records.begin(); it != m_records.end(); ++it)
+	for (auto it = toCheck.begin(); it != toCheck.end(); ++it)
 	{
-		if (it->second.m_state != GCObjectState::Dead)
+		ObjectRecord& cur = m_records[*it];
+		if (cur.m_state != GCObjectState::Dead)
 		{
 			continue;
 		}
-		toDelete.push_back(it->first);
-		managedObjectsToDelete.push_back(it->second.m_object);
-	}
-
-	for (auto it = toDelete.begin(); it != toDelete.end(); ++it)
-	{
+		managedObjectsToDelete.push_back(cur.m_object);
 		m_records.erase(*it);
 	}
 }

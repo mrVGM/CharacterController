@@ -19,6 +19,9 @@ namespace game
 	{
 	private:
 		Value m_camera;
+		Value m_scene;
+
+		void FreeMove(double dt);
 
 	protected:
 		void LoadData(jobs::Job* done) override;

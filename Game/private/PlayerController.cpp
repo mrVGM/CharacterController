@@ -3,6 +3,7 @@
 #include "Camera.h"
 #include "Input.h"
 #include "RenderWindow.h"
+#include "SceneObject.h"
 
 #include "Jobs.h"
 
@@ -44,7 +45,8 @@ void game::PlayerControllerTypeDef::Construct(Value& value) const
 
 game::PlayerController::PlayerController(const ReferenceTypeDef& typeDef) :
     Actor(typeDef),
-    m_camera(rendering::renderer::CameraTypeDef::GetTypeDef(), this)
+    m_camera(rendering::renderer::CameraTypeDef::GetTypeDef(), this),
+    m_scene(scene::SceneObjectTypeDef::GetTypeDef(), this)
 {
 }
 
@@ -57,6 +59,7 @@ void game::PlayerController::LoadData(jobs::Job* done)
 
     jobs::Job* init = jobs::Job::CreateByLambda([=]() {
         ObjectValueContainer::GetObjectOfType(rendering::renderer::CameraTypeDef::GetTypeDef(), m_camera);
+        ObjectValueContainer::GetObjectOfType(scene::SceneObjectTypeDef::GetTypeDef(), m_scene);
         jobs::RunAsync(loadCam);
     });
 
@@ -68,6 +71,20 @@ game::PlayerController::~PlayerController()
 }
 
 void game::PlayerController::Tick(double dt)
+{
+    runtime::Input& input = runtime::GetInput();
+    
+    if (input.m_keysDown.contains(32))
+    {
+        scene::SceneObject* scene = m_scene.GetValue<scene::SceneObject*>();
+        bool t = true;
+
+    }
+
+    FreeMove(dt);
+}
+
+void game::PlayerController::FreeMove(double dt)
 {
     using namespace math;
 
@@ -145,13 +162,6 @@ void game::PlayerController::Tick(double dt)
     if (input.m_keysDown.contains(68)) // D
     {
         move.m_coefs[1] += 1;
-    }
-
-    if (input.m_keysDown.size() > 0)
-    {
-        std::wstringstream ss;
-        ss << *input.m_keysDown.begin() << std::endl;
-        OutputDebugString(ss.str().c_str());
     }
     move = dt * moveSpeed * move;
 
