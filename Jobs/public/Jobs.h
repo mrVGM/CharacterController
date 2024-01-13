@@ -7,7 +7,7 @@
 
 namespace jobs
 {
-	void Boot(Value& mainJobSystemAsset, Value& asyncJobSystemAsset);
+	void Boot();
 
 	void RunSync(Job* job);
 	void RunAsync(Job* job);

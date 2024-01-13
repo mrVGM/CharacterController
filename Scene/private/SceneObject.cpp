@@ -113,14 +113,6 @@ void scene::SceneObject::Load(jobs::Job* done)
 			const AssetTypeDef* actorAsset = static_cast<const AssetTypeDef*>(sceneActorValue->m_actorDef.GetType<const TypeDef*>());
 			actorAsset->Construct(actorVal);
 
-			{
-				json_parser::JSONValue& json = const_cast<json_parser::JSONValue&>(actorAsset->GetJSONData());
-				auto& map = json.GetAsObj();
-				json_parser::JSONValue& defaults = map["defaults"];
-				actorAsset->DeserializeFromJSON(actorVal, defaults);
-			}
-
-
 			runtime::Actor* actor = actorVal.GetValue<runtime::Actor*>();
 
 			{

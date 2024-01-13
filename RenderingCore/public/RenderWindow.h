@@ -4,6 +4,7 @@
 #include "CompositeValue.h"
 
 #include "Value.h"
+#include "JobSystem.h"
 
 #include <Windows.h>
 
@@ -51,6 +52,8 @@ namespace rendering
 		void Destroy();
 
 		void RegisterRawInputDevice();
+
+		Value m_windowUpdateJS;
 	public:
 		std::mutex m_inputMutex;
 
@@ -71,5 +74,7 @@ namespace rendering
 		void WindowTick();
 
 		void GetInputInfo(InputInfo& outInputInfo);
+
+		jobs::JobSystem* GetWindowUpdateJS();
 	};
 }

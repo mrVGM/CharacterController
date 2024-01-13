@@ -7,7 +7,6 @@
 
 namespace assets
 {
-	void Boot(const Value& preloadedAssets, jobs::Job* done);
+	void Boot(jobs::Job* done);
 	void Shutdown();
-	Value& GetAssetList();
 }

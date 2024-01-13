@@ -1,5 +1,7 @@
 #include "ObjectValueContainer.h"
 
+#include "AssetTypeDef.h"
+
 ObjectValueContainer ObjectValueContainer::m_container;
 
 ObjectValueContainer::ObjectValueContainer()
@@ -26,6 +28,7 @@ ObjectValueContainer& ObjectValueContainer::GetContainer()
 
 void ObjectValueContainer::GetObjectOfType(const TypeDef& typeDef, Value& container)
 {
+
 	ObjectValueContainer& inst = GetContainer();
 	inst.CheckAccess();
 	
@@ -41,6 +44,26 @@ void ObjectValueContainer::GetObjectOfType(const TypeDef& typeDef, Value& contai
 			return;
 		}
 	}
+
+	const TypeDef::TypeDefsMap& defsMap = TypeDef::GetDefsMap();
+	for (auto it = defsMap.begin(); it != defsMap.end(); ++it)
+	{
+		const TypeDef* cur = it->second;
+		if (!cur->IsGenerated())
+		{
+			continue;
+		}
+
+		const AssetTypeDef* asset = static_cast<const AssetTypeDef*>(cur);
+		if (TypeDef::IsA(*cur, typeDef))
+		{
+			asset->Construct(container);
+			return;
+		}
+	}
+	
+	const ReferenceTypeDef& refTypeDef = static_cast<const ReferenceTypeDef&>(typeDef);
+	refTypeDef.Construct(container);
 }
 
 void ObjectValueContainer::Register(ObjectValue* value)

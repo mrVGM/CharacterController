@@ -72,4 +72,6 @@ public:
 	virtual void DeserializeFromJSON(Value& value, json_parser::JSONValue& json) const;
 
 	static void SaveReflectionData();
+
+	bool IsGenerated() const;
 };

@@ -254,13 +254,6 @@ void runtime::Actor::LoadData(jobs::Job* done)
 				animatorDef = &animation::AnimatorTypeDef::GetTypeDef();
 			}
 			static_cast<const CompositeTypeDef*>(animatorDef)->Construct(m_animator);
-			if (animatorAssetDef)
-			{
-				AssetTypeDef* asset = const_cast<AssetTypeDef*>(animatorAssetDef);
-				auto& map = asset->m_data.GetAsObj();
-				asset->DeserializeFromJSON(m_animator, map["defaults"]);
-			}
-
 			animation::Animator* animator = m_animator.GetValue<animation::Animator*>();
 
 			++ctx->m_loading;

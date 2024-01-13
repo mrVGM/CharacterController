@@ -79,19 +79,12 @@ const rendering::WindowTypeDef& rendering::WindowTypeDef::GetTypeDef()
 	return *m_wnd.m_object;
 }
 
-
-
-
-namespace
-{
-	
-}
-
 rendering::WindowObj::WindowObj(const ReferenceTypeDef& typeDef) :
 	ObjectValue(typeDef),
 	m_width(WindowTypeDef::GetTypeDef().m_width.GetType(), this),
 	m_height(WindowTypeDef::GetTypeDef().m_height.GetType(), this),
-	m_windowUpdateJobSystem(WindowTypeDef::GetTypeDef().m_windowUpdateJobSystem.GetType(), this)
+	m_windowUpdateJobSystem(WindowTypeDef::GetTypeDef().m_windowUpdateJobSystem.GetType(), this),
+	m_windowUpdateJS(jobs::JobSystemDef::GetTypeDef(), this)
 {
 }
 
@@ -144,15 +137,7 @@ void rendering::WindowObj::Start()
 
 		void Do() override
 		{
-			const jobs::JobSystemDef* jsDef = m_ctx.m_self->m_windowUpdateJobSystem.GetType<const jobs::JobSystemDef*>();
-
-			ObjectValueContainer& container = ObjectValueContainer::GetContainer();
-			std::list<ObjectValue*> tmp;
-			container.GetObjectsOfType(*jsDef, tmp);
-
-			jobs::JobSystem* js = static_cast<jobs::JobSystem*>(tmp.front());
-			js->Start();
-
+			jobs::JobSystem* js = m_ctx.m_self-> GetWindowUpdateJS();
 			js->ScheduleJob(new WindowUpdateJob(m_ctx.m_self));
 		}
 	};
@@ -353,4 +338,20 @@ void rendering::WindowObj::GetInputInfo(InputInfo& outInputInfo)
 	m_inputInfo.m_mouseAxis[1] = 0;
 
 	m_inputMutex.unlock();
+}
+
+jobs::JobSystem* rendering::WindowObj::GetWindowUpdateJS()
+{
+	jobs::JobSystem* js = m_windowUpdateJS.GetValue<jobs::JobSystem*>();
+	if (js)
+	{
+		return js;	
+	}
+
+	const TypeDef* jsDef = m_windowUpdateJobSystem.GetType<const TypeDef*>();
+	ObjectValueContainer::GetObjectOfType(*jsDef, m_windowUpdateJS);
+	js = m_windowUpdateJS.GetValue<jobs::JobSystem*>();
+	js->Start();
+
+	return js;
 }

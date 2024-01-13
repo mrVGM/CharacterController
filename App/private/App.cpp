@@ -29,19 +29,18 @@
 
 namespace
 {
+	Value m_app(app::AppTypeDef::GetTypeDef(), nullptr);
+	Value m_appEntry(app::AppEntryTypeDef::GetTypeDef(), nullptr);
+
 	void Run()
 	{
-		ObjectValueContainer& container = ObjectValueContainer::GetContainer();
+		ObjectValueContainer::GetObjectOfType(app::AppTypeDef::GetTypeDef(), m_app);
+		app::AppObj* app = m_app.GetValue<app::AppObj*>();
 
-		std::list<ObjectValue*> objs;
-		container.GetObjectsOfType(app::AppTypeDef::GetTypeDef(), objs);
+		const TypeDef* appEntry = app->m_appEntry.GetType<const TypeDef*>();
+		ObjectValueContainer::GetObjectOfType(*appEntry, m_appEntry);
 
-		app::AppObj* app = static_cast<app::AppObj*>(objs.front());
-
-		objs.clear();
-		container.GetObjectsOfType(*app->m_appEntry.GetType<const app::AppEntryTypeDef*>(), objs);
-
-		app::AppEntryObj* entry = static_cast<app::AppEntryObj*>(objs.front());
+		app::AppEntryObj* entry = m_appEntry.GetValue<app::AppEntryObj*>();
 		entry->Boot();
 	}
 }
@@ -71,53 +70,17 @@ void app::Boot()
 	AppTypeDef::GetTypeDef();
 	AppEntryTypeDef::GetTypeDef();
 
-	struct Context
-	{
-		Value m_jobSystems;
-
-		Context() :
-			m_jobSystems(ListDef::GetTypeDef(ReferenceTypeDef::GetTypeDef()), nullptr)
-		{
-		}
-	};
-	Context ctx;
-
-	ValueList* vl = ctx.m_jobSystems.GetValue<ValueList*>();
-
-	Value& mainJS = vl->EmplaceBack();
-	Value& asyncJS = vl->EmplaceBack();
-	jobs::Boot(mainJS, asyncJS);
-
+	jobs::Boot();
 	gc::Boot();
 
-	class StartAppJob : public jobs::Job
-	{
-	public:
-		void Do() override
-		{
+	jobs::RunSync(jobs::Job::CreateByLambda([=]() {
+		ObjectValueContainer& container = ObjectValueContainer::GetContainer();
+		container.StartExclusiveThreadAccess();
+
+		assets::Boot(jobs::Job::CreateByLambda([=]() {
 			Run();
-		}
-	};
-
-	class StartExclusiveAccess : public jobs::Job
-	{
-		Context m_ctx;
-	public:
-		StartExclusiveAccess(const Context& ctx)
-		{
-			m_ctx = ctx;
-		}
-
-		void Do() override
-		{
-			ObjectValueContainer& container = ObjectValueContainer::GetContainer();
-			container.StartExclusiveThreadAccess();
-
-			assets::Boot(m_ctx.m_jobSystems, new StartAppJob());
-		}
-	};
-
-	jobs::RunSync(new StartExclusiveAccess(ctx));
+		}));
+	}));
 }
 
 

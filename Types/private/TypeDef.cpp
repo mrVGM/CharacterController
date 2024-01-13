@@ -100,6 +100,11 @@ void TypeDef::SaveReflectionData()
 	}
 }
 
+bool TypeDef::IsGenerated() const
+{
+	return m_isGenerated;
+}
+
 void TypeDef::GetDefaultTypeKey(const std::string& id, json_parser::JSONValue& outTypeKey)
 {
 	using namespace json_parser;

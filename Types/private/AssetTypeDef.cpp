@@ -75,8 +75,16 @@ void AssetTypeDef::Construct(Value& container) const
 	ObjectValue* tmp = container.GetValue<ObjectValue*>();
 	objectValueContainer.Unregister(tmp);
 
+
+
 	tmp->m_typeDef = this;
 	objectValueContainer.Register(tmp);
+
+	json_parser::JSONValue& data = const_cast<json_parser::JSONValue&>(m_data);
+	auto& map = data.GetAsObj();
+	json_parser::JSONValue defaults = map["defaults"];
+
+	DeserializeFromJSON(container, defaults);
 }
 
 void AssetTypeDef::DeserializeFromJSON(Value& value, json_parser::JSONValue& json) const
