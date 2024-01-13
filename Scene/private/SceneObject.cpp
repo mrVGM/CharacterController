@@ -121,9 +121,14 @@ void scene::SceneObject::LoadData(jobs::Job* done)
 				common::Vector3Value* rotation = transform->m_rotation.GetValue<common::Vector3Value*>();
 				common::Vector3Value* scale = transform->m_scale.GetValue<common::Vector3Value*>();
 
-				actor->m_curTransform.m_position = math::Vector3{ position->m_x.Get<float>(), position->m_y.Get<float>(), position->m_z.Get<float>() };
-				actor->m_curTransform.m_rotation = math::Vector3{ rotation->m_x.Get<float>(), rotation->m_y.Get<float>(), rotation->m_z.Get<float>() };
-				actor->m_curTransform.m_scale = math::Vector3{ scale->m_x.Get<float>(), scale->m_y.Get<float>(), scale->m_z.Get<float>() };
+				math::TransformEuler sceneTr
+				{
+					math::Vector3{ position->m_x.Get<float>(), position->m_y.Get<float>(), position->m_z.Get<float>() },
+					math::Vector3{ rotation->m_x.Get<float>(), rotation->m_y.Get<float>(), rotation->m_z.Get<float>() },
+					math::Vector3{ scale->m_x.Get<float>(), scale->m_y.Get<float>(), scale->m_z.Get<float>() }
+				};
+
+				actor->m_curTransform = sceneTr.ToMatrix().ToTransform();
 			}
 
 			++ctx->m_toLoad;

@@ -33,7 +33,7 @@ namespace runtime
 	protected:
 
 	public:
-		math::TransformEuler m_curTransform;
+		math::Transform m_curTransform;
 
 		Actor(const ReferenceTypeDef& typeDef);
 		virtual ~Actor();

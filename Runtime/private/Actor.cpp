@@ -49,7 +49,7 @@ runtime::Actor::Actor(const ReferenceTypeDef& typeDef) :
 	ObjectValue(typeDef)
 {
 	m_curTransform.m_position = math::Vector3{ 0, 0, 0 };
-	m_curTransform.m_rotation = math::Vector3{ 0, 0, 0 };
+	m_curTransform.m_rotation = math::Vector4{ 1, 0, 0, 0 };
 	m_curTransform.m_scale = math::Vector3{ 1, 1, 1 };
 }
 

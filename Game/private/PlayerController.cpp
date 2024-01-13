@@ -308,7 +308,6 @@ void game::PlayerController::HandleCharMove(float dt, const math::Vector3& veloc
 {
     using namespace math;
 
-    const float eps = 0.001f;
     const float acc = 30;
 
     float newSpeed = Dot(velocity, velocity);
@@ -320,7 +319,7 @@ void game::PlayerController::HandleCharMove(float dt, const math::Vector3& veloc
     curSpeed = sqrt(curSpeed);
 
     float coef = 1;
-    if (coef > newSpeed + eps)
+    if (coef > newSpeed + GetFloatEPS())
     {
         coef = -1;
     }
@@ -336,8 +335,70 @@ void game::PlayerController::HandleCharMove(float dt, const math::Vector3& veloc
         curSpeed = newSpeed;
     }
 
-    character->m_velocity = curSpeed * velocity.Normalize();
+    Vector3 velNorm = velocity.Normalize();
+    character->m_velocity = curSpeed * velNorm;
     character->m_curTransform.m_position = character->m_curTransform.m_position + dt * character->m_velocity;
+
+    HandleCharRotation(dt, character->m_velocity);
+}
+
+void game::PlayerController::HandleCharRotation(float dt, const math::Vector3& velocity)
+{
+    using namespace math;
+    const float angleSpeed = 2000;
+
+    Character* character = m_character.GetValue<Character*>();
+
+    Vector3 velNorm = velocity.Normalize();
+    if (Dot(velNorm, velNorm) < GetFloatEPS())
+    {
+        return;
+    }
+
+    Vector3 fwd = velNorm;
+    fwd.m_coefs[1] = 0;
+    fwd = fwd.Normalize();
+    Vector3 up{ 0,1,0 };
+    Vector3 right = up ^ fwd;
+
+    Matrix tmp
+    {
+        right.m_coefs[0],   up.m_coefs[0],  fwd.m_coefs[0], 0,
+        right.m_coefs[1],   up.m_coefs[1],  fwd.m_coefs[1], 0,
+        right.m_coefs[2],   up.m_coefs[2],  fwd.m_coefs[2], 0,
+        0,                  0,              0,              1
+    };
+
+    Transform tr = tmp.ToTransform();
+    Vector4 desiredRot = tr.m_rotation;
+
+    Vector3 curFwd = character->m_curTransform.m_rotation.Rotate(Vector3{ 0, 0, 1 });
+    float cosAngle = Dot(curFwd, fwd);
+    if (cosAngle < -1)
+    {
+        cosAngle = -1;
+    }
+    if (cosAngle > 1)
+    {
+        cosAngle = 1;
+    }
+
+    float angleOffset = 2 * acos(cosAngle);
+    angleOffset = 180 * angleOffset / M_PI;
+
+    if (angleOffset < GetFloatEPS())
+    {
+        return;
+    }
+
+    float alpha = dt * angleSpeed / angleOffset;
+    if (alpha > 1)
+    {
+        character->m_curTransform.m_rotation = desiredRot;
+        return;
+    }
+
+    character->m_curTransform.m_rotation = SLerp(character->m_curTransform.m_rotation, desiredRot, alpha);
 }
 
 void game::PlayerController::PrepareForNextTick()
