@@ -3,7 +3,11 @@
 add_library (Game
 	"public/PlayerController.h"
 	"private/PlayerController.cpp"
- "public/Game.h" "private/Game.cpp")
+	"public/Game.h"
+	"private/Game.cpp"
+	"public/Character.h"
+	"private/Character.cpp"
+)
 
 target_include_directories(Game INTERFACE PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/public")
 target_include_directories(Game PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/private")
