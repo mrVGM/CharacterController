@@ -102,10 +102,6 @@ void game::PlayerController::Tick(double dt)
         alt = 170;
     }
 
-    std::wstringstream ss;
-    ss << azm << L" " << alt << std::endl;
-    OutputDebugString(ss.str().c_str());
-
     azm *= M_PI / 180;
     alt *= M_PI / 180;
 
