@@ -64,7 +64,7 @@ void scene::SceneObjectTypeDef::Construct(Value& container) const
 
 scene::SceneObject::SceneObject(const ReferenceTypeDef& typeDef) :
 	ObjectValue(typeDef),
-	m_actors(ListDef::GetTypeDef(runtime::MeshActorTypeDef::GetTypeDef()), this),
+	m_actors(ListDef::GetTypeDef(runtime::ActorTypeDef::GetTypeDef()), this),
 	m_actorList(SceneObjectTypeDef::GetTypeDef().m_actorList.GetType(), this)
 {
 }
@@ -96,7 +96,7 @@ void scene::SceneObject::Load(jobs::Job* done)
 		jobs::RunSync(done);
 	};
 
-	auto loadActor = [=](runtime::MeshActor* actor) {
+	auto loadActor = [=](runtime::Actor* actor) {
 		return jobs::Job::CreateByLambda([=]() {
 			actor->Load(jobs::Job::CreateByLambda(actorLoaded));
 		});
@@ -113,7 +113,7 @@ void scene::SceneObject::Load(jobs::Job* done)
 			const AssetTypeDef* actorAsset = static_cast<const AssetTypeDef*>(sceneActorValue->m_actorDef.GetType<const TypeDef*>());
 			actorAsset->Construct(actorVal);
 
-			runtime::MeshActor* actor = actorVal.GetValue<runtime::MeshActor*>();
+			runtime::Actor* actor = actorVal.GetValue<runtime::Actor*>();
 
 			{
 				common::TransformValue* transform = sceneActorValue->m_transform.GetValue<common::TransformValue*>();

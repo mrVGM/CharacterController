@@ -12,7 +12,7 @@
 
 #include "SceneObject.h"
 #include "MeshBuffers.h"
-#include "Actor.h"
+#include "MeshActor.h"
 
 #include "UnlitRenderTexture.h"
 
@@ -192,7 +192,14 @@ void rendering::unlit_rp::UnlitRP::Execute()
 	auto mapCommandLists = [=](std::function<void(ID3D12CommandList*)> f) {
 		for (auto it = actorList->GetIterator(); it; ++it)
 		{
-			runtime::MeshActor* cur = (*it).GetValue<runtime::MeshActor*>();
+			Value& curVal = *it;
+			runtime::Actor* curActor = curVal.GetValue<runtime::Actor*>();
+			if (!TypeDef::IsA(curActor->GetTypeDef(), runtime::MeshActorTypeDef::GetTypeDef()))
+			{
+				continue;
+			}
+
+			runtime::MeshActor* cur = static_cast<runtime::MeshActor*>(curActor);
 			ValueList* matDefs = cur->m_materialDefs.GetValue<ValueList*>();
 
 			std::set<const TypeDef*> matsProcessed;
