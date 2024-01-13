@@ -20,5 +20,5 @@ namespace runtime
 		bool m_rbmDown = false;
 	};
 
-	Input m_input;
+	Input& GetInput();
 }

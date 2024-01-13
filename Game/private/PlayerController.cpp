@@ -1,6 +1,7 @@
 #include "PlayerController.h"
 
 #include "Camera.h"
+#include "Input.h"
 
 #include "Jobs.h"
 
@@ -65,6 +66,54 @@ game::PlayerController::~PlayerController()
 
 void game::PlayerController::Tick(double dt)
 {
+    using namespace math;
+
+    runtime::Input& input = runtime::GetInput();
+
+    rendering::renderer::Camera* cam = m_camera.GetValue<rendering::renderer::Camera*>();
+
+    Vector3 right, fwd, up;
+    cam->GetCoordinateVectors(right, fwd, up);
+
+    Vector3 hDir = fwd;
+    hDir.m_coefs[1] = 0;
+    hDir = hDir.Normalize();
+
+    float azm = 180 * acos(Dot(hDir, Vector3{ 1,0,0 })) / M_PI;
+    if (hDir.m_coefs[2] < 0)
+    {
+        azm *= -1;
+    }
+    float alt = 180 * acos(Dot(fwd, Vector3{ 0,1,0 })) / M_PI;
+
+    float azmChange = dt * -input.m_mouseAxis[0] * 50;
+    float altChange = dt * input.m_mouseAxis[1] * 50;
+
+    azm += azmChange;
+    alt += altChange;
+
+    if (alt < 10)
+    {
+        alt = 10;
+    }
+
+    if (alt > 170)
+    {
+        alt = 170;
+    }
+
+    std::wstringstream ss;
+    ss << azm << L" " << alt << std::endl;
+    OutputDebugString(ss.str().c_str());
+
+    azm *= M_PI / 180;
+    alt *= M_PI / 180;
+
+    Vector3 dir{ cos(azm), 0, sin(azm) };
+    dir = sin(alt) * dir;
+    dir.m_coefs[1] = cos(alt);
+
+    cam->m_target = cam->m_position + dir;
 }
 
 void game::PlayerController::PrepareForNextTick()

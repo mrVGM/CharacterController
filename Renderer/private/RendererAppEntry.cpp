@@ -67,11 +67,13 @@ void rendering::RendererAppEntryObj::Tick()
 	}
 	m_firstTick = false;
 
-	runtime::m_input.m_mouseAxis[0] = inputInfo.m_mouseAxis[0];
-	runtime::m_input.m_mouseAxis[1] = inputInfo.m_mouseAxis[1];
-	runtime::m_input.m_keysDown = inputInfo.m_keysDown;
-	runtime::m_input.m_lbmDown = inputInfo.m_leftMouseButtonDown;
-	runtime::m_input.m_rbmDown = inputInfo.m_rightMouseButtonDown;
+	runtime::Input& input = runtime::GetInput();
+
+	input.m_mouseAxis[0] = inputInfo.m_mouseAxis[0];
+	input.m_mouseAxis[1] = inputInfo.m_mouseAxis[1];
+	input.m_keysDown = inputInfo.m_keysDown;
+	input.m_lbmDown = inputInfo.m_leftMouseButtonDown;
+	input.m_rbmDown = inputInfo.m_rightMouseButtonDown;
 
 	auto jobDone = [=]() {
 		--m_running;

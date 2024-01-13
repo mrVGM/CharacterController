@@ -30,8 +30,6 @@ namespace rendering::renderer
 		Value m_window;
 		Value m_cameraBuffer;
 
-		void GetCoordinateVectors(math::Vector3& right, math::Vector3& fwd, math::Vector3& up);
-
 	protected:
 		void LoadData(jobs::Job* done) override;
 
@@ -46,6 +44,7 @@ namespace rendering::renderer
 		Camera(const ReferenceTypeDef& typeDef);
 		virtual ~Camera();
 
+		void GetCoordinateVectors(math::Vector3& right, math::Vector3& fwd, math::Vector3& up);
 		void Update();
 	};
 }
