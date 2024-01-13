@@ -20,8 +20,12 @@ namespace game
 	private:
 		Value m_camera;
 		Value m_scene;
+		Value m_character;
+
+		bool m_justPossesed = true;
 
 		void FreeMove(double dt);
+		void ControllCharacter(double dt);
 
 	protected:
 		void LoadData(jobs::Job* done) override;

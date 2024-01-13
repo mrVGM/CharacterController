@@ -4,7 +4,9 @@
 #include "Input.h"
 #include "RenderWindow.h"
 #include "SceneObject.h"
+#include "Character.h"
 
+#include "ValueList.h"
 #include "Jobs.h"
 
 #include "ObjectValueContainer.h"
@@ -46,7 +48,8 @@ void game::PlayerControllerTypeDef::Construct(Value& value) const
 game::PlayerController::PlayerController(const ReferenceTypeDef& typeDef) :
     Actor(typeDef),
     m_camera(rendering::renderer::CameraTypeDef::GetTypeDef(), this),
-    m_scene(scene::SceneObjectTypeDef::GetTypeDef(), this)
+    m_scene(scene::SceneObjectTypeDef::GetTypeDef(), this),
+    m_character(CharacterTypeDef::GetTypeDef(), this)
 {
 }
 
@@ -74,14 +77,34 @@ void game::PlayerController::Tick(double dt)
 {
     runtime::Input& input = runtime::GetInput();
     
-    if (input.m_keysDown.contains(32))
+    Character* character = m_character.GetValue<Character*>();
+    if (!character && input.m_keysDown.contains(32))
     {
         scene::SceneObject* scene = m_scene.GetValue<scene::SceneObject*>();
-        bool t = true;
-
+        
+        ValueList* actors = scene->GetActors().GetValue<ValueList*>();
+        for (auto it = actors->GetIterator(); it; ++it)
+        {
+            Value& cur = *it;
+            runtime::Actor* actor = cur.GetValue<runtime::Actor*>();
+            if (TypeDef::IsA(actor->GetTypeDef(), CharacterTypeDef::GetTypeDef()))
+            {
+                m_character = cur;
+                character = m_character.GetValue<Character*>();
+                break;
+            }
+        }
     }
 
-    FreeMove(dt);
+    if (character)
+    {
+        ControllCharacter(dt);
+    }
+    else
+    {
+        FreeMove(dt);
+    }
+
 }
 
 void game::PlayerController::FreeMove(double dt)
@@ -177,6 +200,101 @@ void game::PlayerController::FreeMove(double dt)
 
     cam->m_position = cam->m_position + move.m_coefs[0] * fwd + move.m_coefs[1] * right;
     cam->m_target = cam->m_position + fwd;
+}
+
+void game::PlayerController::ControllCharacter(double dt)
+{
+    using namespace math;
+
+    const float aimSpeed = 100;
+    const float moveSpeed = 10;
+
+    runtime::Input& input = runtime::GetInput();
+
+    rendering::renderer::Camera* cam = m_camera.GetValue<rendering::renderer::Camera*>();
+    rendering::WindowObj* wnd = cam->m_window.GetValue<rendering::WindowObj*>();
+
+    Vector3 right, fwd, up;
+    cam->GetCoordinateVectors(right, fwd, up);
+
+    Vector3 hDir = fwd;
+    hDir.m_coefs[1] = 0;
+    hDir = hDir.Normalize();
+
+    float azm = 180 * acos(Dot(hDir, Vector3{ 1,0,0 })) / M_PI;
+    if (hDir.m_coefs[2] < 0)
+    {
+        azm *= -1;
+    }
+    float alt = 180 * acos(Dot(fwd, Vector3{ 0,1,0 })) / M_PI;
+
+
+    float azmChange = dt * -input.m_mouseAxis[0] * aimSpeed;
+    float altChange = dt * input.m_mouseAxis[1] * aimSpeed;
+
+    azm += azmChange;
+    alt += altChange;
+
+    if (m_justPossesed)
+    {
+        m_justPossesed = false;
+
+        RECT rect;
+        GetWindowRect(wnd->m_hwnd, &rect);
+        int offsetH = wnd->m_width.Get<int>() / 3;
+        int offsetV = wnd->m_height.Get<int>() / 3;
+
+        rect.left += offsetH;
+        rect.right -= offsetH;
+        rect.top += offsetV;
+        rect.bottom -= offsetV;
+
+        ClipCursor(&rect);
+    }
+
+    if (alt < 10)
+    {
+        alt = 10;
+    }
+
+    if (alt > 170)
+    {
+        alt = 170;
+    }
+
+    Vector2 move{ 0, 0 };
+    if (input.m_keysDown.contains(87)) // W
+    {
+        move.m_coefs[0] += 1;
+    }
+    if (input.m_keysDown.contains(65)) // A
+    {
+        move.m_coefs[1] += -1;
+    }
+    if (input.m_keysDown.contains(83)) // S
+    {
+        move.m_coefs[0] += -1;
+    }
+    if (input.m_keysDown.contains(68)) // D
+    {
+        move.m_coefs[1] += 1;
+    }
+    move = dt * moveSpeed * move;
+
+    azm *= M_PI / 180;
+    alt *= M_PI / 180;
+
+    Vector3 dir{ cos(azm), 0, sin(azm) };
+    dir = sin(alt) * dir;
+    dir.m_coefs[1] = cos(alt);
+
+    cam->m_target = cam->m_position + dir;
+    cam->GetCoordinateVectors(right, fwd, up);
+
+    Character* character = m_character.GetValue<Character*>();
+    character->m_curTransform.m_position;
+    cam->m_target = character->m_curTransform.m_position + Vector3{ 0, 1, 0 };
+    cam->m_position = cam->m_target + -3 * fwd;
 }
 
 void game::PlayerController::PrepareForNextTick()
