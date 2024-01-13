@@ -102,48 +102,20 @@ void rendering::WindowObj::Start()
 {
 	RegisterWindowClass();
 
-	class WindowUpdateJob : public jobs::Job
-	{
-	private:
-		WindowObj* m_wnd = nullptr;
-	public:
-		WindowUpdateJob(WindowObj* window) :
-			m_wnd(window)
-		{
-		}
-		void Do()
-		{
-			m_wnd->Create();
-			while (m_wnd->m_hwnd)
+	jobs::Job* init = jobs::Job::CreateByLambda([=]() {
+		jobs::JobSystem* js = GetWindowUpdateJS();
+		jobs::Job* updateJob = jobs::Job::CreateByLambda([=]() {
+			Create();
+			while (m_hwnd)
 			{
-				m_wnd->WindowTick();
+				WindowTick();
 			}
-		}
-	};
+		});
 
-	struct Context
-	{
-		WindowObj* m_self = nullptr;
-	};
+		js->ScheduleJob(updateJob);
+	});
 
-	class StartJob : public jobs::Job
-	{
-		Context m_ctx;
-	public:
-		StartJob(const Context& ctx) :
-			m_ctx(ctx)
-		{
-		}
-
-		void Do() override
-		{
-			jobs::JobSystem* js = m_ctx.m_self-> GetWindowUpdateJS();
-			js->ScheduleJob(new WindowUpdateJob(m_ctx.m_self));
-		}
-	};
-
-	Context ctx{ this };
-	jobs::RunSync(new StartJob(ctx));
+	jobs::RunSync(init);
 }
 
 void rendering::WindowObj::RegisterWindowClass()
