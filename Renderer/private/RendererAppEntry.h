@@ -40,7 +40,7 @@ namespace rendering
 
 		void Tick();
 		void UpdateMutableBuffers(jobs::Job* done);
-		void RunTickUpdaters(double dt, jobs::Job* done);
+		void UpdateRoutine(double dt, jobs::Job* done);
 
 		double TimeStamp();
 	public:

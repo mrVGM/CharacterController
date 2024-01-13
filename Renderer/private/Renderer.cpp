@@ -204,3 +204,8 @@ void rendering::renderer::Boot()
 	RendererTypeDef::GetTypeDef();
 	CameraTypeDef::GetTypeDef();
 }
+
+Value& rendering::renderer::RendererObj::GetScene()
+{
+	return m_scene;
+}

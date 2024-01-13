@@ -30,10 +30,15 @@ namespace runtime
 
 	class Actor : public ObjectValue, public jobs::LoadingClass
 	{
+	protected:
+
 	public:
 		math::TransformEuler m_curTransform;
 
 		Actor(const ReferenceTypeDef& typeDef);
 		virtual ~Actor();
+		
+		virtual void Tick(double dt);
+		virtual void PrepareForNextTick();
 	};
 }

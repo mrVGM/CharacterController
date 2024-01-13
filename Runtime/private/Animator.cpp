@@ -27,7 +27,7 @@ const animation::AnimatorTypeDef& animation::AnimatorTypeDef::GetTypeDef()
 }
 
 animation::AnimatorTypeDef::AnimatorTypeDef() :
-    ReferenceTypeDef(&runtime::TickUpdaterTypeDef::GetTypeDef(), "E072CB3C-7F9E-452E-AD27-88404A2E7997"),
+    ReferenceTypeDef(&ReferenceTypeDef::GetTypeDef(), "E072CB3C-7F9E-452E-AD27-88404A2E7997"),
     m_idle("719574BD-6DC2-434A-BD56-D7891C7C4983", TypeTypeDef::GetTypeDef(geo::AnimationTypeDef::GetTypeDef()))
 {
     {
@@ -95,7 +95,7 @@ void animation::Animator::LoadData(jobs::Job* done)
 }
 
 animation::Animator::Animator(const ReferenceTypeDef& typeDef) :
-    runtime::TickUpdater(typeDef),
+    ObjectValue(typeDef),
 
     m_idleDef(AnimatorTypeDef::GetTypeDef().m_idle.GetType(), this),
     m_idle(geo::AnimationTypeDef::GetTypeDef(), this),
@@ -108,13 +108,13 @@ animation::Animator::~Animator()
 {
 }
 
-bool animation::Animator::IsTicking()
+bool animation::Animator::IsTicking() const
 {
     runtime::MeshActor* actor = m_actor.GetValue<runtime::MeshActor*>();
     return actor;
 }
 
-void animation::Animator::Tick(double dt, jobs::Job* done)
+void animation::Animator::Tick(double dt)
 {
     m_curTime += 1 * dt;
 
@@ -156,8 +156,6 @@ void animation::Animator::Tick(double dt, jobs::Job* done)
 
     uploadBuff->Unmap();
     poseBuffer->SetDirty(true);
-
-    jobs::RunSync(done);
 }
 
 void animation::Animator::SetActor(runtime::MeshActor& actor)

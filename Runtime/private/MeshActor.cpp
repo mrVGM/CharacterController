@@ -279,6 +279,11 @@ void runtime::MeshActor::LoadData(jobs::Job* done)
 	jobs::RunSync(init);
 }
 
+void runtime::MeshActor::PrepareForNextTick()
+{
+	UpdateTransformBuffer();
+}
+
 void runtime::MeshActor::CacheCMDLists(jobs::Job* done)
 {
 	jobs::Job* recordCommandLists = jobs::Job::CreateByLambda([=]() {

@@ -37,6 +37,14 @@ void runtime::ActorTypeDef::Construct(Value& container) const
 	throw "Can't Contruct a pure Actor!";
 }
 
+void runtime::Actor::Tick(double dt)
+{
+}
+
+void runtime::Actor::PrepareForNextTick()
+{
+}
+
 runtime::Actor::Actor(const ReferenceTypeDef& typeDef) :
 	ObjectValue(typeDef)
 {

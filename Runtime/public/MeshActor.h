@@ -69,5 +69,6 @@ namespace runtime
 		void GetCMDLists(const TypeDef* material, std::list<ID3D12CommandList*>& outLists);
 
 		void UpdateTransformBuffer();
+		void PrepareForNextTick() override;
 	};
 }

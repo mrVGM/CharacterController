@@ -42,6 +42,7 @@ namespace rendering::renderer
 
 		void Load(jobs::Job* done);
 
+		Value& GetScene();
 		void RenderFrame();
 	};
 

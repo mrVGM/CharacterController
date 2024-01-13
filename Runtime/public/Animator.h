@@ -23,7 +23,7 @@ namespace animation
 	};
 
 
-	class Animator : public runtime::TickUpdater, public jobs::LoadingClass
+	class Animator : public ObjectValue, public jobs::LoadingClass
 	{
 	private:
 		double m_curTime = 0;
@@ -41,8 +41,8 @@ namespace animation
 		Animator(const ReferenceTypeDef& type);
 		virtual ~Animator();
 
-		virtual bool IsTicking() override;
-		virtual void Tick(double dt, jobs::Job* done) override;
+		virtual bool IsTicking() const;
+		virtual void Tick(double dt);
 
 		void SetActor(runtime::MeshActor& actor);
 	};

@@ -13,8 +13,12 @@
 #include "Input.h"
 
 #include "RenderWindow.h"
-
 #include "DXCopyBuffers.h"
+#include "SceneObject.h"
+
+#include "Animator.h"
+
+#include "ValueList.h"
 
 namespace
 {
@@ -97,7 +101,7 @@ void rendering::RendererAppEntryObj::Tick()
 
 	jobs::RunAsync(jobs::Job::CreateByLambda([=]() {
 		double dt = TimeStamp();
-		RunTickUpdaters(dt, jobs::Job::CreateByLambda(jobDone));
+		UpdateRoutine(dt, jobs::Job::CreateByLambda(jobDone));
 	}));
 }
 
@@ -149,7 +153,7 @@ void rendering::RendererAppEntryObj::UpdateMutableBuffers(jobs::Job* done)
 	jobs::RunSync(getBuffers);
 }
 
-void rendering::RendererAppEntryObj::RunTickUpdaters(double dt, jobs::Job* done)
+void rendering::RendererAppEntryObj::UpdateRoutine(double dt, jobs::Job* done)
 {
 	using namespace renderer;
 
@@ -159,6 +163,17 @@ void rendering::RendererAppEntryObj::RunTickUpdaters(double dt, jobs::Job* done)
 	updaters.clear();
 	updatersRunning = 0;
 
+	renderer::RendererObj* renderer = m_renderer.GetValue<renderer::RendererObj*>();
+	scene::SceneObject* scene = renderer->GetScene().GetValue<scene::SceneObject*>();
+	ValueList* actors = scene->GetActors().GetValue<ValueList*>();
+
+	for (auto it = actors->GetIterator(); it; ++it)
+	{
+		Value& cur = *it;
+		runtime::Actor* curActor = cur.GetValue<runtime::Actor*>();
+		curActor->Tick(dt);
+	}
+
 	auto updaterDone = [=]() {
 		--updatersRunning;
 		if (updatersRunning > 0)
@@ -166,24 +181,37 @@ void rendering::RendererAppEntryObj::RunTickUpdaters(double dt, jobs::Job* done)
 			return;
 		}
 
+		renderer::RendererObj* renderer = m_renderer.GetValue<renderer::RendererObj*>();
+		scene::SceneObject* scene = renderer->GetScene().GetValue<scene::SceneObject*>();
+		ValueList* actors = scene->GetActors().GetValue<ValueList*>();
+		
+		for (auto it = actors->GetIterator(); it; ++it)
+		{
+			Value& cur = *it;
+			runtime::Actor* curActor = cur.GetValue<runtime::Actor*>();
+			curActor->PrepareForNextTick();
+		}
+
 		jobs::RunSync(done);
 	};
 
-	auto startUpdater = [=](runtime::TickUpdater* updater) {
-		return jobs::Job::CreateByLambda([=]() {
-			updater->Tick(dt, jobs::Job::CreateByLambda(updaterDone));
+	auto animatorUpdateJob = [=](animation::Animator* animator) {
+		jobs::Job* job = jobs::Job::CreateByLambda([=]() {
+			animator->Tick(dt);
+			jobs::RunSync(jobs::Job::CreateByLambda(updaterDone));
 		});
+
+		return job;
 	};
 
-	jobs::Job* getUpdaters = jobs::Job::CreateByLambda([=]() {
+	jobs::Job* getAnimatorUpdaters = jobs::Job::CreateByLambda([=]() {
 		ObjectValueContainer& container = ObjectValueContainer::GetContainer();
-
-		container.GetObjectsOfType(runtime::TickUpdaterTypeDef::GetTypeDef(), updaters);
+		container.GetObjectsOfType(animation::AnimatorTypeDef::GetTypeDef(), updaters);
 
 		bool anyUpdater = false;
 		for (auto it = updaters.begin(); it != updaters.end(); ++it)
 		{
-			runtime::TickUpdater* cur = static_cast<runtime::TickUpdater*>(*it);
+			animation::Animator* cur = static_cast<animation::Animator*>(*it);
 			if (!cur->IsTicking())
 			{
 				continue;
@@ -191,16 +219,16 @@ void rendering::RendererAppEntryObj::RunTickUpdaters(double dt, jobs::Job* done)
 			anyUpdater = true;
 
 			++updatersRunning;
-			jobs::RunAsync(startUpdater(cur));
+			jobs::RunAsync(animatorUpdateJob(cur));
 		}
 
 		if (!anyUpdater)
 		{
-			jobs::RunSync(done);
+			jobs::Job::CreateByLambda(updaterDone);
 		}
 	});
 
-	jobs::RunSync(getUpdaters);
+	jobs::RunSync(getAnimatorUpdaters);
 }
 
 rendering::RendererAppEntryObj::RendererAppEntryObj(const ReferenceTypeDef& typeDef) :
