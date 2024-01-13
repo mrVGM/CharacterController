@@ -105,6 +105,20 @@ math::Vector3 math::operator^(const math::Vector3& v1, const math::Vector3& v2)
 	return res;
 }
 
+math::Vector2 math::Vector2::Normalize() const
+{
+	float l = Dot(*this, *this);
+
+	if (l < GetFloatEPS())
+	{
+		return Vector2{ 0, 0 };
+	}
+
+	l = sqrt(l);
+	Vector2 res = (1 / l) * (*this);
+	return res;
+}
+
 math::Vector3 math::Vector3::Normalize() const
 {
 	float l = Dot(*this, *this);

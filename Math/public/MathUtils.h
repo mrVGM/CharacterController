@@ -10,6 +10,8 @@ namespace math
 	struct Vector2
 	{
 		float m_coefs[2];
+
+		Vector2 Normalize() const;
 	};
 
 	struct Vector3

@@ -279,7 +279,7 @@ void game::PlayerController::ControllCharacter(double dt)
     {
         move.m_coefs[1] += 1;
     }
-    move = dt * moveSpeed * move;
+    move = dt * moveSpeed * move.Normalize();
 
     azm *= M_PI / 180;
     alt *= M_PI / 180;
@@ -291,8 +291,15 @@ void game::PlayerController::ControllCharacter(double dt)
     cam->m_target = cam->m_position + dir;
     cam->GetCoordinateVectors(right, fwd, up);
 
+    Vector3 charFwd = fwd;
+    charFwd.m_coefs[1] = 0;
+    charFwd = charFwd.Normalize();
+
+    Vector3 charRight = Vector3{ 0,1,0 } ^ charFwd;
+
     Character* character = m_character.GetValue<Character*>();
-    character->m_curTransform.m_position;
+    character->m_curTransform.m_position = character->m_curTransform.m_position + move.m_coefs[1] * charRight + move.m_coefs[0] * charFwd;
+
     cam->m_target = character->m_curTransform.m_position + Vector3{ 0, 1, 0 };
     cam->m_position = cam->m_target + -3 * fwd;
 }
