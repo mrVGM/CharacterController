@@ -10,6 +10,17 @@
       "name":"Idle Anim",
       "id":"719574BD-6DC2-434A-BD56-D7891C7C4983",
       "category":"Setup"
+    },
+    "33BEE8F2-486A-4761-B089-8CDC2F6A0298":{
+      "type":{
+        "template":{
+          "id":"042DF982-4850-4D79-8BD0-0A05B5405AC3"
+        },
+        "id":"1D4363E5-BC6F-4B49-80F3-FAC358F5B296"
+      },
+      "name":"Pose Sampler",
+      "id":"33BEE8F2-486A-4761-B089-8CDC2F6A0298",
+      "category":"Setup"
     }
   },
   "parent":{

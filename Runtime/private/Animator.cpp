@@ -9,6 +9,8 @@
 
 #include "ObjectValueContainer.h"
 
+#include "PoseSampler.h"
+
 #include "Jobs.h"
 
 namespace
@@ -28,7 +30,8 @@ const animation::AnimatorTypeDef& animation::AnimatorTypeDef::GetTypeDef()
 
 animation::AnimatorTypeDef::AnimatorTypeDef() :
     ReferenceTypeDef(&ReferenceTypeDef::GetTypeDef(), "E072CB3C-7F9E-452E-AD27-88404A2E7997"),
-    m_idle("719574BD-6DC2-434A-BD56-D7891C7C4983", TypeTypeDef::GetTypeDef(geo::AnimationTypeDef::GetTypeDef()))
+    m_idle("719574BD-6DC2-434A-BD56-D7891C7C4983", TypeTypeDef::GetTypeDef(geo::AnimationTypeDef::GetTypeDef())),
+    m_sampler("33BEE8F2-486A-4761-B089-8CDC2F6A0298", TypeTypeDef::GetTypeDef(animation::PoseSamplerTypeDef::GetTypeDef()))
 {
     {
         m_idle.m_name = "Idle Anim";
@@ -38,6 +41,16 @@ animation::AnimatorTypeDef::AnimatorTypeDef() :
             return animator->m_idleDef;
         };
         m_properties[m_idle.GetId()] = &m_idle;
+    }
+
+    {
+        m_sampler.m_name = "Pose Sampler";
+        m_sampler.m_category = "Setup";
+        m_sampler.m_getValue = [](CompositeValue* obj) -> Value& {
+            Animator* animator = static_cast<Animator*>(obj);
+            return animator->m_samplerDef;
+        };
+        m_properties[m_sampler.GetId()] = &m_sampler;
     }
 
     m_name = "Animator";
@@ -71,15 +84,40 @@ const math::Matrix& animation::Animator::SampleTransform(double time, const std:
 
 void animation::Animator::LoadData(jobs::Job* done)
 {
-    jobs::Job* load = jobs::Job::CreateByLambda([=]() {
-        geo::Animation* idle = m_idle.GetValue<geo::Animation*>();
-        if (!idle)
+    int* toLoad = new int;
+    *toLoad = 0;
+
+    auto loaded = [=]() {
+        --(*toLoad);
+        if (*toLoad > 0)
         {
-            jobs::RunSync(done);
             return;
         }
 
-        idle->Load(done);
+        delete toLoad;
+
+        jobs::RunSync(done);
+    };
+
+    jobs::Job* load = jobs::Job::CreateByLambda([=]() {
+        geo::Animation* idle = m_idle.GetValue<geo::Animation*>();
+        if (idle)
+        {
+            ++(*toLoad);
+            idle->Load(jobs::Job::CreateByLambda(loaded));
+        }
+
+        PoseSampler* sampler = m_sampler.GetValue<PoseSampler*>();
+        if (sampler)
+        {
+            ++(*toLoad);
+            idle->Load(jobs::Job::CreateByLambda(loaded));
+        }
+
+        if (*toLoad == 0)
+        {
+            jobs::RunSync(jobs::Job::CreateByLambda(loaded));
+        }
     });
 
     jobs::Job* init = jobs::Job::CreateByLambda([=]() {
@@ -88,6 +126,13 @@ void animation::Animator::LoadData(jobs::Job* done)
         {
             ObjectValueContainer::GetObjectOfType(*idleDef, m_idle);
         }
+
+        const TypeDef* samplerDef = m_samplerDef.GetType<const TypeDef*>();
+        if (samplerDef)
+        {
+            ObjectValueContainer::GetObjectOfType(*samplerDef, m_sampler);
+        }
+
         jobs::RunAsync(load);
     });
 
@@ -99,6 +144,9 @@ animation::Animator::Animator(const ReferenceTypeDef& typeDef) :
 
     m_idleDef(AnimatorTypeDef::GetTypeDef().m_idle.GetType(), this),
     m_idle(geo::AnimationTypeDef::GetTypeDef(), this),
+
+    m_samplerDef(AnimatorTypeDef::GetTypeDef().m_sampler.GetType(), this),
+    m_sampler(PoseSamplerTypeDef::GetTypeDef(), this),
 
     m_actor(runtime::MeshActorTypeDef::GetTypeDef(), this)
 {
@@ -129,7 +177,7 @@ void animation::Animator::Tick(double dt)
 
     math::Matrix* poseData = static_cast<math::Matrix*>(uploadBuff->Map());
 
-    geo::Animation* anim = m_idle.GetValue<geo::Animation*>();
+    animation::PoseSampler* sampler = m_sampler.GetValue<animation::PoseSampler*>();
 
     for (auto it = skinData.m_boneNames.begin(); it != skinData.m_boneNames.end(); ++it)
     {
@@ -139,13 +187,13 @@ void animation::Animator::Tick(double dt)
         while (curIndex >= 0)
         {
             const std::string& curBone = skeleton->m_boneNames[curIndex];
-            if (!anim)
+            if (!sampler)
             {
                 mat = skeleton->m_bindPose[curIndex] * mat;
             }
             else
             {
-                mat = SampleTransform(m_curTime, curBone, *anim) * mat;
+                mat = sampler->SampleTransform(*this, *skeleton, curBone, m_curTime) * mat;
             }
             curIndex = skeleton->m_boneParents[curIndex];
         }

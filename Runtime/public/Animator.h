@@ -14,6 +14,7 @@ namespace animation
 
 	public:
 		TypeProperty m_idle;
+		TypeProperty m_sampler;
 
 		AnimatorTypeDef();
 		virtual ~AnimatorTypeDef();
@@ -28,6 +29,8 @@ namespace animation
 		double m_curTime = 0;
 		Value m_actor;
 		Value m_idle;
+
+		Value m_sampler;
 		
 		const math::Matrix& SampleTransform(double time, const std::string& bone, const geo::Animation& animation);
 
@@ -36,6 +39,7 @@ namespace animation
 
 	public:
 		Value m_idleDef;
+		Value m_samplerDef;
 
 		Animator(const ReferenceTypeDef& type);
 		virtual ~Animator();
