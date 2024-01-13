@@ -23,7 +23,7 @@ const scene::SceneActorTypeDef& scene::SceneActorTypeDef::GetTypeDef()
 scene::SceneActorTypeDef::SceneActorTypeDef() :
 	ValueTypeDef(&ValueTypeDef::GetTypeDef(), "BD092EB2-905B-4C30-A9D8-7E96C644D2F3"),
 	m_transform("833DE71F-3C95-41E1-BB02-F80DFEDFF36A", common::TransformTypeDef::GetTypeDef()),
-	m_actor("59D36C1D-465C-4293-8F7D-F80CFBEF9DE3", TypeTypeDef::GetTypeDef(runtime::ActorTypeDef::GetTypeDef()))
+	m_actor("59D36C1D-465C-4293-8F7D-F80CFBEF9DE3", TypeTypeDef::GetTypeDef(runtime::MeshActorTypeDef::GetTypeDef()))
 {
 	{
 		m_transform.m_name = "Transform";

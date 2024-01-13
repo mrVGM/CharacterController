@@ -17,9 +17,9 @@
 
 namespace runtime
 {
-	class ActorTypeDef : public ReferenceTypeDef
+	class MeshActorTypeDef : public ReferenceTypeDef
 	{
-		TYPE_DEF_BODY(ActorTypeDef)
+		TYPE_DEF_BODY(MeshActorTypeDef)
 
 	public:
 		TypeProperty m_mesh;
@@ -28,13 +28,13 @@ namespace runtime
 		TypeProperty m_materials;
 		TypeProperty m_meshTransform;
 
-		ActorTypeDef();
-		virtual ~ActorTypeDef();
+		MeshActorTypeDef();
+		virtual ~MeshActorTypeDef();
 
 		void Construct(Value& container) const override;
 	};
 
-	class Actor : public ObjectValue, public jobs::LoadingClass
+	class MeshActor : public ObjectValue, public jobs::LoadingClass
 	{
 	private:
 		Value m_device;
@@ -64,8 +64,8 @@ namespace runtime
 
 		math::TransformEuler m_curTransform;
 
-		Actor(const ReferenceTypeDef& typeDef);
-		virtual ~Actor();
+		MeshActor(const ReferenceTypeDef& typeDef);
+		virtual ~MeshActor();
 
 		void SetMesh(geo::Mesh* mesh);
 

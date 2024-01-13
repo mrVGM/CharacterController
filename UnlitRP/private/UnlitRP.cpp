@@ -192,7 +192,7 @@ void rendering::unlit_rp::UnlitRP::Execute()
 	auto mapCommandLists = [=](std::function<void(ID3D12CommandList*)> f) {
 		for (auto it = actorList->GetIterator(); it; ++it)
 		{
-			runtime::Actor* cur = (*it).GetValue<runtime::Actor*>();
+			runtime::MeshActor* cur = (*it).GetValue<runtime::MeshActor*>();
 			ValueList* matDefs = cur->m_materialDefs.GetValue<ValueList*>();
 
 			std::set<const TypeDef*> matsProcessed;

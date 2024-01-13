@@ -44,6 +44,6 @@ namespace animation
 		virtual bool IsTicking() override;
 		virtual void Tick(double dt, jobs::Job* done) override;
 
-		void SetActor(runtime::Actor & actor);
+		void SetActor(runtime::MeshActor& actor);
 	};
 }

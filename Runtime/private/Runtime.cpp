@@ -9,7 +9,7 @@
 void runtime::Boot()
 {
 	TickUpdaterTypeDef::GetTypeDef();
-	ActorTypeDef::GetTypeDef();
+	MeshActorTypeDef::GetTypeDef();
 	MeshBuffersTypeDef::GetTypeDef();
 	animation::AnimatorTypeDef::GetTypeDef();
 	PlayerControllerTypeDef::GetTypeDef();

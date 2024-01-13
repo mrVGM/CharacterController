@@ -31,20 +31,20 @@ if (FAILED(hRes)) {\
 
 namespace
 {
-	BasicObjectContainer<runtime::ActorTypeDef> m_actorTypeDef;
+	BasicObjectContainer<runtime::MeshActorTypeDef> m_actorTypeDef;
 }
 
-const runtime::ActorTypeDef& runtime::ActorTypeDef::GetTypeDef()
+const runtime::MeshActorTypeDef& runtime::MeshActorTypeDef::GetTypeDef()
 {
 	if (!m_actorTypeDef.m_object)
 	{
-		m_actorTypeDef.m_object = new ActorTypeDef();
+		m_actorTypeDef.m_object = new MeshActorTypeDef();
 	}
 
 	return *m_actorTypeDef.m_object;
 }
 
-runtime::ActorTypeDef::ActorTypeDef() :
+runtime::MeshActorTypeDef::MeshActorTypeDef() :
 	ReferenceTypeDef(&ReferenceTypeDef::GetTypeDef(), "9CFFA9B0-3542-4509-81CD-387C496ADAFF"),
 	m_mesh("6B501787-EFF6-4EDF-85A4-571428A47071", TypeTypeDef::GetTypeDef(geo::MeshTypeDef::GetTypeDef())),
 	m_animator("C2D55EEE-8279-4CA5-BDA9-699FA696EF19", TypeTypeDef::GetTypeDef(animation::AnimatorTypeDef::GetTypeDef())),
@@ -56,7 +56,7 @@ runtime::ActorTypeDef::ActorTypeDef() :
 		m_mesh.m_name = "Mesh";
 		m_mesh.m_category = "Setup";
 		m_mesh.m_getValue = [](CompositeValue* obj) -> Value& {
-			Actor* actor = static_cast<Actor*>(obj);
+			MeshActor* actor = static_cast<MeshActor*>(obj);
 			return actor->m_meshDef;
 		};
 		m_properties[m_mesh.GetId()] = &m_mesh;
@@ -66,7 +66,7 @@ runtime::ActorTypeDef::ActorTypeDef() :
 		m_animator.m_name = "Animator";
 		m_animator.m_category = "Setup";
 		m_animator.m_getValue = [](CompositeValue* obj) -> Value& {
-			Actor* actor = static_cast<Actor*>(obj);
+			MeshActor* actor = static_cast<MeshActor*>(obj);
 			return actor->m_animatorDef;
 		};
 		m_properties[m_animator.GetId()] = &m_animator;
@@ -76,7 +76,7 @@ runtime::ActorTypeDef::ActorTypeDef() :
 		m_materials.m_name = "Materials";
 		m_materials.m_category = "Setup";
 		m_materials.m_getValue = [](CompositeValue* obj) -> Value& {
-			Actor* actor = static_cast<Actor*>(obj);
+			MeshActor* actor = static_cast<MeshActor*>(obj);
 			return actor->m_materialDefs;
 		};
 		m_properties[m_materials.GetId()] = &m_materials;
@@ -86,7 +86,7 @@ runtime::ActorTypeDef::ActorTypeDef() :
 		m_skeleton.m_name = "Skeleton";
 		m_skeleton.m_category = "Setup";
 		m_skeleton.m_getValue = [](CompositeValue* obj) -> Value& {
-			Actor* actor = static_cast<Actor*>(obj);
+			MeshActor* actor = static_cast<MeshActor*>(obj);
 			return actor->m_skeletonDef;
 		};
 		m_properties[m_skeleton.GetId()] = &m_skeleton;
@@ -96,7 +96,7 @@ runtime::ActorTypeDef::ActorTypeDef() :
 		m_meshTransform.m_name = "Mesh Transform";
 		m_meshTransform.m_category = "Setup";
 		m_meshTransform.m_getValue = [](CompositeValue* obj) -> Value& {
-			Actor* actor = static_cast<Actor*>(obj);
+			MeshActor* actor = static_cast<MeshActor*>(obj);
 			return actor->m_meshTransform;
 		};
 		m_properties[m_meshTransform.GetId()] = &m_meshTransform;
@@ -106,46 +106,46 @@ runtime::ActorTypeDef::ActorTypeDef() :
 	m_category = "Scene";
 }
 
-runtime::ActorTypeDef::~ActorTypeDef()
+runtime::MeshActorTypeDef::~MeshActorTypeDef()
 {
 }
 
-void runtime::ActorTypeDef::Construct(Value& container) const
+void runtime::MeshActorTypeDef::Construct(Value& container) const
 {
-	Actor* actor = new Actor(*this);
+	MeshActor* actor = new MeshActor(*this);
 	container.AssignObject(actor);
 }
 
-runtime::Actor::Actor(const ReferenceTypeDef& typeDef) :
+runtime::MeshActor::MeshActor(const ReferenceTypeDef& typeDef) :
 	ObjectValue(typeDef),
 	m_device(rendering::DXDeviceTypeDef::GetTypeDef(), this),
-	m_meshDef(ActorTypeDef::GetTypeDef().m_mesh.GetType(), this),
+	m_meshDef(MeshActorTypeDef::GetTypeDef().m_mesh.GetType(), this),
 	m_mesh(geo::MeshTypeDef::GetTypeDef(), this),
-	m_skeletonDef(ActorTypeDef::GetTypeDef().m_skeleton.GetType(), this),
+	m_skeletonDef(MeshActorTypeDef::GetTypeDef().m_skeleton.GetType(), this),
 	m_skeleton(geo::SkeletonTypeDef::GetTypeDef(), this),
-	m_materialDefs(ActorTypeDef::GetTypeDef().m_materials.GetType(), this),
+	m_materialDefs(MeshActorTypeDef::GetTypeDef().m_materials.GetType(), this),
 	m_materials(ListDef::GetTypeDef(rendering::materials::MaterialTypeDef::GetTypeDef()), this),
 	m_transformBuffer(rendering::DXMutableBufferTypeDef::GetTypeDef(), this),
 	m_poseBuffer(rendering::DXMutableBufferTypeDef::GetTypeDef(), this),
-	m_animatorDef(ActorTypeDef::GetTypeDef().m_animator.GetType(), this),
+	m_animatorDef(MeshActorTypeDef::GetTypeDef().m_animator.GetType(), this),
 	m_animator(animation::AnimatorTypeDef::GetTypeDef(), this),
-	m_meshTransform(ActorTypeDef::GetTypeDef().m_meshTransform.GetType(), this)
+	m_meshTransform(MeshActorTypeDef::GetTypeDef().m_meshTransform.GetType(), this)
 {
 	m_curTransform.m_position = math::Vector3{ 0, 0, 0 };
 	m_curTransform.m_rotation = math::Vector3{ 0, 0, 0 };
 	m_curTransform.m_scale = math::Vector3{ 1, 1, 1 };
 }
 
-runtime::Actor::~Actor()
+runtime::MeshActor::~MeshActor()
 {
 }
 
-void runtime::Actor::SetMesh(geo::Mesh* mesh)
+void runtime::MeshActor::SetMesh(geo::Mesh* mesh)
 {
 	m_mesh.AssignObject(mesh);
 }
 
-void runtime::Actor::LoadData(jobs::Job* done)
+void runtime::MeshActor::LoadData(jobs::Job* done)
 {
 	struct Context
 	{
@@ -280,7 +280,7 @@ void runtime::Actor::LoadData(jobs::Job* done)
 	jobs::RunSync(init);
 }
 
-void runtime::Actor::CacheCMDLists(jobs::Job* done)
+void runtime::MeshActor::CacheCMDLists(jobs::Job* done)
 {
 	jobs::Job* recordCommandLists = jobs::Job::CreateByLambda([=]() {
 		rendering::DXDevice* device = m_device.GetValue<rendering::DXDevice*>();
@@ -368,7 +368,7 @@ void runtime::Actor::CacheCMDLists(jobs::Job* done)
 	jobs::RunAsync(recordCommandLists);
 }
 
-void runtime::Actor::GetCMDLists(const TypeDef* material, std::list<ID3D12CommandList*>& outLists)
+void runtime::MeshActor::GetCMDLists(const TypeDef* material, std::list<ID3D12CommandList*>& outLists)
 {
 	auto it = m_cmdListCache.find(material);
 	if (it == m_cmdListCache.end())
@@ -382,7 +382,7 @@ void runtime::Actor::GetCMDLists(const TypeDef* material, std::list<ID3D12Comman
 	}
 }
 
-void runtime::Actor::UpdateTransformBuffer()
+void runtime::MeshActor::UpdateTransformBuffer()
 {
 	using namespace rendering;
 

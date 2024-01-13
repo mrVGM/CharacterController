@@ -60,7 +60,7 @@ const math::Matrix& animation::Animator::SampleTransform(double time, const std:
 
     if (!animChannel)
     {
-        runtime::Actor* actor = m_actor.GetValue<runtime::Actor*>();
+        runtime::MeshActor* actor = m_actor.GetValue<runtime::MeshActor*>();
         geo::Skeleton* skeleton = actor->m_skeleton.GetValue<geo::Skeleton*>();
 
         return skeleton->m_bindPose[skeleton->GetBoneIndex(bone)];
@@ -100,7 +100,7 @@ animation::Animator::Animator(const ReferenceTypeDef& typeDef) :
     m_idleDef(AnimatorTypeDef::GetTypeDef().m_idle.GetType(), this),
     m_idle(geo::AnimationTypeDef::GetTypeDef(), this),
 
-    m_actor(runtime::ActorTypeDef::GetTypeDef(), this)
+    m_actor(runtime::MeshActorTypeDef::GetTypeDef(), this)
 {
 }
 
@@ -110,7 +110,7 @@ animation::Animator::~Animator()
 
 bool animation::Animator::IsTicking()
 {
-    runtime::Actor* actor = m_actor.GetValue<runtime::Actor*>();
+    runtime::MeshActor* actor = m_actor.GetValue<runtime::MeshActor*>();
     return actor;
 }
 
@@ -118,7 +118,7 @@ void animation::Animator::Tick(double dt, jobs::Job* done)
 {
     m_curTime += 1 * dt;
 
-    runtime::Actor* actor = m_actor.GetValue<runtime::Actor*>();
+    runtime::MeshActor* actor = m_actor.GetValue<runtime::MeshActor*>();
     rendering::DXMutableBuffer* poseBuffer = actor->m_poseBuffer.GetValue<rendering::DXMutableBuffer*>();
     rendering::DXBuffer* uploadBuff = poseBuffer->m_uploadBuffer.GetValue<rendering::DXBuffer*>();
 
@@ -160,7 +160,7 @@ void animation::Animator::Tick(double dt, jobs::Job* done)
     jobs::RunSync(done);
 }
 
-void animation::Animator::SetActor(runtime::Actor& actor)
+void animation::Animator::SetActor(runtime::MeshActor& actor)
 {
     m_actor.AssignObject(&actor);
 }
