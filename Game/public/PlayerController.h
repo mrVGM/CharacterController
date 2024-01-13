@@ -27,6 +27,8 @@ namespace game
 		void FreeMove(double dt);
 		void ControllCharacter(double dt);
 
+		void HandleCharMove(float dt, const math::Vector3& velocity);
+
 	protected:
 		void LoadData(jobs::Job* done) override;
 

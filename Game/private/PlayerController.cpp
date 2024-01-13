@@ -207,7 +207,7 @@ void game::PlayerController::ControllCharacter(double dt)
     using namespace math;
 
     const float aimSpeed = 100;
-    const float moveSpeed = 10;
+    const float moveSpeed = 6;
 
     runtime::Input& input = runtime::GetInput();
 
@@ -279,7 +279,7 @@ void game::PlayerController::ControllCharacter(double dt)
     {
         move.m_coefs[1] += 1;
     }
-    move = dt * moveSpeed * move.Normalize();
+    move = moveSpeed * move.Normalize();
 
     azm *= M_PI / 180;
     alt *= M_PI / 180;
@@ -298,10 +298,46 @@ void game::PlayerController::ControllCharacter(double dt)
     Vector3 charRight = Vector3{ 0,1,0 } ^ charFwd;
 
     Character* character = m_character.GetValue<Character*>();
-    character->m_curTransform.m_position = character->m_curTransform.m_position + move.m_coefs[1] * charRight + move.m_coefs[0] * charFwd;
+    HandleCharMove(dt, move.m_coefs[1] * charRight + move.m_coefs[0] * charFwd);
 
     cam->m_target = character->m_curTransform.m_position + Vector3{ 0, 1, 0 };
     cam->m_position = cam->m_target + -3 * fwd;
+}
+
+void game::PlayerController::HandleCharMove(float dt, const math::Vector3& velocity)
+{
+    using namespace math;
+
+    const float eps = 0.001f;
+    const float acc = 30;
+
+    float newSpeed = Dot(velocity, velocity);
+    newSpeed = sqrt(newSpeed);
+
+    Character* character = m_character.GetValue<Character*>();
+
+    float curSpeed = Dot(character->m_velocity, character->m_velocity);
+    curSpeed = sqrt(curSpeed);
+
+    float coef = 1;
+    if (coef > newSpeed + eps)
+    {
+        coef = -1;
+    }
+    
+    curSpeed += coef * acc * dt;
+
+    if (curSpeed < 0)
+    {
+        curSpeed = 0;
+    }
+    if (curSpeed > newSpeed)
+    {
+        curSpeed = newSpeed;
+    }
+
+    character->m_velocity = curSpeed * velocity.Normalize();
+    character->m_curTransform.m_position = character->m_curTransform.m_position + dt * character->m_velocity;
 }
 
 void game::PlayerController::PrepareForNextTick()
