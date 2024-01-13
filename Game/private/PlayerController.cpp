@@ -2,10 +2,13 @@
 
 #include "Camera.h"
 #include "Input.h"
+#include "RenderWindow.h"
 
 #include "Jobs.h"
 
 #include "ObjectValueContainer.h"
+
+#include <Windows.h>
 
 namespace
 {
@@ -68,9 +71,13 @@ void game::PlayerController::Tick(double dt)
 {
     using namespace math;
 
+    const float aimSpeed = 100;
+    const float moveSpeed = 10;
+
     runtime::Input& input = runtime::GetInput();
 
     rendering::renderer::Camera* cam = m_camera.GetValue<rendering::renderer::Camera*>();
+    rendering::WindowObj* wnd = cam->m_window.GetValue<rendering::WindowObj*>();
 
     Vector3 right, fwd, up;
     cam->GetCoordinateVectors(right, fwd, up);
@@ -86,11 +93,31 @@ void game::PlayerController::Tick(double dt)
     }
     float alt = 180 * acos(Dot(fwd, Vector3{ 0,1,0 })) / M_PI;
 
-    float azmChange = dt * -input.m_mouseAxis[0] * 50;
-    float altChange = dt * input.m_mouseAxis[1] * 50;
 
-    azm += azmChange;
-    alt += altChange;
+    float azmChange = dt * -input.m_mouseAxis[0] * aimSpeed;
+    float altChange = dt * input.m_mouseAxis[1] * aimSpeed;
+
+    azm += input.m_rbmDown * azmChange;
+    alt += input.m_rbmDown * altChange;
+
+    if (input.m_rbmDown)
+    {
+        RECT rect;
+        GetWindowRect(wnd->m_hwnd, &rect);
+        int offsetH = wnd->m_width.Get<int>() / 3;
+        int offsetV = wnd->m_height.Get<int>() / 3;
+
+        rect.left += offsetH;
+        rect.right -= offsetH;
+        rect.top += offsetV;
+        rect.bottom -= offsetV;
+
+        ClipCursor(&rect);
+    }
+    else
+    {
+        ClipCursor(nullptr);
+    }
 
     if (alt < 10)
     {
@@ -102,6 +129,32 @@ void game::PlayerController::Tick(double dt)
         alt = 170;
     }
 
+    Vector2 move{ 0, 0 };
+    if (input.m_keysDown.contains(87)) // W
+    {
+        move.m_coefs[0] += 1;
+    }
+    if (input.m_keysDown.contains(65)) // A
+    {
+        move.m_coefs[1] += -1;
+    }
+    if (input.m_keysDown.contains(83)) // S
+    {
+        move.m_coefs[0] += -1;
+    }
+    if (input.m_keysDown.contains(68)) // D
+    {
+        move.m_coefs[1] += 1;
+    }
+
+    if (input.m_keysDown.size() > 0)
+    {
+        std::wstringstream ss;
+        ss << *input.m_keysDown.begin() << std::endl;
+        OutputDebugString(ss.str().c_str());
+    }
+    move = dt * moveSpeed * move;
+
     azm *= M_PI / 180;
     alt *= M_PI / 180;
 
@@ -110,6 +163,10 @@ void game::PlayerController::Tick(double dt)
     dir.m_coefs[1] = cos(alt);
 
     cam->m_target = cam->m_position + dir;
+    cam->GetCoordinateVectors(right, fwd, up);
+
+    cam->m_position = cam->m_position + move.m_coefs[0] * fwd + move.m_coefs[1] * right;
+    cam->m_target = cam->m_position + fwd;
 }
 
 void game::PlayerController::PrepareForNextTick()

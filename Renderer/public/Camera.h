@@ -27,7 +27,6 @@ namespace rendering::renderer
 	class Camera : public ObjectValue, public jobs::LoadingClass
 	{
 	private:
-		Value m_window;
 		Value m_cameraBuffer;
 
 	protected:
@@ -38,6 +37,7 @@ namespace rendering::renderer
 		Value m_nearPlane;
 		Value m_farPlane;
 
+		Value m_window;
 		math::Vector3 m_position{ 0, 0, -5 };
 		math::Vector3 m_target{ 0, 0, 0 };
 
