@@ -5,7 +5,7 @@
 
 #include "MathUtils.h"
 
-#include "TickUpdater.h"
+#include "MultiLoader.h"
 
 namespace rendering::renderer
 {
@@ -24,7 +24,7 @@ namespace rendering::renderer
 		void Construct(Value& container) const override;
 	};
 
-	class Camera : public runtime::TickUpdater
+	class Camera : public ObjectValue, public jobs::LoadingClass
 	{
 	private:
 		bool m_isLoaded = false;
@@ -45,6 +45,9 @@ namespace rendering::renderer
 		void GetCoordinateVectors(math::Vector3& right, math::Vector3& fwd, math::Vector3& up);
 		void HandleInput(double dt);
 
+	protected:
+		void LoadData(jobs::Job* done) override;
+
 	public:
 
 		Value m_fov;
@@ -54,9 +57,6 @@ namespace rendering::renderer
 		Camera(const ReferenceTypeDef& typeDef);
 		virtual ~Camera();
 
-		void Load(jobs::Job* done);
-
-		bool IsTicking() override;
-		void Tick(double dt, jobs::Job* done) override;
+		void Update();
 	};
 }

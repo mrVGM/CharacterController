@@ -27,6 +27,7 @@ target_link_libraries(App PUBLIC
 	UnlitRP
 	Materials
 	Runtime
+	Game
 )
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)

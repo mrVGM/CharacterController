@@ -32,7 +32,7 @@ const rendering::renderer::CameraTypeDef& rendering::renderer::CameraTypeDef::Ge
 }
 
 rendering::renderer::CameraTypeDef::CameraTypeDef() :
-	ReferenceTypeDef(&runtime::TickUpdaterTypeDef::GetTypeDef(), "D026E773-A2D4-4D09-A174-A79B00E919DE"),
+	ReferenceTypeDef(&ReferenceTypeDef::GetTypeDef(), "D026E773-A2D4-4D09-A174-A79B00E919DE"),
 	m_fov("693B0DAC-75B2-42B0-AABF-1A447547B720", FloatTypeDef::GetTypeDef()),
 	m_nearPlane("E42C1E0C-C69B-4F86-8EB2-4B5D3550249C", FloatTypeDef::GetTypeDef()),
 	m_farPlane("90F3E332-D507-4BCB-BCBE-E74E89F235F6", FloatTypeDef::GetTypeDef())
@@ -95,130 +95,8 @@ void rendering::renderer::Camera::GetCoordinateVectors(math::Vector3& right, mat
 	up = up.Normalize();
 }
 
-void rendering::renderer::Camera::HandleInput(double dt)
-{
-	using namespace math;
-
-	InputInfo inputInfo;
-	WindowObj* wnd = m_window.GetValue<WindowObj*>();
-	wnd->GetInputInfo(inputInfo);
-
-	float right = 0;
-	float forward = 0;
-	float aimRight = 0;
-	float aimUp = 0;
-
-	for (std::set<WPARAM>::const_iterator it = inputInfo.m_keysDown.begin(); it != inputInfo.m_keysDown.end(); ++it) {
-		WPARAM x = *it;
-		if (x == 65) {
-			right = -1;
-		}
-		if (x == 68) {
-			right = 1;
-		}
-
-		if (x == 87) {
-			forward = 1;
-		}
-		if (x == 83) {
-			forward = -1;
-		}
-
-		if (x == 37) {
-			aimRight = 1;
-		}
-		if (x == 39) {
-			aimRight = -1;
-		}
-		if (x == 38) {
-			aimUp = 1;
-		}
-		if (x == 40) {
-			aimUp = -1;
-		}
-	}
-
-	RECT rect;
-	GetWindowRect(wnd->m_hwnd, &rect);
-
-	if (inputInfo.m_rightMouseButtonDown && !m_aiming) {
-		m_cursorRelativePos[0] = inputInfo.m_mouseMovement[0];
-		m_cursorRelativePos[1] = inputInfo.m_mouseMovement[1];
-		m_anglesCache[0] = m_azimuth;
-		m_anglesCache[1] = m_altitude;
-
-		ClipCursor(&rect);
-		ShowCursor(false);
-	}
-
-	if (!inputInfo.m_rightMouseButtonDown && m_aiming) {
-		ClipCursor(nullptr);
-		ShowCursor(true);
-	}
-
-
-	double m_mouseAngleSpeed = 0.1;
-	double m_angleSpeed = 80;
-	double m_moveSpeed = 0.3;
-
-	m_aiming = inputInfo.m_rightMouseButtonDown;
-	if (m_aiming) {
-		SetCursorPos((rect.left + rect.right) / 2, (rect.top + rect.bottom) / 2);
-
-		m_azimuth = -m_mouseAngleSpeed * (inputInfo.m_mouseMovement[0] - m_cursorRelativePos[0]) + m_anglesCache[0];
-		while (m_azimuth >= 360) {
-			m_azimuth -= 360;
-		}
-		while (m_azimuth < 0) {
-			m_azimuth += 360;
-		}
-
-		m_altitude = -m_mouseAngleSpeed * (inputInfo.m_mouseMovement[1] - m_cursorRelativePos[1]) + m_anglesCache[1];
-		if (m_altitude > 80) {
-			m_altitude = 80;
-		}
-
-		if (m_altitude < -80) {
-			m_altitude = -80;
-		}
-	}
-
-	m_azimuth += dt * m_angleSpeed * aimRight;
-	while (m_azimuth >= 360) {
-		m_azimuth -= 360;
-	}
-	while (m_azimuth < 0) {
-		m_azimuth += 360;
-	}
-
-	m_altitude += dt * m_angleSpeed * aimUp;
-	if (m_altitude > 80) {
-		m_altitude = 80;
-	}
-
-	if (m_altitude < -80) {
-		m_altitude = -80;
-	}
-
-
-	float azimuth = M_PI * m_azimuth / 180.0;
-	float altitude = M_PI * m_altitude / 180.0;
-
-	Vector3 fwdVector = { cos(azimuth) * cos(altitude), sin(altitude), sin(azimuth) * cos(altitude) };
-	Vector3 rightVector = Vector3{ 0, 1, 0 } ^ fwdVector;
-	rightVector = rightVector.Normalize();
-
-	Vector3 moveVector{ right, 0, forward };
-	moveVector = moveVector.Normalize();
-	moveVector = m_moveSpeed * moveVector;
-	moveVector = moveVector.m_coefs[0] * rightVector + moveVector.m_coefs[2] * fwdVector;
-
-	m_position = m_position + moveVector;
-	m_target = m_position + fwdVector;
-}
-
 rendering::renderer::Camera::Camera(const ReferenceTypeDef& typeDef) :
-	TickUpdater(typeDef),
+	ObjectValue(typeDef),
 	m_cameraBuffer(DXMutableBufferTypeDef::GetTypeDef(), this),
 	m_window(WindowTypeDef::GetTypeDef(), this),
 
@@ -232,7 +110,7 @@ rendering::renderer::Camera::~Camera()
 {
 }
 
-void rendering::renderer::Camera::Load(jobs::Job* done)
+void rendering::renderer::Camera::LoadData(jobs::Job* done)
 {
 	auto getCamBuffer = [=]() {
 		return m_cameraBuffer.GetValue<DXMutableBuffer*>();
@@ -256,18 +134,12 @@ void rendering::renderer::Camera::Load(jobs::Job* done)
 	jobs::RunSync(init);
 }
 
-bool rendering::renderer::Camera::IsTicking()
-{
-	return m_isLoaded;
-}
-
-void rendering::renderer::Camera::Tick(double dt, jobs::Job* done)
+void rendering::renderer::Camera::Update()
 {
 	using namespace math;
 
 	WindowObj* wnd = m_window.GetValue<WindowObj*>();
 
-	HandleInput(dt);
 	Vector3 right, fwd, up;
 	GetCoordinateVectors(right, fwd, up);
 
@@ -315,7 +187,5 @@ void rendering::renderer::Camera::Tick(double dt, jobs::Job* done)
 	uploadBuff->Unmap();
 
 	camBuff->SetDirty(true);
-
-	jobs::RunSync(done);
 }
 

@@ -1,12 +1,8 @@
 #pragma once
 
-#include "TickUpdater.h"
+#include "Actor.h"
 
-#include<wrl.h>
-#include <map>
-#include <list>
-
-namespace runtime
+namespace game
 {
 	class PlayerControllerTypeDef : public ReferenceTypeDef
 	{
@@ -19,13 +15,19 @@ namespace runtime
 		void Construct(Value& container) const override;
 	};
 
-	class PlayerController : public TickUpdater
+	class PlayerController : public runtime::Actor
 	{
+	private:
+		Value m_camera;
+
+	protected:
+		void LoadData(jobs::Job* done) override;
+
 	public:
 		PlayerController(const ReferenceTypeDef& typeDef);
 		virtual ~PlayerController();
 
-		virtual bool IsTicking() override;
-		virtual void Tick(double dt, jobs::Job* done) override;
+		virtual void Tick(double dt) override;
+		virtual void PrepareForNextTick() override;
 	};
 }
