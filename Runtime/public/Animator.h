@@ -1,6 +1,5 @@
 #pragma once
 
-#include "TickUpdater.h"
 #include "MeshActor.h"
 
 #include "Animation.h"

@@ -15,6 +15,8 @@ add_library (Runtime
 	"private/Input.cpp"
 	"public/Actor.h"
 	"private/Actor.cpp"
+	"public/PoseSampler.h"
+	"private/PoseSampler.cpp"
 )
 
 target_include_directories(Runtime INTERFACE PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/public")

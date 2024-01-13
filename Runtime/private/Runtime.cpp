@@ -5,6 +5,7 @@
 #include "MeshActor.h"
 #include "MeshBuffers.h"
 #include "Animator.h"
+#include "PoseSampler.h"
 
 void runtime::Boot()
 {
@@ -13,4 +14,5 @@ void runtime::Boot()
 	MeshActorTypeDef::GetTypeDef();
 	MeshBuffersTypeDef::GetTypeDef();
 	animation::AnimatorTypeDef::GetTypeDef();
+	animation::PoseSamplerTypeDef::GetTypeDef();
 }
