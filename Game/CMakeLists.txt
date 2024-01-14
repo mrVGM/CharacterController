@@ -7,6 +7,8 @@ add_library (Game
 	"private/Game.cpp"
 	"public/Character.h"
 	"private/Character.cpp"
+	"private/CharacterAnimator.cpp"
+	"public/CharacterAnimator.h"
 )
 
 target_include_directories(Game INTERFACE PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/public")

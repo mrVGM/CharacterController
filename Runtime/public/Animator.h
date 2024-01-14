@@ -24,13 +24,12 @@ namespace animation
 
 	class Animator : public ObjectValue, public jobs::LoadingClass
 	{
-	private:
+	protected:
 		double m_curTime = 0;
-		Value m_actor;
-
 		Value m_sampler;
 
-	protected:
+		Value m_actor;
+
 		virtual void LoadData(jobs::Job* done) override;
 
 	public:
