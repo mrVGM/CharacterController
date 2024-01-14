@@ -178,6 +178,7 @@ void animation::Animator::Tick(double dt)
     math::Matrix* poseData = static_cast<math::Matrix*>(uploadBuff->Map());
 
     animation::PoseSampler* sampler = m_sampler.GetValue<animation::PoseSampler*>();
+    geo::Animation* anim = m_idle.GetValue<geo::Animation*>();
 
     for (auto it = skinData.m_boneNames.begin(); it != skinData.m_boneNames.end(); ++it)
     {
@@ -187,13 +188,14 @@ void animation::Animator::Tick(double dt)
         while (curIndex >= 0)
         {
             const std::string& curBone = skeleton->m_boneNames[curIndex];
-            if (!sampler)
+            if (!anim)
             {
                 mat = skeleton->m_bindPose[curIndex] * mat;
             }
             else
             {
-                mat = sampler->SampleTransform(*this, *skeleton, curBone, m_curTime) * mat;
+                //mat = sampler->SampleTransform(*this, *skeleton, curBone, m_curTime) * mat;
+                mat = SampleTransform(m_curTime, curBone, *anim) * mat;
             }
             curIndex = skeleton->m_boneParents[curIndex];
         }
