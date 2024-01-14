@@ -13,7 +13,6 @@ namespace animation
 		TYPE_DEF_BODY(AnimatorTypeDef)
 
 	public:
-		TypeProperty m_idle;
 		TypeProperty m_sampler;
 
 		AnimatorTypeDef();
@@ -28,17 +27,13 @@ namespace animation
 	private:
 		double m_curTime = 0;
 		Value m_actor;
-		Value m_idle;
 
 		Value m_sampler;
-		
-		const math::Matrix& SampleTransform(double time, const std::string& bone, const geo::Animation& animation);
 
 	protected:
 		virtual void LoadData(jobs::Job* done) override;
 
 	public:
-		Value m_idleDef;
 		Value m_samplerDef;
 
 		Animator(const ReferenceTypeDef& type);

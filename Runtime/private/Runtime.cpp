@@ -15,4 +15,5 @@ void runtime::Boot()
 	MeshBuffersTypeDef::GetTypeDef();
 	animation::AnimatorTypeDef::GetTypeDef();
 	animation::PoseSamplerTypeDef::GetTypeDef();
+	animation::AnimationSamplerTypeDef::GetTypeDef();
 }

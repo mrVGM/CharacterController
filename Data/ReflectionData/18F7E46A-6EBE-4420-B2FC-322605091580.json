@@ -1,0 +1,24 @@
+{
+  "properties":{
+    "277F8B81-E6EC-45E9-9856-149F2FAA5B96":{
+      "type":{
+        "template":{
+          "id":"B2836B8D-7C9B-436F-A9DA-4A0238FCAD6B"
+        },
+        "id":"1D4363E5-BC6F-4B49-80F3-FAC358F5B296"
+      },
+      "name":"Animation",
+      "id":"277F8B81-E6EC-45E9-9856-149F2FAA5B96",
+      "category":"Setup"
+    }
+  },
+  "parent":{
+    "id":"042DF982-4850-4D79-8BD0-0A05B5405AC3"
+  },
+  "name":"Animation Sampler",
+  "isGenerated":0,
+  "id":{
+    "id":"18F7E46A-6EBE-4420-B2FC-322605091580"
+  },
+  "category":"Animations"
+}
