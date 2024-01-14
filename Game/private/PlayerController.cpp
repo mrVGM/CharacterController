@@ -324,20 +324,31 @@ void game::PlayerController::HandleCharMove(float dt, const math::Vector3& veloc
         coef = -1;
     }
     
+    if (curSpeed > 0 && newSpeed < GetFloatEPS())
+    {
+        bool t = true;
+    }
+
     curSpeed += coef * acc * dt;
 
     if (curSpeed < 0)
     {
         curSpeed = 0;
     }
-    if (curSpeed > newSpeed)
+    if (newSpeed > 0 && curSpeed > newSpeed)
     {
         curSpeed = newSpeed;
     }
 
     Vector3 velNorm = velocity.Normalize();
+    bool keepGoing = true;
+    if (Dot(velNorm, velNorm) < GetFloatEPS())
+    {
+        keepGoing = false;
+        velNorm = character->m_curTransform.m_rotation.Rotate(Vector3{ 0, 0, 1 });
+    }
     character->m_velocity = curSpeed * velNorm;
-    character->m_curTransform.m_position = character->m_curTransform.m_position + dt * character->m_velocity;
+    character->m_curTransform.m_position = character->m_curTransform.m_position + keepGoing * dt * character->m_velocity;
 
     HandleCharRotation(dt, character->m_velocity);
 }
@@ -345,7 +356,7 @@ void game::PlayerController::HandleCharMove(float dt, const math::Vector3& veloc
 void game::PlayerController::HandleCharRotation(float dt, const math::Vector3& velocity)
 {
     using namespace math;
-    const float angleSpeed = 2000;
+    const float angleSpeed = 1000;
 
     Character* character = m_character.GetValue<Character*>();
 
