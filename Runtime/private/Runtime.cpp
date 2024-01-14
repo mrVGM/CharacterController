@@ -16,4 +16,5 @@ void runtime::Boot()
 	animation::AnimatorTypeDef::GetTypeDef();
 	animation::PoseSamplerTypeDef::GetTypeDef();
 	animation::AnimationSamplerTypeDef::GetTypeDef();
+	animation::BlendSpaceSamplerTypeDef::GetTypeDef();
 }

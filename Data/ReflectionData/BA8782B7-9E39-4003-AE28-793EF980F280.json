@@ -1,0 +1,35 @@
+{
+  "properties":{
+    "7CC14CDF-13DF-4223-BF23-84889F308AA4":{
+      "type":{
+        "template":{
+          "id":"042DF982-4850-4D79-8BD0-0A05B5405AC3"
+        },
+        "id":"1D4363E5-BC6F-4B49-80F3-FAC358F5B296"
+      },
+      "name":"Sampler 1",
+      "id":"7CC14CDF-13DF-4223-BF23-84889F308AA4",
+      "category":"Setup"
+    },
+    "3CFABBE1-5A43-4FE5-9275-92F98863C6E9":{
+      "type":{
+        "template":{
+          "id":"042DF982-4850-4D79-8BD0-0A05B5405AC3"
+        },
+        "id":"1D4363E5-BC6F-4B49-80F3-FAC358F5B296"
+      },
+      "name":"Sampler 2",
+      "id":"3CFABBE1-5A43-4FE5-9275-92F98863C6E9",
+      "category":"Setup"
+    }
+  },
+  "parent":{
+    "id":"042DF982-4850-4D79-8BD0-0A05B5405AC3"
+  },
+  "name":"Blend Space Sampler",
+  "isGenerated":0,
+  "id":{
+    "id":"BA8782B7-9E39-4003-AE28-793EF980F280"
+  },
+  "category":"Animations"
+}

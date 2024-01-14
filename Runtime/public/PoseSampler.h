@@ -70,4 +70,45 @@ namespace animation
 			double time
 		) override;
 	};
+
+
+	class BlendSpaceSamplerTypeDef : public ReferenceTypeDef
+	{
+		TYPE_DEF_BODY(BlendSpaceSamplerTypeDef)
+
+	public:
+		TypeProperty m_sampler1;
+		TypeProperty m_sampler2;
+
+		BlendSpaceSamplerTypeDef();
+		virtual ~BlendSpaceSamplerTypeDef();
+
+		void Construct(Value& container) const override;
+	};
+
+	class BlendSpaceSampler : public PoseSampler
+	{
+	private:
+		Value m_sampler1;
+		Value m_sampler2;
+
+	protected:
+		void LoadData(jobs::Job* done) override;
+
+	public:
+		Value m_sampler1Def;
+		Value m_sampler2Def;
+
+		float m_alpha = 0;
+
+		BlendSpaceSampler(const ReferenceTypeDef& type);
+		virtual ~BlendSpaceSampler();
+
+		virtual const math::Matrix& SampleTransform(
+			const animation::Animator& animator,
+			const geo::Skeleton& skeleton,
+			const std::string& bone,
+			double time
+		) override;
+	};
 }
