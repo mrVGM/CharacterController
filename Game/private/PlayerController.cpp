@@ -78,7 +78,7 @@ void game::PlayerController::Tick(double dt)
     runtime::Input& input = runtime::GetInput();
     
     Character* character = m_character.GetValue<Character*>();
-    if (!character && input.m_keysDown.contains(32))
+    if (!character && input.m_keysDown.contains(80)) // P key
     {
         scene::SceneObject* scene = m_scene.GetValue<scene::SceneObject*>();
         
@@ -322,11 +322,6 @@ void game::PlayerController::HandleCharMove(float dt, const math::Vector3& veloc
     if (coef > newSpeed + GetFloatEPS())
     {
         coef = -1;
-    }
-    
-    if (curSpeed > 0 && newSpeed < GetFloatEPS())
-    {
-        bool t = true;
     }
 
     curSpeed += coef * acc * dt;
