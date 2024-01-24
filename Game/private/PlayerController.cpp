@@ -210,6 +210,7 @@ void game::PlayerController::ControllCharacter(double dt)
     const float moveSpeed = 6;
 
     runtime::Input& input = runtime::GetInput();
+    Character* character = m_character.GetValue<Character*>();
 
     rendering::renderer::Camera* cam = m_camera.GetValue<rendering::renderer::Camera*>();
     rendering::WindowObj* wnd = cam->m_window.GetValue<rendering::WindowObj*>();
@@ -279,6 +280,10 @@ void game::PlayerController::ControllCharacter(double dt)
     {
         move.m_coefs[1] += 1;
     }
+    if (input.m_keysDown.contains(32)) // space
+    {
+        character->m_jumpComponent.StartJump();
+    }
     move = moveSpeed * move.Normalize();
 
     azm *= M_PI / 180;
@@ -297,7 +302,6 @@ void game::PlayerController::ControllCharacter(double dt)
 
     Vector3 charRight = Vector3{ 0,1,0 } ^ charFwd;
 
-    Character* character = m_character.GetValue<Character*>();
     HandleCharMove(dt, move.m_coefs[1] * charRight + move.m_coefs[0] * charFwd);
 
     cam->m_target = character->m_curTransform.m_position + Vector3{ 0, 1, 0 };
@@ -344,6 +348,8 @@ void game::PlayerController::HandleCharMove(float dt, const math::Vector3& veloc
     }
     character->m_velocity = curSpeed * velNorm;
     character->m_curTransform.m_position = character->m_curTransform.m_position + keepGoing * dt * character->m_velocity;
+
+    character->m_jumpComponent.UpdateJump(dt);
 
     HandleCharRotation(dt, character->m_velocity);
 }
