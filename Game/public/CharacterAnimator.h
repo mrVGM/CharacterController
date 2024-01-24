@@ -13,6 +13,8 @@ namespace game
 		TYPE_DEF_BODY(CharacterAnimatorTypeDef)
 
 	public:
+		TypeProperty m_idleSampler;
+
 		CharacterAnimatorTypeDef();
 		virtual ~CharacterAnimatorTypeDef();
 
@@ -22,7 +24,17 @@ namespace game
 
 	class CharacterAnimator : public animation::Animator
 	{
+	private:
+		Value m_idleSampler;
+
+	protected:
+		void LoadData(jobs::Job* done) override;
+
 	public:
+		Value m_idleSamplerDef;
+
+		animation::PoseSampler* GetSampler();
+
 		CharacterAnimator(const ReferenceTypeDef& type);
 		virtual ~CharacterAnimator();
 

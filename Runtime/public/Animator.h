@@ -8,13 +8,13 @@
 
 namespace animation
 {
+	class PoseSampler;
+
 	class AnimatorTypeDef : public ReferenceTypeDef
 	{
 		TYPE_DEF_BODY(AnimatorTypeDef)
 
 	public:
-		TypeProperty m_sampler;
-
 		AnimatorTypeDef();
 		virtual ~AnimatorTypeDef();
 
@@ -26,17 +26,15 @@ namespace animation
 	{
 	protected:
 		double m_curTime = 0;
-		Value m_sampler;
-
 		Value m_actor;
 
 		virtual void LoadData(jobs::Job* done) override;
 
 	public:
-		Value m_samplerDef;
-
 		Animator(const ReferenceTypeDef& type);
 		virtual ~Animator();
+
+		virtual PoseSampler* GetSampler();
 
 		virtual bool IsTicking() const;
 		virtual void Tick(double dt);

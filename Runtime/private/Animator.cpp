@@ -29,19 +29,8 @@ const animation::AnimatorTypeDef& animation::AnimatorTypeDef::GetTypeDef()
 }
 
 animation::AnimatorTypeDef::AnimatorTypeDef() :
-    ReferenceTypeDef(&ReferenceTypeDef::GetTypeDef(), "E072CB3C-7F9E-452E-AD27-88404A2E7997"),
-    m_sampler("33BEE8F2-486A-4761-B089-8CDC2F6A0298", TypeTypeDef::GetTypeDef(animation::PoseSamplerTypeDef::GetTypeDef()))
+    ReferenceTypeDef(&ReferenceTypeDef::GetTypeDef(), "E072CB3C-7F9E-452E-AD27-88404A2E7997")
 {
-    {
-        m_sampler.m_name = "Pose Sampler";
-        m_sampler.m_category = "Setup";
-        m_sampler.m_getValue = [](CompositeValue* obj) -> Value& {
-            Animator* animator = static_cast<Animator*>(obj);
-            return animator->m_samplerDef;
-        };
-        m_properties[m_sampler.GetId()] = &m_sampler;
-    }
-
     m_name = "Animator";
     m_category = "Animations";
 }
@@ -58,60 +47,22 @@ void animation::AnimatorTypeDef::Construct(Value& value) const
 
 void animation::Animator::LoadData(jobs::Job* done)
 {
-    int* toLoad = new int;
-    *toLoad = 0;
-
-    auto loaded = [=]() {
-        --(*toLoad);
-        if (*toLoad > 0)
-        {
-            return;
-        }
-
-        delete toLoad;
-
-        jobs::RunSync(done);
-    };
-
-    jobs::Job* load = jobs::Job::CreateByLambda([=]() {
-        PoseSampler* sampler = m_sampler.GetValue<PoseSampler*>();
-        if (sampler)
-        {
-            ++(*toLoad);
-            sampler->Load(jobs::Job::CreateByLambda(loaded));
-        }
-
-        if (*toLoad == 0)
-        {
-            jobs::RunSync(jobs::Job::CreateByLambda(loaded));
-        }
-    });
-
-    jobs::Job* init = jobs::Job::CreateByLambda([=]() {
-        const TypeDef* samplerDef = m_samplerDef.GetType<const TypeDef*>();
-        if (samplerDef)
-        {
-            ObjectValueContainer::GetObjectOfType(*samplerDef, m_sampler);
-        }
-
-        jobs::RunAsync(load);
-    });
-
-    jobs::RunSync(init);
+    jobs::RunSync(done);
 }
 
 animation::Animator::Animator(const ReferenceTypeDef& typeDef) :
     ObjectValue(typeDef),
-
-    m_samplerDef(AnimatorTypeDef::GetTypeDef().m_sampler.GetType(), this),
-    m_sampler(PoseSamplerTypeDef::GetTypeDef(), this),
-
     m_actor(runtime::MeshActorTypeDef::GetTypeDef(), this)
 {
 }
 
 animation::Animator::~Animator()
 {
+}
+
+animation::PoseSampler* animation::Animator::GetSampler()
+{
+    return nullptr;
 }
 
 bool animation::Animator::IsTicking() const
@@ -135,7 +86,7 @@ void animation::Animator::Tick(double dt)
 
     math::Matrix* poseData = static_cast<math::Matrix*>(uploadBuff->Map());
 
-    animation::PoseSampler* sampler = m_sampler.GetValue<animation::PoseSampler*>();
+    animation::PoseSampler* sampler = GetSampler();
 
     for (auto it = skinData.m_boneNames.begin(); it != skinData.m_boneNames.end(); ++it)
     {
