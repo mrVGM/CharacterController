@@ -22,6 +22,8 @@ namespace animation
 	class PoseSampler : public ObjectValue, public jobs::LoadingClass
 	{
 	public:
+		double m_timeOffset = 0;
+
 		PoseSampler(const ReferenceTypeDef& type);
 		virtual ~PoseSampler();
 
@@ -88,14 +90,13 @@ namespace animation
 
 	class BlendSpaceSampler : public PoseSampler
 	{
-	private:
-		Value m_sampler1;
-		Value m_sampler2;
-
 	protected:
 		void LoadData(jobs::Job* done) override;
 
 	public:
+		Value m_sampler1;
+		Value m_sampler2;
+
 		Value m_sampler1Def;
 		Value m_sampler2Def;
 

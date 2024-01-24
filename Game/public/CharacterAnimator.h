@@ -13,7 +13,7 @@ namespace game
 		TYPE_DEF_BODY(CharacterAnimatorTypeDef)
 
 	public:
-		TypeProperty m_idleSampler;
+		TypeProperty m_moveSampler;
 
 		CharacterAnimatorTypeDef();
 		virtual ~CharacterAnimatorTypeDef();
@@ -25,13 +25,15 @@ namespace game
 	class CharacterAnimator : public animation::Animator
 	{
 	private:
-		Value m_idleSampler;
+		Value m_moveSampler;
+		bool m_lastTickWasFalling = false;
+		double m_transitionTimeLeft = 0;
 
 	protected:
 		void LoadData(jobs::Job* done) override;
 
 	public:
-		Value m_idleSamplerDef;
+		Value m_moveSamplerDef;
 
 		animation::PoseSampler* GetSampler();
 

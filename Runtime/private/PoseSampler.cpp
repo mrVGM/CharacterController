@@ -1,6 +1,7 @@
 #include "PoseSampler.h"
 
 #include "PrimitiveTypes.h"
+#include "AssetTypeDef.h"
 
 #include "Animation.h"
 
@@ -147,6 +148,8 @@ const math::Matrix& animation::AnimationSampler::SampleTransform(
 {
     using namespace math;
 
+    time -= m_timeOffset;
+
     geo::Animation* anim = m_animation.GetValue<geo::Animation*>();
 
     math::Matrix mat = math::Matrix::GetIdentityMatrix();
@@ -228,11 +231,11 @@ void animation::BlendSpaceSampler::LoadData(jobs::Job* done)
     };
 
     jobs::Job* init = jobs::Job::CreateByLambda([=]() {
-        const TypeDef* samplerDef1 = m_sampler1Def.GetType<const TypeDef*>();
-        const TypeDef* samplerDef2 = m_sampler2Def.GetType<const TypeDef*>();
+        const AssetTypeDef* samplerDef1 = m_sampler1Def.GetType<const AssetTypeDef*>();
+        const AssetTypeDef* samplerDef2 = m_sampler2Def.GetType<const AssetTypeDef*>();
 
-        ObjectValueContainer::GetObjectOfType(*samplerDef1, m_sampler1);
-        ObjectValueContainer::GetObjectOfType(*samplerDef2, m_sampler2);
+        samplerDef1->Construct(m_sampler1);
+        samplerDef2->Construct(m_sampler2);
 
         PoseSampler* sampler1 = m_sampler1.GetValue<PoseSampler*>();
         PoseSampler* sampler2 = m_sampler2.GetValue<PoseSampler*>();
@@ -267,6 +270,8 @@ animation::BlendSpaceSampler::~BlendSpaceSampler()
 const math::Matrix& animation::BlendSpaceSampler::SampleTransform(const animation::Animator& animator, const geo::Skeleton& skeleton, const std::string& bone, double time)
 {
     using namespace math;
+
+    time -= m_timeOffset;
 
     PoseSampler* sampler1 = m_sampler1.GetValue<PoseSampler*>();
     PoseSampler* sampler2 = m_sampler2.GetValue<PoseSampler*>();

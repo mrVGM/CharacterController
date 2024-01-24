@@ -28,16 +28,16 @@ const game::CharacterAnimatorTypeDef& game::CharacterAnimatorTypeDef::GetTypeDef
 
 game::CharacterAnimatorTypeDef::CharacterAnimatorTypeDef() :
     ReferenceTypeDef(&animation::AnimatorTypeDef::GetTypeDef(), "CD0F47C1-967C-4284-B58C-CBF1DA5D594C"),
-    m_idleSampler("33BEE8F2-486A-4761-B089-8CDC2F6A0298", TypeTypeDef::GetTypeDef(animation::BlendSpaceSamplerTypeDef::GetTypeDef()))
+    m_moveSampler("33BEE8F2-486A-4761-B089-8CDC2F6A0298", TypeTypeDef::GetTypeDef(animation::BlendSpaceSamplerTypeDef::GetTypeDef()))
 {
     {
-        m_idleSampler.m_name = "Idle Sampler";
-        m_idleSampler.m_category = "Setup";
-        m_idleSampler.m_getValue = [](CompositeValue* obj) -> Value& {
+        m_moveSampler.m_name = "Idle Sampler";
+        m_moveSampler.m_category = "Setup";
+        m_moveSampler.m_getValue = [](CompositeValue* obj) -> Value& {
             CharacterAnimator* animator = static_cast<CharacterAnimator*>(obj);
-            return animator->m_idleSamplerDef;
+            return animator->m_moveSamplerDef;
         };
-        m_properties[m_idleSampler.GetId()] = &m_idleSampler;
+        m_properties[m_moveSampler.GetId()] = &m_moveSampler;
     }
 
     m_name = "Character Animator";
@@ -57,10 +57,10 @@ void game::CharacterAnimatorTypeDef::Construct(Value& value) const
 void game::CharacterAnimator::LoadData(jobs::Job* done)
 {
     jobs::Job* init = jobs::Job::CreateByLambda([=]() {
-        const AssetTypeDef* asset = m_idleSamplerDef.GetType<const AssetTypeDef*>();
-        asset->Construct(m_idleSampler);
+        const AssetTypeDef* asset = m_moveSamplerDef.GetType<const AssetTypeDef*>();
+        asset->Construct(m_moveSampler);
 
-        animation::BlendSpaceSampler* sampler = m_idleSampler.GetValue<animation::BlendSpaceSampler*>();
+        animation::BlendSpaceSampler* sampler = m_moveSampler.GetValue<animation::BlendSpaceSampler*>();
 
         jobs::RunAsync(jobs::Job::CreateByLambda([=]() {
             sampler->Load(done);
@@ -72,13 +72,13 @@ void game::CharacterAnimator::LoadData(jobs::Job* done)
 
 animation::PoseSampler* game::CharacterAnimator::GetSampler()
 {
-    return m_idleSampler.GetValue<animation::BlendSpaceSampler*>();
+    return m_moveSampler.GetValue<animation::BlendSpaceSampler*>();
 }
 
 game::CharacterAnimator::CharacterAnimator(const ReferenceTypeDef& typeDef) :
     animation::Animator(typeDef),
-    m_idleSamplerDef(CharacterAnimatorTypeDef::GetTypeDef().m_idleSampler.GetType(), this),
-    m_idleSampler(animation::BlendSpaceSamplerTypeDef::GetTypeDef(), this)
+    m_moveSamplerDef(CharacterAnimatorTypeDef::GetTypeDef().m_moveSampler.GetType(), this),
+    m_moveSampler(animation::BlendSpaceSamplerTypeDef::GetTypeDef(), this)
 {
 }
 
@@ -90,9 +90,36 @@ void game::CharacterAnimator::Tick(double dt)
 {
     using namespace math;
 
-    Character* character = m_actor.GetValue<Character*>();
+    const double transitionDuration = 0.2;
 
-    animation::BlendSpaceSampler* sampler = m_idleSampler.GetValue<animation::BlendSpaceSampler*>();
+    Character* character = m_actor.GetValue<Character*>();
+    if (m_lastTickWasFalling != character->m_jumpComponent.m_duringJump)
+    {
+        m_transitionTimeLeft = transitionDuration;
+    }
+    m_lastTickWasFalling = character->m_jumpComponent.m_duringJump;
+
+    m_transitionTimeLeft -= dt;
+    if (m_transitionTimeLeft < 0)
+    {
+        m_transitionTimeLeft = 0;
+    }
+
+    animation::BlendSpaceSampler* sampler = m_moveSampler.GetValue<animation::BlendSpaceSampler*>();
+    animation::BlendSpaceSampler* moveSampler = sampler->m_sampler1.GetValue<animation::BlendSpaceSampler*>();
+    animation::AnimationSampler* fallSampler = sampler->m_sampler2.GetValue<animation::AnimationSampler*>();
+
+    sampler->m_alpha = m_transitionTimeLeft / transitionDuration;
+    if (sampler->m_alpha < 0)
+    {
+        sampler->m_alpha = 0;
+    }
+    if (sampler->m_alpha > 1)
+    {
+        sampler->m_alpha = 1;
+    }
+
+    sampler->m_alpha = m_lastTickWasFalling ? 1 - sampler->m_alpha : sampler->m_alpha;
 
     float speed = Dot(character->m_velocity, character->m_velocity);
     speed = sqrt(speed);
@@ -107,7 +134,7 @@ void game::CharacterAnimator::Tick(double dt)
     {
         blendFactor = 1;
     }
-    sampler->m_alpha = blendFactor;
+    moveSampler->m_alpha = blendFactor;
 
     animation::Animator::Tick(dt);
 }
