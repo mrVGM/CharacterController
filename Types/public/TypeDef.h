@@ -4,6 +4,8 @@
 
 #include <string>
 #include <map>
+#include <mutex>
+#include <functional>
 
 #define TYPE_DEF_BODY(Name)\
 public:\
@@ -35,7 +37,18 @@ class TypeDef
 	TYPE_DEF_BODY(TypeDef)
 
 public:
-	typedef std::map<std::string, const TypeDef*> TypeDefsMap;
+
+	struct TypeDefsMap
+	{
+	private:
+		std::mutex m_mutex;
+		std::map<std::string, const TypeDef*> m_map;
+	public:
+		const TypeDef* GetByKey(const std::string& key);
+		const TypeDef* GetByFilter(const std::function<bool(const TypeDef*)>& filter);
+		void Register(const std::string& key, const TypeDef* type);
+		void Iterate(const std::function<void(const TypeDef*)>& func);
+	};
 
 	struct TypeKeyGen
 	{
@@ -43,6 +56,7 @@ public:
 	};
 
 private:
+
 	const TypeDef* m_parent = nullptr;
 	std::string m_id;
 	json_parser::JSONValue m_typeKey;

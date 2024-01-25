@@ -31,9 +31,8 @@ TypeDef::TypeDef(const TypeDef* parent, const std::string& id, const TypeDef::Ty
 {
 	keyGenerator.GenerateKey(m_typeKey);
 	TypeDefsMap& defsMap = GetDefsMap();
-
 	std::string typeKey = m_typeKey.ToString(false);
-	defsMap[typeKey] = this;
+	defsMap.Register(typeKey, this);
 }
 
 TypeDef::TypeDef(const TypeDef* parent, const std::string& id) :
@@ -83,21 +82,20 @@ void TypeDef::SaveReflectionData()
 {
 	using namespace json_parser;
 	TypeDefsMap& defsMap = GetDefsMap();
-	for (auto it = defsMap.begin(); it != defsMap.end(); ++it)
-	{
-		if (it->second->m_isGenerated)
+	defsMap.Iterate([](const TypeDef* type) {
+		if (type->IsGenerated())
 		{
-			continue;
+			return;
 		}
-		
+
 		JSONValue reflectionData;
-		it->second->GetReflectionData(reflectionData);
+		type->GetReflectionData(reflectionData);
 
 		std::string contents = reflectionData.ToString(true);
-		std::string fileName = files::GetReflectionDataDir() + it->second->GetId() + ".json";
+		std::string fileName = files::GetReflectionDataDir() + type->GetId() + ".json";
 
 		files::WriteTextFile(fileName, contents);
-	}
+	});
 }
 
 bool TypeDef::IsGenerated() const
@@ -144,4 +142,62 @@ const std::string& TypeDef::GetId() const
 const TypeDef* TypeDef::GetParent() const
 {
 	return m_parent;
+}
+
+const TypeDef* TypeDef::TypeDefsMap::GetByKey(const std::string& key)
+{
+	const TypeDef* type = nullptr;
+
+	m_mutex.lock();
+
+	auto it = m_map.find(key);
+	if (it != m_map.end())
+	{
+		type = it->second;
+	}
+
+	m_mutex.unlock();
+
+	return type;
+}
+
+const TypeDef* TypeDef::TypeDefsMap::GetByFilter(const std::function<bool(const TypeDef*)>& filter)
+{
+	const TypeDef* type = nullptr;
+
+	m_mutex.lock();
+
+	for (auto it = m_map.begin(); it != m_map.end(); ++it)
+	{
+		const TypeDef* cur = it->second;
+		if (filter(cur)) {
+			type = cur;
+			break;
+		}
+	}
+
+	m_mutex.unlock();
+
+	return type;
+}
+
+void TypeDef::TypeDefsMap::Register(const std::string& key, const TypeDef* type)
+{
+	m_mutex.lock();
+
+	m_map[key] = type;
+
+	m_mutex.unlock();
+}
+
+void TypeDef::TypeDefsMap::Iterate(const std::function<void(const TypeDef*)>& func)
+{
+	m_mutex.lock();
+
+	for (auto it = m_map.begin(); it != m_map.end(); ++it)
+	{
+		func(it->second);
+	}
+
+	m_mutex.unlock();
 }

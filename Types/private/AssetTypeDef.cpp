@@ -16,14 +16,13 @@ namespace
 		JSONValue parent = map["parent"];
 
 		TypeDef::TypeDefsMap& defsMap = TypeDef::GetDefsMap();
-		auto it = defsMap.find(parent.ToString(false));
+		const TypeDef* type = defsMap.GetByKey(parent.ToString(false));
 
-		if (it == defsMap.end())
+		if (!type)
 		{
 			throw "Can't find parent type def!";
 		}
 
-		const TypeDef* type = it->second;
 		if (!TypeDef::IsA(*type, ReferenceTypeDef::GetTypeDef()))
 		{
 			throw "Can't cast to reference def!";

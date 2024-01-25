@@ -45,18 +45,23 @@ void ObjectValueContainer::GetObjectOfType(const TypeDef& typeDef, Value& contai
 		}
 	}
 
-	const TypeDef::TypeDefsMap& defsMap = TypeDef::GetDefsMap();
-	for (auto it = defsMap.begin(); it != defsMap.end(); ++it)
 	{
-		const TypeDef* cur = it->second;
-		if (!cur->IsGenerated())
-		{
-			continue;
-		}
+		TypeDef::TypeDefsMap& defsMap = TypeDef::GetDefsMap();
+		const TypeDef* tmp = defsMap.GetByFilter([&](const TypeDef* type) {
+			if (!type->IsGenerated()) {
+				return false;
+			}
 
-		const AssetTypeDef* asset = static_cast<const AssetTypeDef*>(cur);
-		if (TypeDef::IsA(*cur, typeDef))
+			if (TypeDef::IsA(*type, typeDef)) {
+				return true;
+			}
+
+			return false;
+		});
+
+		if (tmp)
 		{
+			const AssetTypeDef* asset = static_cast<const AssetTypeDef*>(tmp);
 			asset->Construct(container);
 			return;
 		}

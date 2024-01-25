@@ -239,11 +239,10 @@ const TypeTypeDef& TypeTypeDef::GetTypeDef(const TypeDef& templateType)
 	}
 
 	TypeDefsMap& defsMap = GetDefsMap();
-	auto it = defsMap.find(key.ToString(false));
-
-	if (it != defsMap.end())
+	const TypeDef* typeDef = defsMap.GetByKey(key.ToString(false));
+	if (typeDef)
 	{
-		return *static_cast<const TypeTypeDef*>(it->second);
+		return *static_cast<const TypeTypeDef*>(typeDef);
 	}
 
 	TypeTypeDef* newDef = new TypeTypeDef(templateType);
@@ -270,13 +269,12 @@ void TypeTypeDef::DeserializeFromJSON(Value& value, json_parser::JSONValue& json
 
 	using namespace json_parser;
 
-	const TypeDef::TypeDefsMap& defsMap = TypeDef::GetDefsMap();
-	auto it = defsMap.find(json.ToString(false));
-
-	if (it == defsMap.end())
+	TypeDef::TypeDefsMap& defsMap = TypeDef::GetDefsMap();
+	const TypeDef* type = defsMap.GetByKey(json.ToString(false));
+	if (!type)
 	{
 		return;
 	}
 
-	value.m_payload = it->second;
+	value.m_payload = type;
 }

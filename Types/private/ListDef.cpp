@@ -42,12 +42,11 @@ const ListDef& ListDef::GetTypeDef(const TypeDef& templateDef)
 		keyGen.GenerateKey(tmp);
 	}
 
-	const TypeDef::TypeDefsMap& defsMap = TypeDef::GetDefsMap();
-
-	auto it = defsMap.find(tmp.ToString(false));
-	if (it != defsMap.end())
+	TypeDef::TypeDefsMap& defsMap = TypeDef::GetDefsMap();
+	const TypeDef* type = defsMap.GetByKey(tmp.ToString(false));
+	if (type)
 	{
-		return static_cast<const ListDef&>(*it->second);
+		return static_cast<const ListDef&>(*type);
 	}
 
 	ListDef* typeDef = new ListDef(templateDef);

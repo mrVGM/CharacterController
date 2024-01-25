@@ -1,5 +1,17 @@
 {
-  "properties":{},
+  "properties":{
+    "33BEE8F2-486A-4761-B089-8CDC2F6A0298":{
+      "type":{
+        "template":{
+          "id":"BA8782B7-9E39-4003-AE28-793EF980F280"
+        },
+        "id":"1D4363E5-BC6F-4B49-80F3-FAC358F5B296"
+      },
+      "name":"Idle Sampler",
+      "id":"33BEE8F2-486A-4761-B089-8CDC2F6A0298",
+      "category":"Setup"
+    }
+  },
   "parent":{
     "id":"E072CB3C-7F9E-452E-AD27-88404A2E7997"
   },
