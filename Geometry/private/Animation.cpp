@@ -324,6 +324,7 @@ const math::Matrix& geo::Animation::SampleChannel(double time, const AnimChannel
 {
 	int tmp = time / GetLength();
 	time -= tmp * GetLength();
+	time += channel.m_keyFrames.front().m_time;
 
 	int left = 0;
 	int right = channel.m_keyFrames.size() - 1;
@@ -358,7 +359,7 @@ const math::Matrix& geo::Animation::SampleChannel(double time, const AnimChannel
 
 double geo::Animation::GetLength() const
 {
-	return m_animation.front().m_keyFrames.back().m_time;
+	return m_animation.front().m_keyFrames.back().m_time - m_animation.front().m_keyFrames.front().m_time;
 }
 
 void geo::Animation::SerializeToMF(files::MemoryFile& mf)
