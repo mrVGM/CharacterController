@@ -14,4 +14,4 @@ Some of the key features of the project are the following:
 Nothing special is done for graphics, yet. I'm currently using a simple flat rendering model, that doesn't support any lighting.
 
 Anyway, here is a demo of what I have so far:
-![Character Controller Demo](demo/CharacterControllerDemo.gif)
+![Character Controller Demo](Demo/CharControllerDemo.gif)
