@@ -6,5 +6,5 @@ namespace rendering::core
 {
 	void Boot();
 
-	void LoadCoreObjects(jobs::Job* done);
+	void LoadCoreObjects(jobs::Job done);
 }

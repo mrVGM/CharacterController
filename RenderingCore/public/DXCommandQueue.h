@@ -3,7 +3,7 @@
 #include "CompositeTypeDef.h"
 #include "CompositeValue.h"
 
-#include "Job.h"
+#include "Jobs.h"
 
 #include "MultiLoader.h"
 
@@ -33,7 +33,7 @@ namespace rendering
 		Value m_device;
 
 	protected:
-		void LoadData(jobs::Job* done);
+		void LoadData(jobs::Job done) override;
 
 	public:
 		DXCommandQueue(const ReferenceTypeDef& typeDef);

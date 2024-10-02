@@ -5,7 +5,7 @@
 
 #include "MultiLoader.h"
 
-#include "Job.h"
+#include "Jobs.h"
 
 namespace scene
 {
@@ -28,7 +28,7 @@ namespace scene
 		Value m_actors;
 
 	protected:
-		void LoadData(jobs::Job* done) override;
+		void LoadData(jobs::Job done) override;
 
 	public:
 		Value m_actorList;

@@ -54,18 +54,18 @@ void game::CharacterAnimatorTypeDef::Construct(Value& value) const
     value.AssignObject(animator);
 }
 
-void game::CharacterAnimator::LoadData(jobs::Job* done)
+void game::CharacterAnimator::LoadData(jobs::Job done)
 {
-    jobs::Job* init = jobs::Job::CreateByLambda([=]() {
+    jobs::Job init = [=]() {
         const AssetTypeDef* asset = m_moveSamplerDef.GetType<const AssetTypeDef*>();
         asset->Construct(m_moveSampler);
 
         animation::BlendSpaceSampler* sampler = m_moveSampler.GetValue<animation::BlendSpaceSampler*>();
 
-        jobs::RunAsync(jobs::Job::CreateByLambda([=]() {
+        jobs::RunAsync([=]() {
             sampler->Load(done);
-        }));
-    });
+        });
+    };
 
     jobs::RunSync(init);
 }

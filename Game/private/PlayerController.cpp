@@ -53,18 +53,18 @@ game::PlayerController::PlayerController(const ReferenceTypeDef& typeDef) :
 {
 }
 
-void game::PlayerController::LoadData(jobs::Job* done)
+void game::PlayerController::LoadData(jobs::Job done)
 {
-    jobs::Job* loadCam = jobs::Job::CreateByLambda([=]() {
+    jobs::Job loadCam = [=]() {
         rendering::renderer::Camera* cam = m_camera.GetValue<rendering::renderer::Camera*>();
         cam->Load(done);
-    });
+    };
 
-    jobs::Job* init = jobs::Job::CreateByLambda([=]() {
+    jobs::Job init = [=]() {
         ObjectValueContainer::GetObjectOfType(rendering::renderer::CameraTypeDef::GetTypeDef(), m_camera);
         ObjectValueContainer::GetObjectOfType(scene::SceneObjectTypeDef::GetTypeDef(), m_scene);
         jobs::RunAsync(loadCam);
-    });
+    };
 
     jobs::RunSync(init);
 }

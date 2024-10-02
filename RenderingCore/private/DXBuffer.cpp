@@ -130,11 +130,11 @@ UINT64 rendering::DXBuffer::GetElementCount() const
 
 void rendering::DXBuffer::CopyBuffer(
 	rendering::DXBuffer& destination,
-	jobs::Job* done) const
+	jobs::Job done) const
 {
 	DXBuffer* destBuff = &destination;
 	
-	jobs::Job* init = jobs::Job::CreateByLambda([=]() {
+	jobs::Job init = [=]() {
 		DXBuffer* self = const_cast<DXBuffer*>(this);
 		DXCopyBuffers* copyBuffers = m_copyBuffers.GetValue<DXCopyBuffers*>();
 		if (!copyBuffers)
@@ -144,7 +144,7 @@ void rendering::DXBuffer::CopyBuffer(
 		}
 
 		copyBuffers->Execute(*destBuff, *this, done);
-	});
+	};
 
 	jobs::RunSync(init);
 }

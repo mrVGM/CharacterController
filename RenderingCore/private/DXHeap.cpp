@@ -72,24 +72,24 @@ rendering::DXHeap::~DXHeap()
 	}
 }
 
-void rendering::DXHeap::MakeResident(jobs::Job* done)
+void rendering::DXHeap::MakeResident(jobs::Job done)
 {
 	if (m_resident) {
 		throw "The heap is already Resident!";
 	}
 
 	auto createWaitJob = [=](UINT64 signal) {
-		return jobs::Job::CreateByLambda([=]() {
+		return [=]() {
 			DXFence* fence = m_residentHeapFence.GetValue<DXFence*>();
 			WaitFence waitFence(*fence);
 			waitFence.Wait(signal);
 			m_resident = true;
 
 			jobs::RunSync(done);
-		});
+		};
 	};
 
-	jobs::Job* enqueJob = jobs::Job::CreateByLambda([=]() {
+	jobs::Job enqueJob = [=]() {
 		ID3D12Device3* device3;
 		HRESULT hr = m_device.GetValue<DXDevice*>()->GetDevice().QueryInterface(IID_PPV_ARGS(&device3));
 		if (FAILED(hr))
@@ -105,16 +105,16 @@ void rendering::DXHeap::MakeResident(jobs::Job* done)
 		}
 
 		jobs::RunAsync(createWaitJob(signal));
-	});
+	};
 
-	jobs::Job* init = jobs::Job::CreateByLambda([=]() {
+	jobs::Job init = [=]() {
 		ObjectValueContainer::GetObjectOfType(DXDeviceTypeDef::GetTypeDef(), m_device);
 		ObjectValueContainer::GetObjectOfType(ResidentHeapJobSystemTypeDef::GetTypeDef(), m_residentHeapJS);
 		ObjectValueContainer::GetObjectOfType(ResidentHeapFenceTypeDef::GetTypeDef(), m_residentHeapFence);
 
 		Create();
 		m_residentHeapJS.GetValue<jobs::JobSystem*>()->ScheduleJob(enqueJob);
-	});
+	};
 
 	jobs::RunSync(init);
 }

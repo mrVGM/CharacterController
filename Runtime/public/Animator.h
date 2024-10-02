@@ -28,7 +28,7 @@ namespace animation
 		double m_curTime = 0;
 		Value m_actor;
 
-		virtual void LoadData(jobs::Job* done) override;
+		virtual void LoadData(jobs::Job done) override;
 
 	public:
 		Animator(const ReferenceTypeDef& type);

@@ -31,7 +31,7 @@ namespace game
 		void HandleCharRotation(float dt, const math::Vector3& velocity);
 
 	protected:
-		void LoadData(jobs::Job* done) override;
+		void LoadData(jobs::Job done) override;
 
 	public:
 		PlayerController(const ReferenceTypeDef& typeDef);

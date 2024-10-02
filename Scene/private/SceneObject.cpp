@@ -73,7 +73,7 @@ scene::SceneObject::~SceneObject()
 {
 }
 
-void scene::SceneObject::LoadData(jobs::Job* done)
+void scene::SceneObject::LoadData(jobs::Job done)
 {
 	ValueList* sceneActorList = m_actorList.GetValue<ValueList*>();
 	ValueList* actorList = m_actors.GetValue<ValueList*>();
@@ -97,12 +97,12 @@ void scene::SceneObject::LoadData(jobs::Job* done)
 	};
 
 	auto loadActor = [=](runtime::Actor* actor) {
-		return jobs::Job::CreateByLambda([=]() {
-			actor->Load(jobs::Job::CreateByLambda(actorLoaded));
-		});
+		return [=]() {
+			actor->Load(actorLoaded);
+		};
 	};
 
-	jobs::Job* initActors = jobs::Job::CreateByLambda([=]() {
+	jobs::Job initActors = [=]() {
 
 		for (auto it = sceneActorList->GetIterator(); it; ++it)
 		{
@@ -134,7 +134,7 @@ void scene::SceneObject::LoadData(jobs::Job* done)
 			++ctx->m_toLoad;
 			jobs::RunAsync(loadActor(actor));
 		}
-	});
+	};
 
 	jobs::RunSync(initActors);
 }

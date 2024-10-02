@@ -3,7 +3,7 @@
 #include "CompositeTypeDef.h"
 #include "CompositeValue.h"
 
-#include "Job.h"
+#include "Jobs.h"
 
 #include "d3dx12.h"
 #include <wrl.h>
@@ -47,8 +47,8 @@ namespace rendering
 		void SetDirty(bool dirty);
 		bool IsDirty();
 
-		void Load(jobs::Job* done);
-		void Upload(jobs::Job* done);
+		void Load(jobs::Job done);
+		void Upload(jobs::Job done);
 
 		ID3D12CommandList* GetCopyCommandList();
 	};

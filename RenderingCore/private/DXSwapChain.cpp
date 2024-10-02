@@ -175,36 +175,12 @@ rendering::DXSwapChain::~DXSwapChain()
 {
 }
 
-void rendering::DXSwapChain::Load(jobs::Job* done)
+void rendering::DXSwapChain::Load(jobs::Job done)
 {
-    struct Context
-    {
-        DXSwapChain* m_self = nullptr;
-        jobs::Job* m_done = nullptr;
-    };
-
-    Context ctx{ this, done };
-
-    class LoadJob : public jobs::Job
-    {
-    private:
-        Context m_ctx;
-    public:
-        LoadJob(const Context& ctx) :
-            m_ctx(ctx)
-        {
-        }
-
-        void Do() override
-        {
-            m_ctx.m_self->Create();
-
-            jobs::RunSync(m_ctx.m_done);
-        }
-    };
-
-
-    jobs::RunSync(new LoadJob(ctx));
+    jobs::RunSync([=]() {
+        Create();
+        jobs::RunSync(done);
+	});
 }
 
 const CD3DX12_VIEWPORT& rendering::DXSwapChain::GetViewport() const

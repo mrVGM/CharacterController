@@ -3,7 +3,7 @@
 #include "CompositeTypeDef.h"
 #include "CompositeValue.h"
 
-#include "Job.h"
+#include "Jobs.h"
 
 #include "d3dx12.h"
 #include <wrl.h>
@@ -38,7 +38,7 @@ namespace rendering
 		DXHeap(const ReferenceTypeDef& typeDef);
 		virtual ~DXHeap();
 
-		void MakeResident(jobs::Job* done);
+		void MakeResident(jobs::Job done);
 		ID3D12Heap* GetHeap() const;
 		void SetHeapSize(UINT64 size);
 		void SetHeapType(D3D12_HEAP_TYPE type);

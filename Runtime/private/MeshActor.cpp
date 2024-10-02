@@ -144,7 +144,7 @@ void runtime::MeshActor::SetMesh(geo::Mesh* mesh)
 	m_mesh.AssignObject(mesh);
 }
 
-void runtime::MeshActor::LoadData(jobs::Job* done)
+void runtime::MeshActor::LoadData(jobs::Job done)
 {
 	struct Context
 	{
@@ -153,14 +153,14 @@ void runtime::MeshActor::LoadData(jobs::Job* done)
 
 	Context* ctx = new Context();
 
-	jobs::Job* initAnimator = jobs::Job::CreateByLambda([=]() {
+	jobs::Job initAnimator = [=]() {
 		animation::Animator* animator = m_animator.GetValue<animation::Animator*>();
 		if (animator)
 		{
 			animator->SetActor(*this);
 		}
 		jobs::RunSync(done);
-	});
+	};
 
 	auto itemLoaded = [=]() {
 		--ctx->m_loading;
@@ -173,7 +173,7 @@ void runtime::MeshActor::LoadData(jobs::Job* done)
 		CacheCMDLists(initAnimator);
 	};
 
-	jobs::Job* initMeshBuffers = jobs::Job::CreateByLambda([=]() {
+	jobs::Job initMeshBuffers = [=]() {
 		geo::Mesh* mesh = m_mesh.GetValue<geo::Mesh*>();
 		MeshBuffers* meshBuffers = mesh->m_buffers.GetValue<MeshBuffers*>();
 
@@ -183,11 +183,11 @@ void runtime::MeshActor::LoadData(jobs::Job* done)
 			meshBuffers = mesh->m_buffers.GetValue<MeshBuffers*>();
 		}
 
-		jobs::RunAsync(jobs::Job::CreateByLambda([=]() {
-			meshBuffers->Load(*mesh, jobs::Job::CreateByLambda([=]() {
+		jobs::RunAsync([=]() {
+			meshBuffers->Load(*mesh, [=]() {
 				if (!mesh->m_skinData.m_hasAnyData)
 				{
-					jobs::RunSync(jobs::Job::CreateByLambda(itemLoaded));
+					jobs::RunSync(itemLoaded);
 					return;
 				}
 
@@ -197,39 +197,39 @@ void runtime::MeshActor::LoadData(jobs::Job* done)
 				int poseBuffStride = sizeof(math::Matrix);
 				int poseBuffSize = mesh->m_skinData.m_boneNames.size() * poseBuffStride;
 				poseBuffer->SetSizeAndStride(poseBuffSize, poseBuffStride);
-				jobs::RunAsync(jobs::Job::CreateByLambda([=]() {
-					poseBuffer->Load(jobs::Job::CreateByLambda(itemLoaded));
-				}));
-			}));
-		}));
-	});
-
-	auto loadMat = [=](rendering::materials::Material* material) {
-		return jobs::Job::CreateByLambda([=]() {
-			material->Load(jobs::Job::CreateByLambda(itemLoaded));
+				jobs::RunAsync([=]() {
+					poseBuffer->Load(itemLoaded);
+				});
+			});
 		});
 	};
 
-	jobs::Job* init = jobs::Job::CreateByLambda([=]() {
+	auto loadMat = [=](rendering::materials::Material* material) {
+		return [=]() {
+			material->Load(itemLoaded);
+		};
+	};
+
+	jobs::Job init = [=]() {
 		ObjectValueContainer::GetObjectOfType(rendering::DXDeviceTypeDef::GetTypeDef(), m_device);
 		ObjectValueContainer::GetObjectOfType(*m_meshDef.GetType<const TypeDef*>(), m_mesh);
 		geo::Mesh* mesh = m_mesh.GetValue<geo::Mesh*>();
 
 		++ctx->m_loading;
-		jobs::RunAsync(jobs::Job::CreateByLambda([=]() {
+		jobs::RunAsync([=]() {
 			mesh->Load(initMeshBuffers);
-		}));
+		});
 
 		rendering::DXMutableBufferTypeDef::GetTypeDef().Construct(m_transformBuffer);
 		rendering::DXMutableBuffer* transformBuffer = m_transformBuffer.GetValue<rendering::DXMutableBuffer*>();
 		transformBuffer->SetSizeAndStride(256, 256);
 		++ctx->m_loading;
-		jobs::RunAsync(jobs::Job::CreateByLambda([=]() {
-			transformBuffer->Load(jobs::Job::CreateByLambda([=]() {
+		jobs::RunAsync([=]() {
+			transformBuffer->Load([=]() {
 				UpdateTransformBuffer();
-				jobs::RunSync(jobs::Job::CreateByLambda(itemLoaded));
-			}));
-		}));
+				jobs::RunSync(itemLoaded);
+			});
+		});
 
 		const TypeDef* skeletonDef = m_skeletonDef.GetType<const TypeDef*>();
 		if (skeletonDef)
@@ -241,9 +241,9 @@ void runtime::MeshActor::LoadData(jobs::Job* done)
 		if (skeleton)
 		{
 			++ctx->m_loading;
-			jobs::RunAsync(jobs::Job::CreateByLambda([=]() {
-				skeleton->Load(jobs::Job::CreateByLambda(itemLoaded));
-			}));
+			jobs::RunAsync([=]() {
+				skeleton->Load(itemLoaded);
+			});
 
 
 			const AssetTypeDef* animatorAssetDef = static_cast<const AssetTypeDef*>(m_animatorDef.GetType<const TypeDef*>());
@@ -256,7 +256,7 @@ void runtime::MeshActor::LoadData(jobs::Job* done)
 			animation::Animator* animator = m_animator.GetValue<animation::Animator*>();
 
 			++ctx->m_loading;
-			animator->Load(jobs::Job::CreateByLambda(itemLoaded));
+			animator->Load(itemLoaded);
 		}
 
 		ValueList* matDefs = m_materialDefs.GetValue<ValueList*>();
@@ -274,7 +274,7 @@ void runtime::MeshActor::LoadData(jobs::Job* done)
 			++ctx->m_loading;
 			jobs::RunAsync(loadMat(material));
 		}
-	});
+	};
 
 	jobs::RunSync(init);
 }
@@ -284,9 +284,9 @@ void runtime::MeshActor::PrepareForNextTick()
 	UpdateTransformBuffer();
 }
 
-void runtime::MeshActor::CacheCMDLists(jobs::Job* done)
+void runtime::MeshActor::CacheCMDLists(jobs::Job done)
 {
-	jobs::Job* recordCommandLists = jobs::Job::CreateByLambda([=]() {
+	jobs::Job recordCommandLists = [=]() {
 		rendering::DXDevice* device = m_device.GetValue<rendering::DXDevice*>();
 
 		THROW_ERROR(
@@ -367,7 +367,7 @@ void runtime::MeshActor::CacheCMDLists(jobs::Job* done)
 		}
 
 		jobs::RunSync(done);
-	});
+	};
 
 	jobs::RunAsync(recordCommandLists);
 }

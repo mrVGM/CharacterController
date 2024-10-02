@@ -6,7 +6,7 @@
 #include "Material.h"
 
 #include "MultiLoader.h"
-#include "Job.h"
+#include "Jobs.h"
 
 #include "d3dx12.h"
 
@@ -44,9 +44,9 @@ namespace runtime
 			const TypeDef*, 
 			std::list<Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> > > m_cmdListCache;
 
-		void CacheCMDLists(jobs::Job* done);
+		void CacheCMDLists(jobs::Job done);
 	protected:
-		virtual void LoadData(jobs::Job* done) override;
+		virtual void LoadData(jobs::Job done) override;
 
 	public:
 		Value m_meshTransform;

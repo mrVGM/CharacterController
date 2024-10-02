@@ -5,7 +5,7 @@
 
 #include "MultiLoader.h"
 
-#include "Job.h"
+#include "Jobs.h"
 
 #include "d3dx12.h"
 #include <wrl.h>
@@ -74,7 +74,7 @@ namespace rendering
 		Value m_device;
 		int m_size = 0;
 
-		virtual void LoadData(jobs::Job* done) override;
+		virtual void LoadData(jobs::Job done) override;
 		virtual void Init() = 0;
 
 	public:

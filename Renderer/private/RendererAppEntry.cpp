@@ -82,34 +82,34 @@ void rendering::RendererAppEntryObj::Tick()
 			return;
 		}
 
-		jobs::Job* updateMutable = jobs::Job::CreateByLambda([=]() {
-			UpdateMutableBuffers(jobs::Job::CreateByLambda([=]() {
-				jobs::Job* nextTick = jobs::Job::CreateByLambda([=]() {
+		jobs::Job updateMutable = [=]() {
+			UpdateMutableBuffers([=]() {
+				jobs::Job nextTick = [=]() {
 					m_startedTicking = true;
 					Tick();
-				});
+				};
 				jobs::RunAsync(nextTick);
-			}));
-		});
+			});
+		};
 
 		jobs::RunAsync(updateMutable);
 	};
 
 	renderer::RendererObj* rend = m_renderer.GetValue<renderer::RendererObj*>();
-	jobs::RunAsync(jobs::Job::CreateByLambda([=]() {
+	jobs::RunAsync([=]() {
 		rend->RenderFrame();
-		jobs::RunSync(jobs::Job::CreateByLambda(jobDone));
-	}));
+		jobs::RunSync(jobDone);
+	});
 
-	jobs::RunAsync(jobs::Job::CreateByLambda([=]() {
+	jobs::RunAsync([=]() {
 		double dt = TimeStamp();
-		UpdateRoutine(dt, jobs::Job::CreateByLambda(jobDone));
-	}));
+		UpdateRoutine(dt, jobDone);
+	});
 }
 
-void rendering::RendererAppEntryObj::UpdateMutableBuffers(jobs::Job* done)
+void rendering::RendererAppEntryObj::UpdateMutableBuffers(jobs::Job done)
 {
-	jobs::Job* getBuffers = jobs::Job::CreateByLambda([=]() {
+	jobs::Job getBuffers = [=]() {
 		std::list<ObjectValue*> mutableBuffers;
 		ObjectValueContainer& container = ObjectValueContainer::GetContainer();
 		container.GetObjectsOfType(DXMutableBufferTypeDef::GetTypeDef(), mutableBuffers);
@@ -147,15 +147,15 @@ void rendering::RendererAppEntryObj::UpdateMutableBuffers(jobs::Job* done)
 			return;
 		}
 
-		jobs::RunAsync(jobs::Job::CreateByLambda([=]() {
+		jobs::RunAsync([=]() {
 			m_copyBuffers.GetValue<DXCopyBuffers*>()->Execute(m_copyCommandLists, numLists, done);
-		}));
-	});
+		});
+	};
 
 	jobs::RunSync(getBuffers);
 }
 
-void rendering::RendererAppEntryObj::UpdateRoutine(double dt, jobs::Job* done)
+void rendering::RendererAppEntryObj::UpdateRoutine(double dt, jobs::Job done)
 {
 	using namespace renderer;
 
@@ -198,15 +198,15 @@ void rendering::RendererAppEntryObj::UpdateRoutine(double dt, jobs::Job* done)
 	};
 
 	auto animatorUpdateJob = [=](animation::Animator* animator) {
-		jobs::Job* job = jobs::Job::CreateByLambda([=]() {
+		jobs::Job job = [=]() {
 			animator->Tick(dt);
-			jobs::RunSync(jobs::Job::CreateByLambda(updaterDone));
-		});
+			jobs::RunSync(updaterDone);
+		};
 
 		return job;
 	};
 
-	jobs::Job* getAnimatorUpdaters = jobs::Job::CreateByLambda([=]() {
+	jobs::Job getAnimatorUpdaters = [=]() {
 		ObjectValueContainer& container = ObjectValueContainer::GetContainer();
 		container.GetObjectsOfType(animation::AnimatorTypeDef::GetTypeDef(), updaters);
 
@@ -226,9 +226,9 @@ void rendering::RendererAppEntryObj::UpdateRoutine(double dt, jobs::Job* done)
 
 		if (!anyUpdater)
 		{
-			jobs::Job::CreateByLambda(updaterDone);
+			jobs::RunSync(updaterDone);
 		}
-	});
+	};
 
 	jobs::RunSync(getAnimatorUpdaters);
 }
@@ -257,19 +257,19 @@ void rendering::RendererAppEntryObj::Boot()
 		return m_renderer.GetValue<renderer::RendererObj*>();
 	};
 
-	jobs::Job* load = jobs::Job::CreateByLambda([=]() {
-		getRend()->Load(jobs::Job::CreateByLambda([=]() {
+	jobs::Job load = [=]() {
+		getRend()->Load([=]() {
 			Tick();
-		}));
-	});
+		});
+	};
 
-	jobs::Job* init = jobs::Job::CreateByLambda([=]() {
+	jobs::Job init = [=]() {
 		ObjectValueContainer::GetObjectOfType(renderer::RendererTypeDef::GetTypeDef(), m_renderer);
 		ObjectValueContainer::GetObjectOfType(DXCopyBuffersTypeDef::GetTypeDef(), m_copyBuffers);
 		ObjectValueContainer::GetObjectOfType(WindowTypeDef::GetTypeDef(), m_window);
 		
 		jobs::RunAsync(load);
- 	});
+ 	};
 
 	jobs::RunSync(init);
 }

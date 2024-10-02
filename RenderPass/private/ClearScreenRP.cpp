@@ -144,35 +144,12 @@ void rendering::render_pass::ClearScreenRP::Execute()
 	commandQueue->GetGraphicsCommandQueue()->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
 }
 
-void rendering::render_pass::ClearScreenRP::LoadData(jobs::Job* done)
+void rendering::render_pass::ClearScreenRP::LoadData(jobs::Job done)
 {
-	struct Context
-	{
-		ClearScreenRP* m_self = nullptr;
-		jobs::Job* m_done = nullptr;
-	};
-
-	Context ctx{ this, done };
-
-	class LoadJob : public jobs::Job
-	{
-	private:
-		Context m_ctx;
-
-	public:
-		LoadJob(const Context& ctx) :
-			m_ctx(ctx)
-		{
-		}
-
-		void Do() override
-		{
-			m_ctx.m_self->Create();
-			jobs::RunSync(m_ctx.m_done);
-		}
-	};
-
-	jobs::RunSync(new LoadJob(ctx));
+	jobs::RunSync([=]() {
+		Create();
+		jobs::RunSync(done);
+	});
 }
 
 

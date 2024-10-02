@@ -30,7 +30,7 @@ namespace rendering::renderer
 		Value m_cameraBuffer;
 
 	protected:
-		void LoadData(jobs::Job* done) override;
+		void LoadData(jobs::Job done) override;
 
 	public:
 		Value m_fov;

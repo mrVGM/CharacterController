@@ -241,7 +241,7 @@ void rendering::render_pass::DisplayTextureMaterial::GenerateCommandList(
         "Can't close Command List!")
 }
 
-void rendering::render_pass::DisplayTextureMaterial::LoadData(jobs::Job* done)
+void rendering::render_pass::DisplayTextureMaterial::LoadData(jobs::Job done)
 {
     struct Context
     {
@@ -265,22 +265,22 @@ void rendering::render_pass::DisplayTextureMaterial::LoadData(jobs::Job* done)
         jobs::RunSync(done);
     };
 
-    jobs::Job* loadParent = jobs::Job::CreateByLambda([=]() {
-        materials::Material::LoadData(jobs::Job::CreateByLambda(itemLoaded));
-    });
+    jobs::Job loadParent = [=]() {
+        materials::Material::LoadData(itemLoaded);
+    };
 
-    jobs::Job* loadDescriptorHeap = jobs::Job::CreateByLambda([=]() {
+    jobs::Job loadDescriptorHeap = [=]() {
         DXDescriptorHeap* heap = getDescHeap();
-        heap->Load(jobs::Job::CreateByLambda(itemLoaded));
-    });
+        heap->Load(itemLoaded);
+    };
 
-    jobs::Job* init = jobs::Job::CreateByLambda([=]() {
+    jobs::Job init = [=]() {
         ObjectValueContainer::GetObjectOfType(*m_texDescriptorHeapDef.GetType<const TypeDef*>(), m_texDescriptorHeap);
 
         ctx->m_loading = 2;
         jobs::RunAsync(loadParent);
         jobs::RunAsync(loadDescriptorHeap);
-    });
+    };
 
     jobs::RunSync(init);
 }

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Job.h"
+#include "Jobs.h"
 
 #include <list>
 
@@ -12,7 +12,7 @@ namespace jobs
 	{
 	private:
 		LoadingClass& m_loadingClass;
-		std::list<jobs::Job*> m_loadRequests;
+		std::list<jobs::Job> m_loadRequests;
 
 		bool m_loadStarted = false;
 		bool m_loaded = false;
@@ -20,7 +20,7 @@ namespace jobs
 	public:
 		MultiLoader(LoadingClass& loadingClass);
 
-		void Load(jobs::Job* done);
+		void Load(jobs::Job done);
 	};
 
 	class LoadingClass
@@ -29,12 +29,12 @@ namespace jobs
 	private:
 		MultiLoader m_loader;
 	protected:
-		virtual void LoadData(Job* done) = 0;
+		virtual void LoadData(Job done) = 0;
 
 	public:
 		LoadingClass();
 
-		void Load(Job* done);
+		void Load(Job done);
 		virtual ~LoadingClass();
 	};
 }

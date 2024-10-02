@@ -1,16 +1,19 @@
 #pragma once
 
+#include "Jobs.h"
+
 #include <thread>
 #include <semaphore>
+#include <threads.h>
 
 namespace jobs
 {
-	class Job;
 	class JobSystem;
 
 	class Thread
 	{
 	private:
+		thrd_t m_thrd;
 		bool m_busy = false;
 		std::binary_semaphore m_semaphore{ 1 };
 		std::thread* m_thread = nullptr;
@@ -22,15 +25,9 @@ namespace jobs
 		~Thread();
 
 		void Start();
-		void Boot();
 		void Stop();
 		bool ShouldStop();
 
-		jobs::Job* GetJob();
-
-		bool IsBusy() const;
-		void SetBusy(bool busy);
-		std::binary_semaphore& GetSemaphore();
-		jobs::JobSystem& GetJobSystem();
+		jobs::Job GetJob();
 	};
 }

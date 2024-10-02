@@ -10,12 +10,11 @@
 #include "AssetTypeDef.h"
 
 #include "Jobs.h"
-#include "Job.h"
 
 #include <filesystem>
 
 
-void assets::Boot(jobs::Job* done)
+void assets::Boot(jobs::Job done)
 {
     using namespace json_parser;
 
@@ -48,7 +47,7 @@ void assets::Boot(jobs::Job* done)
     };
 
     auto createLoadAssetJob = [=](const std::string& path) {
-        return jobs::Job::CreateByLambda([=]() {
+        return [=]() {
             std::string contents;
             files::ReadTextFile(path, contents);
 
@@ -56,8 +55,8 @@ void assets::Boot(jobs::Job* done)
             JSONValue::FromString(contents, assetData);
             AssetTypeDef* assetTypeDef = new AssetTypeDef(assetData);
 
-            jobs::RunSync(jobs::Job::CreateByLambda(assetLoaded));
-        });
+            jobs::RunSync(assetLoaded);
+        };
     };
 
     for (auto it = assetPaths.begin(); it != assetPaths.end(); ++it)

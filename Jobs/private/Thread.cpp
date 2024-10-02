@@ -1,47 +1,24 @@
 #include "Thread.h"
 
-#include "Job.h"
 #include "JobSystem.h"
+#include "Channel.h"
+#include "Jobs.h"
 
 
 namespace
 {
-	std::binary_semaphore m_initThreadSemaphore{ 1 };
-	std::mutex m_initThreadMutex;
-
-	jobs::Thread* m_curThread = nullptr;
-
-	void run()
+	int run_thrd(void* arg)
 	{
-		jobs::Thread& thread = *m_curThread;
-		m_initThreadSemaphore.release();
+		using namespace jobs;
 
-		while (true)
+		Thread* thread = static_cast<Thread*>(arg);
+
+		while (!thread->ShouldStop())
 		{
-			thread.GetSemaphore().acquire();
-			if (thread.ShouldStop())
-			{
-				return;
-			}
-
-			while (true)
-			{
-				if (thread.ShouldStop())
-				{
-					return;
-				}
-
-				jobs::Job* job = thread.GetJob();
-				if (!job)
-				{
-					thread.SetBusy(false);
-					break;
-				}
-
-				job->Do();
-				delete job;
-			}
+			Job job = thread->GetJob();
+			job();
 		}
+		return 0;
 	}
 }
 
@@ -60,34 +37,12 @@ jobs::Thread::~Thread()
 
 void jobs::Thread::Start()
 {
-	m_initThreadMutex.lock();
-	m_initThreadSemaphore.acquire();
-	m_semaphore.acquire();
-
-	m_curThread = this;
-	m_thread = new std::thread(run);
-
-	m_initThreadSemaphore.acquire();
-	m_initThreadSemaphore.release();
-
-	m_initThreadMutex.unlock();
-}
-
-void jobs::Thread::Boot()
-{
-	if (m_busy)
-	{
-		throw "Already Busy!";
-	}
-
-	m_busy = true;
-	m_semaphore.release();
+	thrd_create(&m_thrd, run_thrd, this);
 }
 
 void jobs::Thread::Stop()
 {
 	m_stopped = true;
-	GetSemaphore().release();
 }
 
 bool jobs::Thread::ShouldStop()
@@ -95,27 +50,8 @@ bool jobs::Thread::ShouldStop()
 	return m_stopped;
 }
 
-jobs::Job* jobs::Thread::GetJob()
+jobs::Job jobs::Thread::GetJob()
 {
 	return m_jobSystem.AcquireJob();
 }
 
-std::binary_semaphore& jobs::Thread::GetSemaphore()
-{
-	return m_semaphore;
-}
-
-jobs::JobSystem& jobs::Thread::GetJobSystem()
-{
-	return m_jobSystem;
-}
-
-bool jobs::Thread::IsBusy() const
-{
-	return m_busy;
-}
-
-void jobs::Thread::SetBusy(bool busy)
-{
-	m_busy = busy;
-}

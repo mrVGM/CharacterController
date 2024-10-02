@@ -78,34 +78,34 @@ ID3D12Resource* rendering::DXTexture::GetTexture() const
 	return m_texture.Get();
 }
 
-void rendering::DXTexture::LoadData(jobs::Job* done)
+void rendering::DXTexture::LoadData(jobs::Job done)
 {
 	auto getHeap = [=]() {
 		return m_heap.GetValue<DXHeap*>();
 	};
 
-	jobs::Job* placeTex = jobs::Job::CreateByLambda([=]() {
+	jobs::Job placeTex = [=]() {
 		DXHeap* heap = getHeap();
 		Place(*heap, 0);
 
 		jobs::RunSync(done);
-	});
+	};
 
-	jobs::Job* loadHeap = jobs::Job::CreateByLambda([=]() {
+	jobs::Job loadHeap = [=]() {
 		DXHeap* heap = getHeap();
 		heap->SetHeapType(D3D12_HEAP_TYPE::D3D12_HEAP_TYPE_DEFAULT);
 		heap->SetHeapFlags(D3D12_HEAP_FLAGS::D3D12_HEAP_FLAG_ALLOW_ONLY_RT_DS_TEXTURES);
 		heap->SetHeapSize(GetTextureAllocationInfo().SizeInBytes);
 
 		heap->MakeResident(placeTex);
-	});
+	};
 
-	jobs::Job* init = jobs::Job::CreateByLambda([=]() {
+	jobs::Job init = [=]() {
 		ObjectValueContainer::GetObjectOfType(DXDeviceTypeDef::GetTypeDef(), m_device);
 		DXHeapTypeDef::GetTypeDef().Construct(m_heap);
 
 		jobs::RunAsync(loadHeap);
-	});
+	};
 
 	jobs::RunSync(init);
 }

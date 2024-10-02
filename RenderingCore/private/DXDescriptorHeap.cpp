@@ -92,7 +92,7 @@ void rendering::DXDescriptorHeapTypeDef::Construct(Value& container) const
 	throw "Can't construct Descriptor Heap from this class!";
 }
 
-void rendering::DXDescriptorHeap::LoadData(jobs::Job* done)
+void rendering::DXDescriptorHeap::LoadData(jobs::Job done)
 {
 	struct Context
 	{
@@ -115,12 +115,12 @@ void rendering::DXDescriptorHeap::LoadData(jobs::Job* done)
 	};
 
 	auto loadTexJob = [=](DXTexture* tex) {
-		return jobs::Job::CreateByLambda([=]() {
-			tex->Load(jobs::Job::CreateByLambda(texLoaded));
-		});
+		return [=]() {
+			tex->Load(texLoaded);
+		};
 	};
 
-	jobs::Job* init = jobs::Job::CreateByLambda([=]() {
+	jobs::Job init = [=]() {
 		ObjectValueContainer::GetObjectOfType(DXDeviceTypeDef::GetTypeDef(), m_device);
 
 		ValueList* defs = m_textureDefs.GetValue<ValueList*>();
@@ -138,7 +138,7 @@ void rendering::DXDescriptorHeap::LoadData(jobs::Job* done)
 			++ctx->m_loading;
 			jobs::RunAsync(loadTexJob(t));
 		}
-	});
+	};
 	
 	jobs::RunSync(init);
 }

@@ -5,7 +5,7 @@
 
 #include "MultiLoader.h"
 
-#include "Job.h"
+#include "Jobs.h"
 
 namespace rendering::render_pass
 {
@@ -22,9 +22,6 @@ namespace rendering::render_pass
 
 	class RenderPass : public ObjectValue, public jobs::LoadingClass
 	{
-	protected:
-		virtual void LoadData(jobs::Job* done) = 0;
-
 	public:
 		virtual void Prepare() = 0;
 		virtual void Execute() = 0;

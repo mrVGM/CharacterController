@@ -97,36 +97,12 @@ rendering::DXCommandQueue::~DXCommandQueue()
 {
 }
 
-void rendering::DXCommandQueue::LoadData(jobs::Job* done)
+void rendering::DXCommandQueue::LoadData(jobs::Job done)
 {
-    struct Context
-    {
-        DXCommandQueue* m_self = nullptr;
-        jobs::Job* m_done = nullptr;
-    };
-
-    Context ctx{ this, done };
-
-    class LoadJob : public jobs::Job
-    {
-    private:
-        Context m_ctx;
-    public:
-        LoadJob(const Context& ctx) :
-            m_ctx(ctx)
-        {
-        }
-
-        void Do() override
-        {
-            m_ctx.m_self->Create();
-
-            jobs::RunSync(m_ctx.m_done);
-        }
-    };
-
-
-    jobs::RunSync(new LoadJob(ctx));
+    jobs::RunSync([=]() {
+        Create();
+        jobs::RunSync(done);
+	});
 }
 
 #undef THROW_ERROR

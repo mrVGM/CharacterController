@@ -2,7 +2,7 @@
 
 #include "AppEntry.h"
 
-#include "Job.h"
+#include "Jobs.h"
 
 #include "CompositeTypeDef.h"
 
@@ -39,8 +39,8 @@ namespace rendering
 		std::chrono::system_clock::time_point m_lastTick;
 
 		void Tick();
-		void UpdateMutableBuffers(jobs::Job* done);
-		void UpdateRoutine(double dt, jobs::Job* done);
+		void UpdateMutableBuffers(jobs::Job done);
+		void UpdateRoutine(double dt, jobs::Job done);
 
 		double TimeStamp();
 	public:

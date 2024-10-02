@@ -176,9 +176,9 @@ rendering::DXShader::~DXShader()
 {
 }
 
-void rendering::DXShader::LoadData(jobs::Job* done)
+void rendering::DXShader::LoadData(jobs::Job done)
 {
-	jobs::Job* compileJob = jobs::Job::CreateByLambda([=]() {
+	jobs::Job compileJob = [=]() {
 		std::string shaderFileName = m_name.Get<std::string>();
 		std::string shaderFile = files::GetDataDir() + "Shaders\\src\\" + shaderFileName;
 
@@ -225,7 +225,7 @@ void rendering::DXShader::LoadData(jobs::Job* done)
 		}
 
 		jobs::RunSync(done);
-	});
+	};
 
 	jobs::RunAsync(compileJob);
 }

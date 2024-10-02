@@ -110,25 +110,25 @@ rendering::renderer::Camera::~Camera()
 {
 }
 
-void rendering::renderer::Camera::LoadData(jobs::Job* done)
+void rendering::renderer::Camera::LoadData(jobs::Job done)
 {
 	auto getCamBuffer = [=]() {
 		return m_cameraBuffer.GetValue<DXMutableBuffer*>();
 	};
 
-	jobs::Job* loadCamBuffer = jobs::Job::CreateByLambda([=]() {
+	jobs::Job loadCamBuffer = [=]() {
 		DXMutableBuffer* camBuff = getCamBuffer();
-		camBuff->Load(jobs::Job::CreateByLambda([=]() {
+		camBuff->Load([=]() {
 			jobs::RunSync(done);
-		}));
-	});
+		});
+	};
 
-	jobs::Job* init = jobs::Job::CreateByLambda([=]() {
+	jobs::Job init = [=]() {
 		ObjectValueContainer::GetObjectOfType(WindowTypeDef::GetTypeDef(), m_window);
 		ObjectValueContainer::GetObjectOfType(render_pass::CameraBufferTypeDef::GetTypeDef(), m_cameraBuffer);
 
 		jobs::RunAsync(loadCamBuffer);
-	});
+	};
 
 	jobs::RunSync(init);
 }

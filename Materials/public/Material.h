@@ -4,7 +4,7 @@
 #include "CompositeValue.h"
 
 #include "MultiLoader.h"
-#include "Job.h"
+#include "Jobs.h"
 
 #include "d3dx12.h"
 
@@ -36,7 +36,7 @@ namespace rendering::materials
 		Value m_vertexShader;
 		Value m_pixelShader;
 
-		virtual void LoadData(jobs::Job* done) override;
+		virtual void LoadData(jobs::Job done) override;
 
 	public:
 		Value m_vertexShaderDef;

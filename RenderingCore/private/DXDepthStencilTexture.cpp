@@ -38,9 +38,9 @@ void rendering::DXDepthStencilTextureTypeDef::Construct(Value& container) const
 	container.AssignObject(tex);
 }
 
-void rendering::DXDepthStencilTexture::LoadData(jobs::Job* done)
+void rendering::DXDepthStencilTexture::LoadData(jobs::Job done)
 {
-	jobs::Job* init = jobs::Job::CreateByLambda([=]() {
+	jobs::Job init = [=]() {
 		Value wndVal(WindowTypeDef::GetTypeDef(), nullptr);
 		ObjectValueContainer::GetObjectOfType(WindowTypeDef::GetTypeDef(), wndVal);
 		WindowObj* wnd = wndVal.GetValue<WindowObj*>();
@@ -50,7 +50,7 @@ void rendering::DXDepthStencilTexture::LoadData(jobs::Job* done)
 		SetDescription(DXTexture::CreateDepthStencilTextureDescription(w, h));
 
 		DXTexture::LoadData(done);
-	});
+	};
 
 	jobs::RunSync(init);
 }

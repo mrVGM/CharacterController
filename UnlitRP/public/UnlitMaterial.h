@@ -37,7 +37,7 @@ namespace rendering::unlit_rp
 		Value m_skeletalMeshVertexShader;
 
 	protected:
-		void LoadData(jobs::Job* done) override;
+		void LoadData(jobs::Job done) override;
 
 	public:
 		Value m_rtDescHeapDef;

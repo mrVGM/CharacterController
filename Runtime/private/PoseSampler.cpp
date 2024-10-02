@@ -112,19 +112,19 @@ math::Matrix animation::AnimationSampler::SampleAnimation(double time, const std
     return animation->SampleChannel(time, *animChannel);
 }
 
-void animation::AnimationSampler::LoadData(jobs::Job* done)
+void animation::AnimationSampler::LoadData(jobs::Job done)
 {
-    jobs::Job* load = jobs::Job::CreateByLambda([=]() {
+    jobs::Job load = [=]() {
         geo::Animation* anim = m_animation.GetValue<geo::Animation*>();
         anim->Load(done);
-    });
+    };
 
-    jobs::Job* init = jobs::Job::CreateByLambda([=]() {
+    jobs::Job init = [=]() {
         const TypeDef* animDef = m_animationDef.GetType<const TypeDef*>();
         ObjectValueContainer::GetObjectOfType(*animDef, m_animation);
 
         jobs::RunAsync(load);
-    });
+    };
 
     jobs::RunSync(init);
 }
@@ -213,7 +213,7 @@ void animation::BlendSpaceSamplerTypeDef::Construct(Value& container) const
     container.AssignObject(sampler);
 }
 
-void animation::BlendSpaceSampler::LoadData(jobs::Job* done)
+void animation::BlendSpaceSampler::LoadData(jobs::Job done)
 {
     int* toLoad = new int;
     *toLoad = 0;
@@ -230,7 +230,7 @@ void animation::BlendSpaceSampler::LoadData(jobs::Job* done)
         jobs::RunSync(done);
     };
 
-    jobs::Job* init = jobs::Job::CreateByLambda([=]() {
+    jobs::Job init = [=]() {
         const AssetTypeDef* samplerDef1 = m_sampler1Def.GetType<const AssetTypeDef*>();
         const AssetTypeDef* samplerDef2 = m_sampler2Def.GetType<const AssetTypeDef*>();
 
@@ -241,15 +241,15 @@ void animation::BlendSpaceSampler::LoadData(jobs::Job* done)
         PoseSampler* sampler2 = m_sampler2.GetValue<PoseSampler*>();
 
         (*toLoad)++;
-        jobs::RunAsync(jobs::Job::CreateByLambda([=]() {
-            sampler1->Load(jobs::Job::CreateByLambda(loaded));
-        }));
+        jobs::RunAsync([=]() {
+            sampler1->Load(loaded);
+        });
 
         (*toLoad)++;
-        jobs::RunAsync(jobs::Job::CreateByLambda([=]() {
-            sampler2->Load(jobs::Job::CreateByLambda(loaded));
-        }));
-    });
+        jobs::RunAsync([=]() {
+            sampler2->Load(loaded);
+        });
+    };
 
     jobs::RunSync(init);
 }

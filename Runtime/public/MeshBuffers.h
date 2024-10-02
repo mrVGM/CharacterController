@@ -7,7 +7,7 @@
 
 #include "MultiLoader.h"
 
-#include "Job.h"
+#include "Jobs.h"
 
 namespace runtime
 {
@@ -27,7 +27,7 @@ namespace runtime
 		geo::Mesh* m_mesh = nullptr;
 
 	protected:
-		void LoadData(jobs::Job* done) override;
+		void LoadData(jobs::Job done) override;
 
 	public:
 		Value m_vertexBuffer;
@@ -40,6 +40,6 @@ namespace runtime
 		MeshBuffers(const ReferenceTypeDef& typeDef);
 		virtual ~MeshBuffers();
 
-		void Load(geo::Mesh& mesh, jobs::Job* done);
+		void Load(geo::Mesh& mesh, jobs::Job done);
 	};
 }

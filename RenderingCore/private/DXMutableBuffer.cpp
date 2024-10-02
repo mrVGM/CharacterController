@@ -76,7 +76,7 @@ void rendering::DXMutableBuffer::SetSizeAndStride(UINT64 size, UINT64 stride)
 	uploadBuffer->SetBufferStride(m_stride);
 }
 
-void rendering::DXMutableBuffer::Load(jobs::Job* done)
+void rendering::DXMutableBuffer::Load(jobs::Job done)
 {
 	struct Context
 	{
@@ -125,7 +125,7 @@ void rendering::DXMutableBuffer::Load(jobs::Job* done)
 	};
 
 
-	jobs::Job* init = jobs::Job::CreateByLambda([=]() {
+	jobs::Job init = [=]() {
 		DXHeapTypeDef::GetTypeDef().Construct(ctx->m_heapVal);
 		DXHeapTypeDef::GetTypeDef().Construct(ctx->m_uploadHeapVal);
 
@@ -140,19 +140,19 @@ void rendering::DXMutableBuffer::Load(jobs::Job* done)
 		uploadHeap->SetHeapType(D3D12_HEAP_TYPE_UPLOAD);
 		uploadHeap->SetHeapFlags(D3D12_HEAP_FLAG_ALLOW_ONLY_BUFFERS);
 
-		jobs::RunAsync(jobs::Job::CreateByLambda([=]() {
-			heap->MakeResident(jobs::Job::CreateByLambda(heapLoaded));
-		}));
+		jobs::RunAsync([=]() {
+			heap->MakeResident(heapLoaded);
+		});
 
-		jobs::RunAsync(jobs::Job::CreateByLambda([=]() {
-			uploadHeap->MakeResident(jobs::Job::CreateByLambda(heapLoaded));
-		}));
-	});
+		jobs::RunAsync([=]() {
+			uploadHeap->MakeResident(heapLoaded);
+		});
+	};
 
 	jobs::RunSync(init);
 }
 
-void rendering::DXMutableBuffer::Upload(jobs::Job* done)
+void rendering::DXMutableBuffer::Upload(jobs::Job done)
 {
 	m_uploadBuffer.GetValue<DXBuffer*>()->CopyBuffer(*m_buffer.GetValue<DXBuffer*>(), done);
 }

@@ -4,7 +4,6 @@
 #include "JobSystemDef.h"
 
 #include "JobSystem.h"
-#include "Job.h"
 #include "Jobs.h"
 
 #include "ObjectValueContainer.h"
@@ -102,18 +101,18 @@ void rendering::WindowObj::Start()
 {
 	RegisterWindowClass();
 
-	jobs::Job* init = jobs::Job::CreateByLambda([=]() {
+	jobs::Job init = [=]() {
 		jobs::JobSystem* js = GetWindowUpdateJS();
-		jobs::Job* updateJob = jobs::Job::CreateByLambda([=]() {
+		jobs::Job updateJob = [=]() {
 			Create();
 			while (m_hwnd)
 			{
 				WindowTick();
 			}
-		});
+		};
 
 		js->ScheduleJob(updateJob);
-	});
+	};
 
 	jobs::RunSync(init);
 }

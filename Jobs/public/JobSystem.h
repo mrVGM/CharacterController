@@ -3,14 +3,13 @@
 #include "CompositeValue.h"
 #include "JobSystemDef.h"
 
-#include <queue>
-#include <list>
+#include "Channel.h"
+#include "Jobs.h"
 
-#include <mutex>
+#include <list>
 
 namespace jobs
 {
-	class Job;
 	class JobSystem;
 	class Thread;
 
@@ -18,13 +17,10 @@ namespace jobs
 	{
 		friend class Thread;
 	private:
-		std::queue<Job*> m_jobQueue;
+		Channel<Job> m_jobsChannel;
 		std::list<Thread*> m_threads;
-		std::mutex m_mutex;
-		std::mutex m_bootMutex;
 
-		jobs::Job* AcquireJob();
-		void BootThread();
+		jobs::Job AcquireJob();
 	public:
 		Value m_numThreads;
 
@@ -33,6 +29,6 @@ namespace jobs
 
 		void Start();
 
-		void ScheduleJob(Job* job);
+		void ScheduleJob(const Job& job);
 	};
 }

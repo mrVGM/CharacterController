@@ -6,7 +6,7 @@
 #include "Geometry.h"
 
 #include "MultiLoader.h"
-#include "Job.h"
+#include "Jobs.h"
 
 #include "MemoryFile.h"
 
@@ -40,7 +40,7 @@ namespace geo
 		void DeserializeFromMF(files::MemoryFile& mf);
 
 	protected:
-		virtual void LoadData(jobs::Job* done) override;
+		virtual void LoadData(jobs::Job done) override;
 
 	public:
 		struct MaterialRange

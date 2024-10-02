@@ -493,7 +493,7 @@ const geo::Animation::AnimChannel* geo::Animation::GetAnimChannel(const std::str
 	return it->second;
 }
 
-void geo::Animation::LoadData(jobs::Job* done)
+void geo::Animation::LoadData(jobs::Job done)
 {
 	using namespace xml_reader;
 

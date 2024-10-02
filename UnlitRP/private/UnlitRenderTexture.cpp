@@ -38,9 +38,9 @@ void rendering::unlit_rp::UnlitRenderTextureTypeDef::Construct(Value& container)
 	container.AssignObject(tex);
 }
 
-void rendering::unlit_rp::UnlitRenderTexture::LoadData(jobs::Job* done)
+void rendering::unlit_rp::UnlitRenderTexture::LoadData(jobs::Job done)
 {
-	jobs::Job* init = jobs::Job::CreateByLambda([=]() {
+	jobs::Job init = [=]() {
 		Value wndVal(WindowTypeDef::GetTypeDef(), nullptr);
 		ObjectValueContainer::GetObjectOfType(WindowTypeDef::GetTypeDef(), wndVal);
 		WindowObj* wnd = wndVal.GetValue<WindowObj*>();
@@ -50,7 +50,7 @@ void rendering::unlit_rp::UnlitRenderTexture::LoadData(jobs::Job* done)
 		SetDescription(DXTexture::CreateRenderTargetTextureDescription(w, h));
 
 		DXTexture::LoadData(done);
-	});
+	};
 
 	jobs::RunSync(init);
 }

@@ -45,7 +45,7 @@ void animation::AnimatorTypeDef::Construct(Value& value) const
     value.AssignObject(animator);
 }
 
-void animation::Animator::LoadData(jobs::Job* done)
+void animation::Animator::LoadData(jobs::Job done)
 {
     jobs::RunSync(done);
 }

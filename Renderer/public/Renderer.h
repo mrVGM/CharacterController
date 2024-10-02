@@ -3,7 +3,7 @@
 #include "CompositeTypeDef.h"
 #include "CompositeValue.h"
 
-#include "Job.h"
+#include "Jobs.h"
 
 #include "d3dx12.h"
 
@@ -40,7 +40,7 @@ namespace rendering::renderer
 		RendererObj(const ReferenceTypeDef& typeDef);
 		virtual ~RendererObj();
 
-		void Load(jobs::Job* done);
+		void Load(jobs::Job done);
 
 		Value& GetScene();
 		void RenderFrame();

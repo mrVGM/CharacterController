@@ -34,7 +34,7 @@ namespace rendering::render_pass
 		void Create();
 
 	protected:
-		void LoadData(jobs::Job* done) override;
+		void LoadData(jobs::Job done) override;
 
 	public:
 

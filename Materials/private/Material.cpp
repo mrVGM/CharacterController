@@ -115,7 +115,7 @@ void rendering::materials::Material::GenerateCommandList(
 {
 }
 
-void rendering::materials::Material::LoadData(jobs::Job* done)
+void rendering::materials::Material::LoadData(jobs::Job done)
 {
     struct Context
     {
@@ -142,24 +142,24 @@ void rendering::materials::Material::LoadData(jobs::Job* done)
         jobs::RunSync(done);
     };
 
-    jobs::Job* init = jobs::Job::CreateByLambda([=]() {
+    jobs::Job init = [=]() {
 		ObjectValueContainer::GetObjectOfType(DXDeviceTypeDef::GetTypeDef(), m_device);
 		ObjectValueContainer::GetObjectOfType(DXSwapChainTypeDef::GetTypeDef(), m_swapChain);
         ObjectValueContainer::GetObjectOfType(*m_vertexShaderDef.GetType<const TypeDef*>(), m_vertexShader);
         ObjectValueContainer::GetObjectOfType(*m_pixelShaderDef.GetType<const TypeDef*>(), m_pixelShader);
 
-        jobs::RunAsync(jobs::Job::CreateByLambda([=]() {
-            getVS()->Load(jobs::Job::CreateByLambda([=]() {
-                jobs::RunSync(jobs::Job::CreateByLambda(shaderLoaded));
-            }));
-        }));
+        jobs::RunAsync([=]() {
+            getVS()->Load([=]() {
+                jobs::RunSync(shaderLoaded);
+            });
+        });
 
-        jobs::RunAsync(jobs::Job::CreateByLambda([=]() {
-            getPS()->Load(jobs::Job::CreateByLambda([=]() {
-                jobs::RunSync(jobs::Job::CreateByLambda(shaderLoaded));
-            }));
-        }));
-    });
+        jobs::RunAsync([=]() {
+            getPS()->Load([=]() {
+                jobs::RunSync(shaderLoaded);
+            });
+        });
+    };
 
     jobs::RunSync(init);
 }

@@ -55,11 +55,11 @@ runtime::MeshBuffers::~MeshBuffers()
 {
 }
 
-void runtime::MeshBuffers::Load(geo::Mesh& mesh, jobs::Job* done)
+void runtime::MeshBuffers::Load(geo::Mesh& mesh, jobs::Job done)
 {
 	geo::Mesh* meshPtr = &mesh;
 
-	jobs::Job* setMesh = jobs::Job::CreateByLambda([=]() {
+	jobs::Job setMesh = [=]() {
 		if (this->m_mesh)
 		{
 			jobs::RunSync(done);
@@ -67,15 +67,15 @@ void runtime::MeshBuffers::Load(geo::Mesh& mesh, jobs::Job* done)
 		}
 
 		m_mesh = meshPtr;
-		jobs::RunAsync(jobs::Job::CreateByLambda([=]() {
+		jobs::RunAsync([=]() {
 			LoadData(done);
-		}));
-	});
+		});
+	};
 
 	jobs::RunSync(setMesh);
 }
 
-void runtime::MeshBuffers::LoadData(jobs::Job* done)
+void runtime::MeshBuffers::LoadData(jobs::Job done)
 {
 	struct Context
 	{
@@ -123,7 +123,7 @@ void runtime::MeshBuffers::LoadData(jobs::Job* done)
 		jobs::RunSync(done);
 	};
 
-	jobs::Job* initMutBuffers = jobs::Job::CreateByLambda([=]() {
+	jobs::Job initMutBuffers = [=]() {
 		using namespace rendering;
 
 		DXMutableBufferTypeDef::GetTypeDef().Construct(ctx->m_vMutBuffer);
@@ -136,32 +136,32 @@ void runtime::MeshBuffers::LoadData(jobs::Job* done)
 		iBuff->SetSizeAndStride(m_mesh->m_indices.size() * sizeof(int), sizeof(int));
 
 		++ctx->m_toLoad;
-		jobs::RunAsync(jobs::Job::CreateByLambda([=]() {
+		jobs::RunAsync([=]() {
 
-			vBuff->Load(jobs::Job::CreateByLambda([=]() {
+			vBuff->Load([=]() {
 				DXBuffer* upload = vBuff->m_uploadBuffer.GetValue<DXBuffer*>();
 				void* data = upload->Map();
 				m_mesh->InitVertexBuffer(data);
 				upload->Unmap();
 
-				vBuff->Upload(jobs::Job::CreateByLambda(buffLoaded));
-			}));
+				vBuff->Upload(buffLoaded);
+			});
 			
-		}));
+		});
 
 		++ctx->m_toLoad;
-		jobs::RunAsync(jobs::Job::CreateByLambda([=]() {
+		jobs::RunAsync([=]() {
 
-			iBuff->Load(jobs::Job::CreateByLambda([=]() {
+			iBuff->Load([=]() {
 				DXBuffer* upload = iBuff->m_uploadBuffer.GetValue<DXBuffer*>();
 				void* data = upload->Map();
 				m_mesh->InitIndexBuffer(data);
 				upload->Unmap();
 
-				iBuff->Upload(jobs::Job::CreateByLambda(buffLoaded));
-			}));
+				iBuff->Upload(buffLoaded);
+			});
 
-		}));
+		});
 
 		if (!m_mesh->m_skinData.m_hasAnyData)
 		{
@@ -182,9 +182,9 @@ void runtime::MeshBuffers::LoadData(jobs::Job* done)
 		bindShapeBuffer->SetSizeAndStride((m_mesh->m_skinData.m_invBindMatrices.size() + 1) * sizeof(math::Matrix), sizeof(math::Matrix));
 
 		++ctx->m_toLoad;
-		jobs::RunAsync(jobs::Job::CreateByLambda([=]() {
+		jobs::RunAsync([=]() {
 
-			weightsBuff->Load(jobs::Job::CreateByLambda([=]() {
+			weightsBuff->Load([=]() {
 				DXBuffer* upload = weightsBuff->m_uploadBuffer.GetValue<DXBuffer*>();
 				void* data = upload->Map();
 				geo::Mesh::SkinData::VertexWeights* weightsPtr = reinterpret_cast<geo::Mesh::SkinData::VertexWeights*>(data);
@@ -194,15 +194,15 @@ void runtime::MeshBuffers::LoadData(jobs::Job* done)
 				}
 				upload->Unmap();
 
-				weightsBuff->Upload(jobs::Job::CreateByLambda(buffLoaded));
-			}));
+				weightsBuff->Upload(buffLoaded);
+			});
 
-		}));
+		});
 
 		++ctx->m_toLoad;
-		jobs::RunAsync(jobs::Job::CreateByLambda([=]() {
+		jobs::RunAsync([=]() {
 
-			weightsMapBuff->Load(jobs::Job::CreateByLambda([=]() {
+			weightsMapBuff->Load([=]() {
 				DXBuffer* upload = weightsMapBuff->m_uploadBuffer.GetValue<DXBuffer*>();
 				void* data = upload->Map();
 				int* weightsMapPtr = reinterpret_cast<int*>(data);
@@ -212,15 +212,15 @@ void runtime::MeshBuffers::LoadData(jobs::Job* done)
 				}
 				upload->Unmap();
 
-				weightsMapBuff->Upload(jobs::Job::CreateByLambda(buffLoaded));
-			}));
+				weightsMapBuff->Upload(buffLoaded);
+			});
 
-		}));
+		});
 
 		++ctx->m_toLoad;
-		jobs::RunAsync(jobs::Job::CreateByLambda([=]() {
+		jobs::RunAsync([=]() {
 
-			bindShapeBuffer->Load(jobs::Job::CreateByLambda([=]() {
+			bindShapeBuffer->Load([=]() {
 				DXBuffer* upload = bindShapeBuffer->m_uploadBuffer.GetValue<DXBuffer*>();
 				void* data = upload->Map();
 				math::Matrix* bindShapePtr = reinterpret_cast<math::Matrix*>(data);
@@ -237,15 +237,15 @@ void runtime::MeshBuffers::LoadData(jobs::Job* done)
 				}
 				upload->Unmap();
 
-				bindShapeBuffer->Upload(jobs::Job::CreateByLambda(buffLoaded));
-			}));
+				bindShapeBuffer->Upload(buffLoaded);
+			});
 
-		}));
-	});
+		});
+	};
 
-	jobs::Job* loadMesh = jobs::Job::CreateByLambda([=]() {
+	jobs::Job loadMesh = [=]() {
 		m_mesh->Load(initMutBuffers);
-	});
+	};
 
 	jobs::RunAsync(loadMesh);
 }

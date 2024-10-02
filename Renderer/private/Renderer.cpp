@@ -89,7 +89,7 @@ rendering::renderer::RendererObj::~RendererObj()
 {
 }
 
-void rendering::renderer::RendererObj::Load(jobs::Job* done)
+void rendering::renderer::RendererObj::Load(jobs::Job done)
 {
 	struct Context
 	{
@@ -112,12 +112,12 @@ void rendering::renderer::RendererObj::Load(jobs::Job* done)
 	};
 
 	auto loadRP = [=](render_pass::RenderPass* rp) {
-		return jobs::Job::CreateByLambda([=]() {
-			rp->Load(jobs::Job::CreateByLambda(rpLoaded));
-		});
+		return [=]() {
+			rp->Load(rpLoaded);
+		};
 	};
 
-	jobs::Job* loadRPs = jobs::Job::CreateByLambda([=]() {
+	jobs::Job loadRPs = [=]() {
 		ValueList* prDefs = m_renderPassesDefs.GetValue<ValueList*>();
 		ValueList* prs = m_renderPasses.GetValue<ValueList*>();
 
@@ -132,28 +132,28 @@ void rendering::renderer::RendererObj::Load(jobs::Job* done)
 
 			jobs::RunAsync(loadRP(rp));
 		}
-	});
+	};
 
-	jobs::Job* loadScene = jobs::Job::CreateByLambda([=]() {
+	jobs::Job loadScene = [=]() {
 		
 		scene::SceneObject* mainScene = m_scene.GetValue<scene::SceneObject*>();
 
-		jobs::Job* loadJob = jobs::Job::CreateByLambda([=]() {
+		jobs::Job loadJob = [=]() {
 			mainScene->Load(loadRPs);
-		});
+		};
 
 		jobs::RunAsync(loadJob);
-	});
+	};
 
-	jobs::Job* loadCamera = jobs::Job::CreateByLambda([=]() {
+	jobs::Job loadCamera = [=]() {
 		Camera* cam = m_camera.GetValue<Camera*>();
 
-		jobs::RunAsync(jobs::Job::CreateByLambda([=]() {
+		jobs::RunAsync([=]() {
 			cam->Load(loadScene);
-		}));
-	});
+		});
+	};
 
-	jobs::Job* init = jobs::Job::CreateByLambda([=]() {
+	jobs::Job init = [=]() {
 		ObjectValueContainer::GetObjectOfType(DXCommandQueueTypeDef::GetTypeDef(), m_commandQueue);
 		ObjectValueContainer::GetObjectOfType(DXSwapChainTypeDef::GetTypeDef(), m_swapChain);		
 		ObjectValueContainer::GetObjectOfType(RenderFenceTypeDef::GetTypeDef(), m_renderFence);
@@ -162,11 +162,11 @@ void rendering::renderer::RendererObj::Load(jobs::Job* done)
 		ObjectValueContainer::GetObjectOfType(CameraTypeDef::GetTypeDef(), m_camera);
 
 		jobs::RunSync(loadCamera);
-	});
+	};
 
-	jobs::RunAsync(jobs::Job::CreateByLambda([=]() {
+	jobs::RunAsync([=]() {
 		core::LoadCoreObjects(init);
-	}));
+	});
 }
 
 void rendering::renderer::RendererObj::RenderFrame()

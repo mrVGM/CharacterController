@@ -954,7 +954,7 @@ geo::Mesh::~Mesh()
 {
 }
 
-void geo::Mesh::LoadData(jobs::Job* done)
+void geo::Mesh::LoadData(jobs::Job done)
 {
 	using namespace xml_reader;
 

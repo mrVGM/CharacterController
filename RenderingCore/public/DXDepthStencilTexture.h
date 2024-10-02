@@ -18,7 +18,7 @@ namespace rendering
     class DXDepthStencilTexture : public DXTexture
     {
     protected:
-        virtual void LoadData(jobs::Job* done);
+        virtual void LoadData(jobs::Job done);
 
     public:
         DXDepthStencilTexture(const ReferenceTypeDef& typeDef);

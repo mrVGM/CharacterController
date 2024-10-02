@@ -53,139 +53,89 @@ namespace
 
 	CoreObjects m_coreObjects;
 
-	void LoadStage0(jobs::Job* done)
+	void LoadStage0(jobs::Job done)
 	{
 		struct Context
 		{
 			int m_loading = 0;
-			jobs::Job* m_done = nullptr;
 		};
-		Context* ctx = new Context{ 0, done };
+		Context* ctx = new Context{ 0 };
 
-		class ItemLoaded : public jobs::Job
-		{
-		private:
-			Context& m_ctx;
-		public:
-			ItemLoaded(Context& ctx) :
-				m_ctx(ctx)
+		jobs::Job itemLoaded = [=]() {
+			--ctx->m_loading;
+			if (ctx->m_loading > 0)
 			{
+				return;
 			}
+			delete ctx;
 
-			void Do() override
-			{
-				--m_ctx.m_loading;
-				if (m_ctx.m_loading > 0)
-				{
-					return;
-				}
-
-				jobs::RunSync(m_ctx.m_done);
-				delete &m_ctx;
-			}
+			jobs::RunSync(done);
 		};
 
-		class LoadJob : public jobs::Job
-		{
-		private:
-			Context& m_ctx;
-		public:
-			LoadJob(Context& ctx) :
-				m_ctx(ctx)
-			{
-			}
+		jobs::Job loadJob = [=]() {
+			using namespace rendering;
 
-			void Do() override
-			{
-				using namespace rendering;
+			ObjectValueContainer::GetObjectOfType(WindowTypeDef::GetTypeDef(), m_coreObjects.m_window);
+			ObjectValueContainer::GetObjectOfType(DXDeviceTypeDef::GetTypeDef(), m_coreObjects.m_device);
+			ObjectValueContainer::GetObjectOfType(DXCommandQueueTypeDef::GetTypeDef(), m_coreObjects.m_commandQueue);
+			ObjectValueContainer::GetObjectOfType(ResidentHeapJobSystemTypeDef::GetTypeDef(), m_coreObjects.m_residentHeapJS);
+			ObjectValueContainer::GetObjectOfType(ResidentHeapFenceTypeDef::GetTypeDef(), m_coreObjects.m_residentHeapFence);
+			ObjectValueContainer::GetObjectOfType(RenderFenceTypeDef::GetTypeDef(), m_coreObjects.m_renderFence);
 
-				ObjectValueContainer::GetObjectOfType(WindowTypeDef::GetTypeDef(), m_coreObjects.m_window);
-				ObjectValueContainer::GetObjectOfType(DXDeviceTypeDef::GetTypeDef(), m_coreObjects.m_device);
-				ObjectValueContainer::GetObjectOfType(DXCommandQueueTypeDef::GetTypeDef(), m_coreObjects.m_commandQueue);
-				ObjectValueContainer::GetObjectOfType(ResidentHeapJobSystemTypeDef::GetTypeDef(), m_coreObjects.m_residentHeapJS);
-				ObjectValueContainer::GetObjectOfType(ResidentHeapFenceTypeDef::GetTypeDef(), m_coreObjects.m_residentHeapFence);
-				ObjectValueContainer::GetObjectOfType(RenderFenceTypeDef::GetTypeDef(), m_coreObjects.m_renderFence);
+			WindowObj* window = m_coreObjects.m_window.GetValue<WindowObj*>();
+			window->Start();
 
-				WindowObj* window = m_coreObjects.m_window.GetValue<WindowObj*>();
-				window->Start();
+			jobs::JobSystem* residentHeapJobSystem = m_coreObjects.m_residentHeapJS.GetValue<jobs::JobSystem*>();
+			residentHeapJobSystem->Start();
 
-				jobs::JobSystem* residentHeapJobSystem = m_coreObjects.m_residentHeapJS.GetValue<jobs::JobSystem*>();
-				residentHeapJobSystem->Start();
+			DXCommandQueue* commandQueue = m_coreObjects.m_commandQueue.GetValue<DXCommandQueue*>();
+			DXFence* renderFence = m_coreObjects.m_renderFence.GetValue<DXFence*>();
+			DXFence* residentHeapFence = m_coreObjects.m_residentHeapFence.GetValue<DXFence*>();
 
-				DXCommandQueue* commandQueue = m_coreObjects.m_commandQueue.GetValue<DXCommandQueue*>();
-				DXFence* renderFence = m_coreObjects.m_renderFence.GetValue<DXFence*>();
-				DXFence* residentHeapFence = m_coreObjects.m_residentHeapFence.GetValue<DXFence*>();
+			ctx->m_loading = 3;
 
-				m_ctx.m_loading = 3;
-
-				commandQueue->Load(new ItemLoaded(m_ctx));
-				renderFence->Load(new ItemLoaded(m_ctx));
-				residentHeapFence->Load(new ItemLoaded(m_ctx));
-			}
+			commandQueue->Load(itemLoaded);
+			renderFence->Load(itemLoaded);
+			residentHeapFence->Load(itemLoaded);
 		};
 
-		jobs::RunSync(new LoadJob(*ctx));
+		jobs::RunSync(loadJob);
 	}
 
-	void LoadStage1(jobs::Job* done)
+	void LoadStage1(jobs::Job done)
 	{
 		struct Context
 		{
 			int m_loading = 0;
-			jobs::Job* m_done = nullptr;
 		};
-		Context* ctx = new Context{ 0, done };
+		Context* ctx = new Context{ 0 };
 
-		class ItemLoaded : public jobs::Job
-		{
-		private:
-			Context& m_ctx;
-		public:
-			ItemLoaded(Context& ctx) :
-				m_ctx(ctx)
+		jobs::Job itemLoaded = [=]() {
+			--ctx->m_loading;
+			if (ctx->m_loading > 0)
 			{
+				return;
 			}
+			delete ctx;
 
-			void Do() override
-			{
-				--m_ctx.m_loading;
-				if (m_ctx.m_loading > 0)
-				{
-					return;
-				}
-
-				jobs::RunSync(m_ctx.m_done);
-				delete& m_ctx;
-			}
+			jobs::RunSync(done);
 		};
 
-		class LoadJob : public jobs::Job
-		{
-		private:
-			Context& m_ctx;
-		public:
-			LoadJob(Context& ctx) :
-				m_ctx(ctx)
-			{
-			}
+		jobs::Job loadJob = [=]() {
+			using namespace rendering;
 
-			void Do() override
-			{
-				using namespace rendering;
+			ObjectValueContainer::GetObjectOfType(DXSwapChainTypeDef::GetTypeDef(), m_coreObjects.m_swapChain);
+			ObjectValueContainer::GetObjectOfType(DXCopyBuffersTypeDef::GetTypeDef(), m_coreObjects.m_copyBuffers);
 
-				ObjectValueContainer::GetObjectOfType(DXSwapChainTypeDef::GetTypeDef(), m_coreObjects.m_swapChain);
-				ObjectValueContainer::GetObjectOfType(DXCopyBuffersTypeDef::GetTypeDef(), m_coreObjects.m_copyBuffers);
+			DXSwapChain* swapChain = m_coreObjects.m_swapChain.GetValue<DXSwapChain*>();
+			DXCopyBuffers* copyBuffers = m_coreObjects.m_copyBuffers.GetValue<DXCopyBuffers*>();
+			ctx->m_loading = 2;
 
-				DXSwapChain* swapChain = m_coreObjects.m_swapChain.GetValue<DXSwapChain*>();
-				DXCopyBuffers* copyBuffers = m_coreObjects.m_copyBuffers.GetValue<DXCopyBuffers*>();
-				m_ctx.m_loading = 2;
-
-				swapChain->Load(new ItemLoaded(m_ctx));
-				copyBuffers->Load(new ItemLoaded(m_ctx));
-			}
+			swapChain->Load(itemLoaded);
+			copyBuffers->Load(itemLoaded);
 		};
 
-		jobs::RunSync(new LoadJob(*ctx));
+		jobs::RunSync(loadJob);
 	}
 }
 
@@ -217,29 +167,9 @@ void rendering::core::Boot()
 	ResidentHeapJobSystemTypeDef::GetTypeDef();
 }
 
-void rendering::core::LoadCoreObjects(jobs::Job* done)
+void rendering::core::LoadCoreObjects(jobs::Job done)
 {
-	struct Context
-	{
-		jobs::Job* m_done = nullptr;
-	};
-	Context ctx{ done };
-
-	class Stage1 : public jobs::Job
-	{
-	private:
-		Context m_ctx;
-	public:
-		Stage1(const Context& ctx) :
-			m_ctx(ctx)
-		{
-		}
-
-		void Do() override
-		{
-			LoadStage1(m_ctx.m_done);
-		}
-	};
-
-	LoadStage0(new Stage1(ctx));
+	LoadStage0([=]() {
+		LoadStage1(done);
+	});
 }

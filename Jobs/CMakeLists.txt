@@ -5,8 +5,6 @@ add_library (Jobs
 	"private/JobSystemDef.cpp"
 	"public/JobSystem.h"
 	"private/JobSystem.cpp"
-	"public/Job.h"
-	"private/Job.cpp"
 	"private/Thread.h"
 	"private/Thread.cpp"
 	"public/Jobs.h"

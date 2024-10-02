@@ -59,7 +59,7 @@ namespace rendering::unlit_rp
 		void ResizeCommandLists(int size);
 
 	protected:
-		void LoadData(jobs::Job* done) override;
+		void LoadData(jobs::Job done) override;
 
 	public:
 		Value m_quadMeshDef;

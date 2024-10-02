@@ -7,7 +7,7 @@
 #include "Skeleton.h"
 
 #include "MultiLoader.h"
-#include "Job.h"
+#include "Jobs.h"
 
 #include "MemoryFile.h"
 
@@ -58,7 +58,7 @@ namespace geo
 		std::map<std::string, const AnimChannel*> m_channelMap;
 
 	protected:
-		virtual void LoadData(jobs::Job* done) override;
+		virtual void LoadData(jobs::Job done) override;
 
 	public:
 		Value m_colladaFile;

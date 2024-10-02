@@ -3,7 +3,7 @@
 #include "CompositeTypeDef.h"
 #include "CompositeValue.h"
 
-#include "Job.h"
+#include "Jobs.h"
 
 #include "d3dx12.h"
 #include <d3d12.h>
@@ -43,7 +43,7 @@ namespace rendering
 		DXSwapChain(const ReferenceTypeDef& typeDef);
 		virtual ~DXSwapChain();
 
-		void Load(jobs::Job* done);
+		void Load(jobs::Job done);
 
 		void Present();
 

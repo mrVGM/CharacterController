@@ -256,7 +256,7 @@ void rendering::unlit_rp::UnlitRP::Execute()
 	}
 }
 
-void rendering::unlit_rp::UnlitRP::LoadData(jobs::Job* done)
+void rendering::unlit_rp::UnlitRP::LoadData(jobs::Job done)
 {
 	struct Context
 	{
@@ -275,27 +275,27 @@ void rendering::unlit_rp::UnlitRP::LoadData(jobs::Job* done)
 		jobs::RunSync(done);
 	};
 
-	jobs::Job* loadDisplayTextureMat = jobs::Job::CreateByLambda([=]() {
+	jobs::Job loadDisplayTextureMat = [=]() {
 		materials::Material* mat = m_displayTextureMat.GetValue<materials::Material*>();
-		mat->Load(jobs::Job::CreateByLambda(itemLoaded));
-	});
+		mat->Load(itemLoaded);
+	};
 
-	jobs::Job* loadQuadMesh = jobs::Job::CreateByLambda([=]() {
+	jobs::Job loadQuadMesh = [=]() {
 		geo::Mesh* mesh = m_quadMesh.GetValue<geo::Mesh*>();
 
-		jobs::Job* loadMeshBuffers = jobs::Job::CreateByLambda([=]() {
+		jobs::Job loadMeshBuffers = [=]() {
 			runtime::MeshBuffersTypeDef::GetTypeDef().Construct(mesh->m_buffers);
 			runtime::MeshBuffers* meshBuffers = mesh->m_buffers.GetValue<runtime::MeshBuffers*>();
 
-			jobs::RunAsync(jobs::Job::CreateByLambda([=]() {
-				meshBuffers->Load(*mesh, jobs::Job::CreateByLambda(itemLoaded));
-			}));
-		});
+			jobs::RunAsync([=]() {
+				meshBuffers->Load(*mesh, itemLoaded);
+			});
+		};
 
 		mesh->Load(loadMeshBuffers);
-	});
+	};
 
-	jobs::Job* init = jobs::Job::CreateByLambda([=]() {
+	jobs::Job init = [=]() {
 		ObjectValueContainer::GetObjectOfType(DXDeviceTypeDef::GetTypeDef(), m_device);
 		ObjectValueContainer::GetObjectOfType(DXSwapChainTypeDef::GetTypeDef(), m_swapChain);
 		ObjectValueContainer::GetObjectOfType(DXCommandQueueTypeDef::GetTypeDef(), m_commandQueue);
@@ -311,7 +311,7 @@ void rendering::unlit_rp::UnlitRP::LoadData(jobs::Job* done)
 		jobs::RunAsync(loadDisplayTextureMat);
 		++ctx->m_loading;
 		jobs::RunAsync(loadQuadMesh);
-	});
+	};
 
 	jobs::RunSync(init);
 }

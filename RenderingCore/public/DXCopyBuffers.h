@@ -5,7 +5,7 @@
 
 #include "DXBuffer.h"
 
-#include "Job.h"
+#include "Jobs.h"
 
 #include "MultiLoader.h"
 
@@ -38,7 +38,7 @@ namespace rendering
 		UINT64 m_copyCounter = 1;
 
 	protected:
-		void LoadData(jobs::Job* done);
+		void LoadData(jobs::Job done) override;
 
 	public:
 		Value m_copyJobSystemDef;
@@ -50,13 +50,13 @@ namespace rendering
 		void Execute(
 			DXBuffer& dst,
 			const DXBuffer& src,
-			jobs::Job* done
+			jobs::Job done
 		);
 
 		void Execute(
 			ID3D12CommandList* const* lists,
 			UINT64 numLists,
-			jobs::Job* done
+			jobs::Job done
 		);
 	};
 }

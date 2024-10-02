@@ -382,7 +382,7 @@ const Value& rendering::unlit_rp::UnlitMaterial::GetRTHeap() const
     return m_rtDescHeap;
 }
 
-void rendering::unlit_rp::UnlitMaterial::LoadData(jobs::Job* done)
+void rendering::unlit_rp::UnlitMaterial::LoadData(jobs::Job done)
 {
     struct Context
     {
@@ -405,39 +405,39 @@ void rendering::unlit_rp::UnlitMaterial::LoadData(jobs::Job* done)
     };
 
 
-    jobs::Job* parentLoaded = jobs::Job::CreateByLambda([=]() {
+    jobs::Job parentLoaded = [=]() {
         DXDescriptorHeap* dsHeap = m_dsDescriptorHeap.GetValue<DXDescriptorHeap*>();
         DXDescriptorHeap* rtHeap = m_rtDescHeap.GetValue<DXDescriptorHeap*>();
         DXShader* skeletalMeshVertexShader = m_skeletalMeshVertexShader.GetValue<DXShader*>();
 
         ++ctx->m_loading;
-        jobs::RunAsync(jobs::Job::CreateByLambda([=]() {
-            dsHeap->Load(jobs::Job::CreateByLambda(itemLoaded));
-        }));
+        jobs::RunAsync([=]() {
+            dsHeap->Load(itemLoaded);
+        });
 
         ++ctx->m_loading;
-        jobs::RunAsync(jobs::Job::CreateByLambda([=]() {
-            rtHeap->Load(jobs::Job::CreateByLambda(itemLoaded));
-        }));
+        jobs::RunAsync([=]() {
+            rtHeap->Load(itemLoaded);
+        });
 
         ++ctx->m_loading;
-        jobs::RunAsync(jobs::Job::CreateByLambda([=]() {
-            skeletalMeshVertexShader->Load(jobs::Job::CreateByLambda(itemLoaded));
-        }));
-    });
+        jobs::RunAsync([=]() {
+            skeletalMeshVertexShader->Load(itemLoaded);
+        });
+    };
 
-    jobs::Job* loadParent = jobs::Job::CreateByLambda([=]() {
+    jobs::Job loadParent = [=]() {
         materials::Material::LoadData(parentLoaded);
-    });
+    };
 
-    jobs::Job* init = jobs::Job::CreateByLambda([=]() {
+    jobs::Job init = [=]() {
         ObjectValueContainer::GetObjectOfType(render_pass::CameraBufferTypeDef::GetTypeDef(), m_camBuffer);
         ObjectValueContainer::GetObjectOfType(DepthStencilDescriptorHeapTypeDef::GetTypeDef(), m_dsDescriptorHeap);
         ObjectValueContainer::GetObjectOfType(*m_rtDescHeapDef.GetType<const TypeDef*>(), m_rtDescHeap);
         ObjectValueContainer::GetObjectOfType(*m_skeletalMeshVertexShaderDef.GetType<const TypeDef*>(), m_skeletalMeshVertexShader);
 
         jobs::RunAsync(loadParent);
-    });
+    };
 
     jobs::RunSync(init);
 }

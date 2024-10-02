@@ -30,7 +30,7 @@ namespace game
 		double m_transitionTimeLeft = 0;
 
 	protected:
-		void LoadData(jobs::Job* done) override;
+		void LoadData(jobs::Job done) override;
 
 	public:
 		Value m_moveSamplerDef;

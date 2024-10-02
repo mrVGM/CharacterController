@@ -1,12 +1,12 @@
 #pragma once
 
 #include "Value.h"
-#include "Job.h"
+#include "Jobs.h"
 
 #include <string>
 
 namespace assets
 {
-	void Boot(jobs::Job* done);
+	void Boot(jobs::Job done);
 	void Shutdown();
 }

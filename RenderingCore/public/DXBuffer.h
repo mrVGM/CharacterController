@@ -3,7 +3,7 @@
 #include "CompositeTypeDef.h"
 #include "CompositeValue.h"
 
-#include "Job.h"
+#include "Jobs.h"
 #include "DXHeap.h"
 
 #include "d3dx12.h"
@@ -46,7 +46,7 @@ namespace rendering
 		void CopyData(void* data, int dataSize);
 		void CopyBuffer(
 			rendering::DXBuffer& destination,
-			jobs::Job* done) const;
+			jobs::Job done) const;
 
 		void Place(DXHeap* heap, UINT64 heapOffset);
 

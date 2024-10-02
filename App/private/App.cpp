@@ -75,14 +75,14 @@ void app::Boot()
 	jobs::Boot();
 	gc::Boot();
 
-	jobs::RunSync(jobs::Job::CreateByLambda([=]() {
+	jobs::RunSync([=]() {
 		ObjectValueContainer& container = ObjectValueContainer::GetContainer();
 		container.StartExclusiveThreadAccess();
 
-		assets::Boot(jobs::Job::CreateByLambda([=]() {
+		assets::Boot([=]() {
 			Run();
-		}));
-	}));
+		});
+	});
 }
 
 

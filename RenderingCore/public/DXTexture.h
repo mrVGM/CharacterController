@@ -3,7 +3,7 @@
 #include "CompositeTypeDef.h"
 #include "CompositeValue.h"
 
-#include "Job.h"
+#include "Jobs.h"
 #include "DXHeap.h"
 
 #include "MultiLoader.h"
@@ -36,7 +36,7 @@ namespace rendering
 		void Place(DXHeap& heap, UINT64 heapOffset);
 
 	protected:
-		virtual void LoadData(jobs::Job* done) override;
+		virtual void LoadData(jobs::Job done) override;
 
 	public:
 		DXTexture(const ReferenceTypeDef& typeDef);

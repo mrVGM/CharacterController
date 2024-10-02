@@ -18,7 +18,7 @@ namespace rendering::unlit_rp
     class UnlitRenderTexture : public DXTexture
     {
     protected:
-        virtual void LoadData(jobs::Job* done);
+        virtual void LoadData(jobs::Job done);
 
     public:
         UnlitRenderTexture(const ReferenceTypeDef& typeDef);

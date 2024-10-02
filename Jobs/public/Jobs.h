@@ -1,14 +1,13 @@
 #pragma once
 
-#include "JobSystem.h"
-#include "Job.h"
 
-#include "Value.h"
+#include <functional>
 
 namespace jobs
 {
+	typedef std::function<void()> Job;
 	void Boot();
 
-	void RunSync(Job* job);
-	void RunAsync(Job* job);
+	void RunSync(const Job& job);
+	void RunAsync(const Job& job);
 }

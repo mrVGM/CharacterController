@@ -3,7 +3,6 @@
 #include "CompositeTypeDef.h"
 #include "CompositeValue.h"
 
-#include "Job.h"
 #include "MultiLoader.h"
 
 #include "d3dx12.h"
@@ -52,7 +51,7 @@ namespace rendering
 		Microsoft::WRL::ComPtr<ID3DBlob> m_shader;
 
 	protected:
-		void LoadData(jobs::Job* done) override;
+		void LoadData(jobs::Job done) override;
 
 	public:
 		Value m_name;

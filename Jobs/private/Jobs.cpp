@@ -5,6 +5,7 @@
 #include "ObjectValueContainer.h"
 
 #include "JobSystemDef.h"
+#include "JobSystem.h"
 
 #include "JSONValue.h"
 
@@ -34,12 +35,12 @@ void jobs::Boot()
     m_asyncJobSystem->Start();
 }
 
-void jobs::RunSync(Job* job)
+void jobs::RunSync(const Job& job)
 {
     m_mainJobSystem->ScheduleJob(job);
 }
 
-void jobs::RunAsync(Job* job)
+void jobs::RunAsync(const Job& job)
 {
     m_asyncJobSystem->ScheduleJob(job);
 }

@@ -57,7 +57,7 @@ namespace animation
 		math::Matrix SampleAnimation(double time, const std::string& bone, const geo::Skeleton& skeleton);
 
 	protected:
-		void LoadData(jobs::Job* done) override;
+		void LoadData(jobs::Job done) override;
 
 	public:
 		Value m_animationDef;
@@ -91,7 +91,7 @@ namespace animation
 	class BlendSpaceSampler : public PoseSampler
 	{
 	protected:
-		void LoadData(jobs::Job* done) override;
+		void LoadData(jobs::Job done) override;
 
 	public:
 		Value m_sampler1;

@@ -4,6 +4,7 @@
 #include "PrimitiveTypes.h"
 
 #include "Jobs.h"
+#include "JobSystem.h"
 #include "WaitFence.h"
 
 #include "DXDevice.h"
@@ -154,133 +155,61 @@ rendering::DXCopyBuffers::~DXCopyBuffers()
 void rendering::DXCopyBuffers::Execute(
     DXBuffer& dst,
     const DXBuffer& src,
-    jobs::Job* done)
+    jobs::Job done)
 {
-    struct JobContext
-    {
-        DXCopyBuffers* m_dxCopyBuffers = nullptr;
-        DXBuffer* m_dst = nullptr;
-        const DXBuffer* m_src = nullptr;
-        CopyCommandList* m_copyCommandList = nullptr;
-        UINT64 m_signal = -1;
-        jobs::Job* m_done = nullptr;
+    DXBuffer* dstPtr = &dst;
+    const DXBuffer* srcPtr = &src;
+
+    jobs::Job copyJob = [=]() {
+
+		DXFence* fence = m_copyFence.GetValue<DXFence*>();
+		DXCommandQueue* commandQueue = m_commandQueue.GetValue<DXCommandQueue*>();
+		UINT64 signal = m_copyCounter++;
+
+        jobs::RunAsync([=]() {
+            WaitFence waitFence(*m_copyFence.GetValue<DXFence*>());
+            waitFence.Wait(signal);
+
+            jobs::RunSync(done);
+        });
+
+        CopyCommandList cl(m_device.GetValue<DXDevice*>());
+        cl.Execute(*dstPtr, *srcPtr, commandQueue, fence->GetFence(), signal);
     };
 
-    JobContext ctx{ this, &dst, &src, new CopyCommandList(m_device.GetValue<DXDevice*>()), -1, done };
-
-    class WaitJob : public jobs::Job
-    {
-    private:
-        JobContext m_jobContext;
-    public:
-        WaitJob(const JobContext& jobContext) :
-            m_jobContext(jobContext)
-        {
-        }
-
-        void Do() override
-        {
-            WaitFence waitFence(*m_jobContext.m_dxCopyBuffers->m_copyFence.GetValue<DXFence*>());
-            waitFence.Wait(m_jobContext.m_signal);
-
-            jobs::RunSync(m_jobContext.m_done);
-            delete m_jobContext.m_copyCommandList;
-        }
-    };
-
-    class CopyJob : public jobs::Job
-    {
-    private:
-        JobContext m_jobContext;
-    public:
-        CopyJob(const JobContext& jobContext) :
-            m_jobContext(jobContext)
-        {
-        }
-
-        void Do() override
-        {
-            DXFence* fence = m_jobContext.m_dxCopyBuffers->m_copyFence.GetValue<DXFence*>();
-            DXCommandQueue* commandQueue = m_jobContext.m_dxCopyBuffers->m_commandQueue.GetValue<DXCommandQueue*>();
-            UINT64 signal = m_jobContext.m_dxCopyBuffers->m_copyCounter++;
-            m_jobContext.m_signal = signal;
-
-            m_jobContext.m_copyCommandList->Execute(*m_jobContext.m_dst, *m_jobContext.m_src, commandQueue, fence->GetFence(), signal);
-            jobs::RunAsync(new WaitJob(m_jobContext));
-        }
-    };
-
-    m_copyJobSytem.GetValue<jobs::JobSystem*>()->ScheduleJob(new CopyJob(ctx));
+    m_copyJobSytem.GetValue<jobs::JobSystem*>()->ScheduleJob(copyJob);
 }
 
-void rendering::DXCopyBuffers::Execute(ID3D12CommandList* const* lists, UINT64 numLists, jobs::Job* done)
+void rendering::DXCopyBuffers::Execute(ID3D12CommandList* const* lists, UINT64 numLists, jobs::Job done)
 {
-    struct JobContext
-    {
-        DXCopyBuffers* m_dxCopyBuffers = nullptr;
-        ID3D12CommandList* const* m_lists = nullptr;
-        UINT64 m_numLists = 0;
-        UINT64 m_signal = -1;
-        jobs::Job* m_done = nullptr;
-    };
+    jobs::Job copyJob = [=]() {
+		DXFence* fence = m_copyFence.GetValue<DXFence*>();
+		DXCommandQueue* commandQueue = m_commandQueue.GetValue<DXCommandQueue*>();
+		UINT64 signal = m_copyCounter++;
 
-    JobContext ctx{ this, lists, numLists, -1, done };
+        jobs::RunAsync([=]() {
+            WaitFence waitFence(*fence);
+            waitFence.Wait(signal);
 
-    class WaitJob : public jobs::Job
-    {
-    private:
-        JobContext m_jobContext;
-    public:
-        WaitJob(const JobContext& jobContext) :
-            m_jobContext(jobContext)
-        {
-        }
+            jobs::RunSync(done);
+        });
 
-        void Do() override
-        {
-            WaitFence waitFence(*m_jobContext.m_dxCopyBuffers->m_copyFence.GetValue<DXFence*>());
-            waitFence.Wait(m_jobContext.m_signal);
+		commandQueue->GetCopyCommandQueue()->ExecuteCommandLists(numLists, lists);
+		commandQueue->GetCopyCommandQueue()->Signal(fence->GetFence(), signal);
+	};
 
-            jobs::RunSync(m_jobContext.m_done);
-        }
-    };
-
-    class CopyJob : public jobs::Job
-    {
-    private:
-        JobContext m_jobContext;
-    public:
-        CopyJob(const JobContext& jobContext) :
-            m_jobContext(jobContext)
-        {
-        }
-
-        void Do() override
-        {
-            DXFence* fence = m_jobContext.m_dxCopyBuffers->m_copyFence.GetValue<DXFence*>();
-            DXCommandQueue* commandQueue = m_jobContext.m_dxCopyBuffers->m_commandQueue.GetValue<DXCommandQueue*>();
-            UINT64 signal = m_jobContext.m_dxCopyBuffers->m_copyCounter++;
-
-            m_jobContext.m_signal = signal;
-            jobs::RunAsync(new WaitJob(m_jobContext));
-
-            commandQueue->GetCopyCommandQueue()->ExecuteCommandLists(m_jobContext.m_numLists, m_jobContext.m_lists);
-            commandQueue->GetCopyCommandQueue()->Signal(fence->GetFence(), signal);
-        }
-    };
-
-    m_copyJobSytem.GetValue<jobs::JobSystem*>()->ScheduleJob(new CopyJob(ctx));
+    m_copyJobSytem.GetValue<jobs::JobSystem*>()->ScheduleJob(copyJob);
 }
 
 
-void rendering::DXCopyBuffers::LoadData(jobs::Job* done)
+void rendering::DXCopyBuffers::LoadData(jobs::Job done)
 {
-    jobs::Job* load = jobs::Job::CreateByLambda([=]() {
+    jobs::Job load = [=]() {
         DXFence* copyFence = m_copyFence.GetValue<DXFence*>();
         copyFence->Load(done);
-    });
+    };
 
-    jobs::Job* init = jobs::Job::CreateByLambda([=]() {
+    jobs::Job init = [=]() {
         ObjectValueContainer::GetObjectOfType(DXDeviceTypeDef::GetTypeDef(), m_device);
         ObjectValueContainer::GetObjectOfType(DXCommandQueueTypeDef::GetTypeDef(), m_commandQueue);
         ObjectValueContainer::GetObjectOfType(*m_copyJobSystemDef.GetType<const TypeDef*>(), m_copyJobSytem);
@@ -290,7 +219,7 @@ void rendering::DXCopyBuffers::LoadData(jobs::Job* done)
         copyJS->Start();
 
         jobs::RunAsync(load);
-    });
+    };
 
     jobs::RunSync(init);
 }

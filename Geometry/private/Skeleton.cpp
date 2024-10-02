@@ -230,7 +230,7 @@ void geo::Skeleton::DeserializeFromMF(files::MemoryFile& mf)
 	}
 }
 
-void geo::Skeleton::LoadData(jobs::Job* done)
+void geo::Skeleton::LoadData(jobs::Job done)
 {
 	using namespace xml_reader;
 

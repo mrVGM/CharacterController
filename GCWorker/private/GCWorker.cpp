@@ -2,7 +2,6 @@
 
 #include "GC.h"
 
-#include "Job.h"
 #include "Jobs.h"
 
 #include <set>
@@ -86,11 +85,11 @@ namespace
 
 		static std::list<const gc::ManagedObject*> toDelete;
 
-		jobs::RunAsync(jobs::Job::CreateByLambda([&]() {
+		jobs::RunAsync([&]() {
 			toDelete.clear();
 			gc::GCTick(toDelete);
 
-			jobs::RunSync(jobs::Job::CreateByLambda([&]() {
+			jobs::RunSync([&]() {
 
 				gc::GCLogger::m_log << "DEL ";
 				for (auto it = toDelete.begin(); it != toDelete.end(); ++it)
@@ -102,8 +101,8 @@ namespace
 				gc::GCLogger::m_log << '\n';
 
 				HandleState(GCState::Idle);
-			}));
-		}));
+			});
+		});
 	}
 
 	GCHandler m_gcHandler;

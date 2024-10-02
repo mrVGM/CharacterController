@@ -3,7 +3,7 @@
 #include "CompositeTypeDef.h"
 #include "CompositeValue.h"
 
-#include "Job.h"
+#include "Jobs.h"
 
 #include "MultiLoader.h"
 
@@ -34,7 +34,7 @@ namespace rendering
 		void Create();
 
 	protected:
-		void LoadData(jobs::Job* done);
+		void LoadData(jobs::Job done) override;
 
 	public:
 		DXFence(const ReferenceTypeDef& typeDef);

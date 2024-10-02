@@ -28,7 +28,7 @@ namespace rendering::render_pass
 		virtual void CreatePipelineStateAndRootSignatureForStaticMesh();
 
 	protected:
-		void LoadData(jobs::Job* done) override;
+		void LoadData(jobs::Job done) override;
 
 	public:
 		Value m_texDescriptorHeapDef;
