@@ -2,8 +2,6 @@
 
 #include "Jobs.h"
 
-#include <thread>
-#include <semaphore>
 #include <threads.h>
 
 namespace jobs
@@ -14,9 +12,6 @@ namespace jobs
 	{
 	private:
 		thrd_t m_thrd;
-		bool m_busy = false;
-		std::binary_semaphore m_semaphore{ 1 };
-		std::thread* m_thread = nullptr;
 
 		bool m_stopped = false;
 		jobs::JobSystem& m_jobSystem;

@@ -31,8 +31,6 @@ jobs::Thread::Thread(JobSystem& jobSystem) :
 jobs::Thread::~Thread()
 {
 	Stop();
-	m_thread->join();
-	delete m_thread;
 }
 
 void jobs::Thread::Start()
