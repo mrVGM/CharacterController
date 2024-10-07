@@ -6,6 +6,6 @@ public class Program
     public static void Main()
     {
         Guid guid = Guid.NewGuid();
-        Clipboard.SetText(guid.ToString().ToUpper());
+        Console.Write(guid.ToString().ToUpper());
     }
 }

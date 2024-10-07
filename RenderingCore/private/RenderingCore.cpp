@@ -19,6 +19,7 @@
 #include "RenderFence.h"
 #include "DXCopyBuffers.h"
 #include "DXMutableBuffer.h"
+#include "ImageTex.h"
 
 #include "RenderWindow.h"
 #include "RenderFence.h"
@@ -161,6 +162,8 @@ void rendering::core::Boot()
 	DepthStencilDescriptorHeapTypeDef::GetTypeDef();
 	RenderTargetDescriptorHeapTypeDef::GetTypeDef();
 	ShaderResourceDescriptorHeapTypeDef::GetTypeDef();
+	ImageTexTypeDef::GetTypeDef();
+
 
 	RenderFenceTypeDef::GetTypeDef();
 	ResidentHeapFenceTypeDef::GetTypeDef();

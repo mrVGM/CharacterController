@@ -12,8 +12,6 @@ add_library (RenderingCore
 	"private/DXDevice.cpp"
 	"public/DXSwapChain.h"
 	"private/DXSwapChain.cpp"
-	
-	
 	"private/DXCommandQueue.cpp"
 	"public/DXCommandQueue.h"
 	"public/DXFence.h"
@@ -40,6 +38,8 @@ add_library (RenderingCore
 	"private/DXDepthStencilTexture.cpp"
 	"public/DXDescriptorHeap.h"
 	"private/DXDescriptorHeap.cpp"
+	"private/ImageTex.h"
+	"private/ImageTex.cpp"
  )
 
 target_include_directories(RenderingCore INTERFACE PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/public")
@@ -47,7 +47,7 @@ target_include_directories(RenderingCore PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/pr
 
 target_link_libraries(RenderingCore PUBLIC Jobs Types CommonTypeDefs Settings)
 
-target_link_libraries(RenderingCore PRIVATE "d3d12.lib" "dxgi.lib" "d3dcompiler.lib" "dxguid.lib")
+target_link_libraries(RenderingCore PRIVATE "d3d12.lib" "dxgi.lib" "d3dcompiler.lib" "dxguid.lib" "windowscodecs.lib")
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET RenderingCore PROPERTY CXX_STANDARD 20)

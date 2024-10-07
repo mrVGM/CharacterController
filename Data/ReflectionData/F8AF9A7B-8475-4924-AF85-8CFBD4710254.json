@@ -1,0 +1,21 @@
+{
+  "properties":{
+    "27FDC497-19C8-4FAB-B2A8-F3113B941777":{
+      "type":{
+        "id":"B641BC7D-49F6-4194-B4C9-239FDDAAA623"
+      },
+      "name":"File",
+      "id":"27FDC497-19C8-4FAB-B2A8-F3113B941777",
+      "category":"Setup"
+    }
+  },
+  "parent":{
+    "id":"A1693B2C-8BE1-4AF8-AAC5-00206DA6FDE6"
+  },
+  "name":"Image Texture",
+  "isGenerated":0,
+  "id":{
+    "id":"F8AF9A7B-8475-4924-AF85-8CFBD4710254"
+  },
+  "category":"Images"
+}
