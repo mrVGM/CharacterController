@@ -36,6 +36,9 @@ namespace rendering
 		void Place(DXHeap& heap, UINT64 heapOffset);
 
 	protected:
+		bool m_hasClearValue = true;
+		D3D12_HEAP_FLAGS m_heapFlags = D3D12_HEAP_FLAGS::D3D12_HEAP_FLAG_ALLOW_ONLY_RT_DS_TEXTURES;
+
 		virtual void LoadData(jobs::Job done) override;
 
 	public:

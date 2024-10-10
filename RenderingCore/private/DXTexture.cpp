@@ -94,7 +94,7 @@ void rendering::DXTexture::LoadData(jobs::Job done)
 	jobs::Job loadHeap = [=]() {
 		DXHeap* heap = getHeap();
 		heap->SetHeapType(D3D12_HEAP_TYPE::D3D12_HEAP_TYPE_DEFAULT);
-		heap->SetHeapFlags(D3D12_HEAP_FLAGS::D3D12_HEAP_FLAG_ALLOW_ONLY_RT_DS_TEXTURES);
+		heap->SetHeapFlags(m_heapFlags);
 		heap->SetHeapSize(GetTextureAllocationInfo().SizeInBytes);
 
 		heap->MakeResident(placeTex);
@@ -125,13 +125,19 @@ void rendering::DXTexture::Place(DXHeap& heap, UINT64 heapOffset)
 	D3D12_CLEAR_VALUE regularClearValue = {};
 	regularClearValue.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
 
+	D3D12_CLEAR_VALUE* clearValue = nullptr;
+	if (m_hasClearValue)
+	{
+		clearValue = isDS ? &depthOptimizedClearValue : &regularClearValue;
+	}
+
 	THROW_ERROR(
 		device->GetDevice().CreatePlacedResource(
 			heap.GetHeap(),
 			heapOffset,
 			&textureDesc,
 			isDS ? D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_DEPTH_WRITE : D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_PRESENT,
-			isDS ? &depthOptimizedClearValue : &regularClearValue,
+			clearValue,
 			IID_PPV_ARGS(&m_texture)),
 		"Can't place texture in the heap!")
 }

@@ -39,8 +39,6 @@ namespace rendering
 		Microsoft::WRL::ComPtr<IWICImagingFactory> m_factory;
 		std::map<std::string, DXTexture*> m_imagesRepo;
 
-		void LoadImageFromFile(const std::string& imageFile, jobs::Job done);
-
 	protected:
 		virtual void LoadData(jobs::Job done) override;
 

@@ -136,6 +136,9 @@ rendering::ImageTex::ImageTex() :
 	DXTexture(rendering::ImageTexTypeDef::GetTypeDef()),
 	m_file(StringTypeDef::GetTypeDef(), this)
 {
+	m_hasClearValue = false;
+	m_heapFlags = D3D12_HEAP_FLAGS::D3D12_HEAP_FLAG_ALLOW_ONLY_NON_RT_DS_TEXTURES;
+
 	THROW_ERROR(
 		CoInitialize(nullptr),
 		"CoInitialize Error!"
@@ -157,9 +160,11 @@ rendering::ImageTex::~ImageTex()
 {
 }
 
-void rendering::ImageTex::LoadImageFromFile(const std::string& imageFile, jobs::Job done)
+void rendering::ImageTex::LoadData(jobs::Job done)
 {
-	std::string fullPath = files::GetDataDir() + "Images\\src\\" + imageFile;
+	std::string imageFile = m_file.Get<std::string>();
+	
+	std::string fullPath = files::GetDataDir() + "Images\\" + imageFile;
 	std::wstring imageFileW(fullPath.begin(), fullPath.end());
 
 	Microsoft::WRL::ComPtr<IWICBitmapDecoder> decoder;
@@ -195,12 +200,10 @@ void rendering::ImageTex::LoadImageFromFile(const std::string& imageFile, jobs::
 
 	struct CTX {
 		int toLoad = 2;
-		Value tex;
 		Value buff;
 		Value heap;
 		BYTE* imageData = nullptr;
 		CTX() :
-			tex(DXTextureTypeDef::GetTypeDef(), nullptr),
 			buff(DXBufferTypeDef::GetTypeDef(), nullptr),
 			heap(DXHeapTypeDef::GetTypeDef(), nullptr)
 		{
@@ -229,7 +232,6 @@ void rendering::ImageTex::LoadImageFromFile(const std::string& imageFile, jobs::
 		DXBuffer* buff = ctx->buff.GetValue<DXBuffer*>();
 		DXHeap* heap = ctx->heap.GetValue<DXHeap*>();
 		buff->Place(heap, 0);
-		DXTexture* tex = ctx->tex.GetValue<DXTexture*>();
 
 		Value dev(DXDeviceTypeDef::GetTypeDef(), nullptr);
 		ObjectValueContainer::GetObjectOfType(DXDeviceTypeDef::GetTypeDef(), dev);
@@ -238,7 +240,7 @@ void rendering::ImageTex::LoadImageFromFile(const std::string& imageFile, jobs::
 		
 		LoadImageCommandList* loadImageCommandList = new LoadImageCommandList(dev);
 		loadImageCommandList->m_commandList.Get()->Reset(loadImageCommandList->m_commandAllocator.Get(), nullptr);
-		UpdateSubresources(loadImageCommandList->m_commandList.Get(), tex->GetTexture(), buff->GetBuffer(), 0, 0, 1, &textureData);
+		UpdateSubresources(loadImageCommandList->m_commandList.Get(), GetTexture(), buff->GetBuffer(), 0, 0, 1, &textureData);
 		loadImageCommandList->m_commandList->Close();
 
 		DXCopyBuffers* m_copyBuffers = copyBuffers.GetValue<DXCopyBuffers*>();
@@ -248,26 +250,24 @@ void rendering::ImageTex::LoadImageFromFile(const std::string& imageFile, jobs::
 			jobs::RunSync(done);
 		});
 	};
+	
+	D3D12_RESOURCE_FLAGS flags = D3D12_RESOURCE_FLAGS::D3D12_RESOURCE_FLAG_NONE;
+	CD3DX12_RESOURCE_DESC textureDesc = {};
+	textureDesc = CD3DX12_RESOURCE_DESC::Tex2D(
+		format,
+		width,
+		height,
+		1,
+		0,
+		1,
+		0,
+		flags);
+
+	SetDescription(textureDesc);
+	DXTexture::LoadData(itemLoaded);
 
 	jobs::Job createTexAndBuffer = [=]() {
-		D3D12_RESOURCE_FLAGS flags = D3D12_RESOURCE_FLAGS::D3D12_RESOURCE_FLAG_NONE;
-		CD3DX12_RESOURCE_DESC textureDesc = {};
-		textureDesc = CD3DX12_RESOURCE_DESC::Tex2D(
-			format,
-			width,
-			height,
-			1,
-			0,
-			1,
-			0,
-			flags);
-
-		DXTextureTypeDef::GetTypeDef().Construct(ctx->tex);
-
-		DXTexture* t = ctx->tex.GetValue<DXTexture*>();
-		t->SetDescription(textureDesc);
-		t->Load(itemLoaded);
-
+		
 		Value dev(DXDeviceTypeDef::GetTypeDef(), nullptr);
 		ObjectValueContainer::GetObjectOfType(DXDeviceTypeDef::GetTypeDef(), dev);
 		DXDevice* device = dev.GetValue<DXDevice*>();
@@ -289,13 +289,7 @@ void rendering::ImageTex::LoadImageFromFile(const std::string& imageFile, jobs::
 	};
 
 	jobs::RunSync(createTexAndBuffer);
-}
 
-void rendering::ImageTex::LoadData(jobs::Job done)
-{
-	std::string file = m_file.Get<std::string>();
-
-	LoadImageFromFile(file, done);
 }
 
 #undef THROW_ERROR
