@@ -266,7 +266,7 @@ void rendering::ImageTex::LoadData(jobs::Job done)
 	SetDescription(textureDesc);
 	DXTexture::LoadData(itemLoaded);
 
-	jobs::Job createTexAndBuffer = [=]() {
+	jobs::Job createBuffer = [=]() {
 		
 		Value dev(DXDeviceTypeDef::GetTypeDef(), nullptr);
 		ObjectValueContainer::GetObjectOfType(DXDeviceTypeDef::GetTypeDef(), dev);
@@ -288,7 +288,7 @@ void rendering::ImageTex::LoadData(jobs::Job done)
 		heap->MakeResident(itemLoaded);
 	};
 
-	jobs::RunSync(createTexAndBuffer);
+	jobs::RunSync(createBuffer);
 
 }
 
